@@ -424,22 +424,25 @@ class PhilipsHumidifierMixin(PhilipsGenericCoAPFanBase):
 
 # TODO consolidate these classes as soon as we see a proper pattern
 class PhilipsAC1214(PhilipsGenericCoAPFan):
+    # the AC1214 doesn't seem to like a power on call when the mode or speed is set,
+    # so this needs to be handled separately
+    SERIALIZE_POWER_CALL = True
     AVAILABLE_PRESET_MODES = {
-        PRESET_MODE_AUTO: {PHILIPS_POWER: "1", PHILIPS_MODE: "P"},
-        PRESET_MODE_ALLERGEN: {PHILIPS_POWER: "1", PHILIPS_MODE: "A"},
+        PRESET_MODE_AUTO: {PHILIPS_MODE: "P"},
+        PRESET_MODE_ALLERGEN: {PHILIPS_MODE: "A"},
         # make speeds available as preset
-        PRESET_MODE_NIGHT: {PHILIPS_POWER: "1", PHILIPS_MODE: "N"},
-        SPEED_1: {PHILIPS_POWER: "1", PHILIPS_MODE: "M", PHILIPS_SPEED: "1"},
-        SPEED_2: {PHILIPS_POWER: "1", PHILIPS_MODE: "M", PHILIPS_SPEED: "2"},
-        SPEED_3: {PHILIPS_POWER: "1", PHILIPS_MODE: "M", PHILIPS_SPEED: "3"},
-        PRESET_MODE_TURBO: {PHILIPS_POWER: "1", PHILIPS_MODE: "M", PHILIPS_SPEED: "t"},
+        PRESET_MODE_NIGHT: {PHILIPS_MODE: "N"},
+        SPEED_1: {PHILIPS_MODE: "M", PHILIPS_SPEED: "1"},
+        SPEED_2: {PHILIPS_MODE: "M", PHILIPS_SPEED: "2"},
+        SPEED_3: {PHILIPS_MODE: "M", PHILIPS_SPEED: "3"},
+        PRESET_MODE_TURBO: {PHILIPS_MODE: "M", PHILIPS_SPEED: "t"},
     }
     AVAILABLE_SPEEDS = {
-        PRESET_MODE_NIGHT: {PHILIPS_POWER: "1", PHILIPS_MODE: "N"},
-        SPEED_1: {PHILIPS_POWER: "1", PHILIPS_MODE: "M", PHILIPS_SPEED: "1"},
-        SPEED_2: {PHILIPS_POWER: "1", PHILIPS_MODE: "M", PHILIPS_SPEED: "2"},
-        SPEED_3: {PHILIPS_POWER: "1", PHILIPS_MODE: "M", PHILIPS_SPEED: "3"},
-        PRESET_MODE_TURBO: {PHILIPS_POWER: "1", PHILIPS_MODE: "M", PHILIPS_SPEED: "t"},
+        PRESET_MODE_NIGHT: {PHILIPS_MODE: "N"},
+        SPEED_1: {PHILIPS_MODE: "M", PHILIPS_SPEED: "1"},
+        SPEED_2: { PHILIPS_MODE: "M", PHILIPS_SPEED: "2"},
+        SPEED_3: {PHILIPS_MODE: "M", PHILIPS_SPEED: "3"},
+        PRESET_MODE_TURBO: {PHILIPS_MODE: "M", PHILIPS_SPEED: "t"},
     }
     AVAILABLE_SWITCHES = [PHILIPS_CHILD_LOCK]
 

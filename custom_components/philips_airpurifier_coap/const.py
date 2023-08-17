@@ -273,8 +273,8 @@ PHILIPS_PREFERRED_INDEX_MAP = {
     "2": "Gas",
 }
 PHILIPS_NEW_PREFERRED_INDEX_MAP = {
-    "IAI": "Indoor Allergen Index",
-    "PM2.5": "PM2.5",
+    "0": ("IAI", ICON.IAI),
+    "1": ("PM2.5", ICON.PM25),
 }
 PHILIPS_DISPLAY_BACKLIGHT_MAP = {
     "0": False,
@@ -459,4 +459,9 @@ SELECT_TYPES: dict[str, SelectDescription] = {
         CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
         OPTIONS: PHILIPS_HUMIDITY_TARGET_MAP,
     },
+    PHILIPS_PREFERRED_INDEX: {
+        ATTR_LABEL: ATTR_PREFERRED_INDEX,
+        CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
+        OPTIONS: PHILIPS_NEW_PREFERRED_INDEX_MAP,
+    }
 }

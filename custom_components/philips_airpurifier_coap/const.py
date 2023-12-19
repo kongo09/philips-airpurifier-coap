@@ -5,6 +5,7 @@ from typing import Tuple
 from homeassistant.components.sensor import (
     ATTR_STATE_CLASS,
     STATE_CLASS_MEASUREMENT,
+    SensorDeviceClass,
 )
 
 from homeassistant.const import (
@@ -14,6 +15,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
     PERCENTAGE,
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_TEMPERATURE,
     CONF_ENTITY_CATEGORY,
@@ -192,6 +194,7 @@ ATTR_TOTAL_VOLATILE_ORGANIC_COMPOUNDS = "total_volatile_organic_compounds"
 ATTR_TYPE = "type"
 ATTR_WATER_LEVEL = "water_level"
 ATTR_WIFI_VERSION = "wifi_version"
+ATTR_RSSI = "rssi"
 ATTR_PREFIX = "prefix"
 ATTR_POSTFIX = "postfix"
 ATTR_WARN_VALUE = "warn_value"
@@ -243,6 +246,7 @@ PHILIPS_PM25 = "pm25"
 PHILIPS_POWER = "pwr"
 PHILIPS_PREFERRED_INDEX = "ddp"
 PHILIPS_PRODUCT_ID = "ProductId"
+PHILIPS_RSSI = "rssi"
 PHILIPS_RUNTIME = "Runtime"
 PHILIPS_SOFTWARE_VERSION = "swversion"
 PHILIPS_SPEED = "om"
@@ -348,6 +352,16 @@ SENSOR_TYPES: dict[str, SensorDescription] = {
         ATTR_UNIT: TEMP_CELSIUS,
     },
     # diagnostic information
+    PHILIPS_RSSI: {
+        ATTR_ICON: "mdi:wifi",
+        ATTR_LABEL: ATTR_RSSI,
+        ATTR_STATE_CLASS: STATE_CLASS_MEASUREMENT,
+        ATTR_DEVICE_CLASS: SensorDeviceClass.SIGNAL_STRENGTH,
+        ATTR_UNIT: SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+        CONF_ENTITY_CATEGORY: EntityCategory.DIAGNOSTIC,
+        ATTR_WARN_ICON: "mdi:wifi-alert",
+        ATTR_WARN_VALUE: -80,
+    },
     PHILIPS_WATER_LEVEL: {
         ATTR_ICON: "mdi:water",
         ATTR_LABEL: ATTR_WATER_LEVEL,

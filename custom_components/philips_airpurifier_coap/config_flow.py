@@ -11,6 +11,7 @@ import voluptuous as vol
 from homeassistant import config_entries, exceptions
 from homeassistant.components import dhcp
 from homeassistant.const import CONF_HOST, CONF_NAME
+from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_validation as cv
 from homeassistant.util.timeout import TimeoutManager
@@ -317,6 +318,46 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         # show the form to the user
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> config_entries.OptionsFlow:
+        """Create the options flow."""
+        return OptionsFlowHandler(config_entry)
+
+
+class OptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle an options flow for Philips AirPurifier."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialize options flow."""
+        self.config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Manage the options."""
+        if user_input is not None:
+            # TODO: take the new host address and check if the device is still the same
+            # only then proceed to register the new IP
+            self._model = self.config_entry.options[CONF_MODEL]
+            self._name =  self.config_entry.options[CONF_NAME]
+            self.config_entry.options[CONF_HOST] = user_input[CONF_HOST]
+            return self.async_create_entry(
+                title=self._model + " " + self._name, data=self.config_entry.options # TODO: user_input is wrong and incomplete
+            )
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_HOST, default=self.config_entry.options[CONF_HOST]
+                    ): str,
+                }
+            ),
+        )
 
 class InvalidHost(exceptions.HomeAssistantError):
     """Error to indicate that hostname/IP address is invalid."""

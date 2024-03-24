@@ -25,6 +25,7 @@ from .const import (
     CONF_MODEL,
     DATA_KEY_COORDINATOR,
     DOMAIN,
+    EXTRA_SENSOR_TYPES,
     FILTER_TYPES,
     SENSOR_TYPES,
     FanAttributes,
@@ -54,6 +55,7 @@ async def async_setup_entry(  # noqa: D103
     model_class = model_to_class.get(model)
     unavailable_filters = []
     unavailable_sensors = []
+    extra_sensors = []
 
     if model_class:
         for cls in reversed(model_class.__mro__):
@@ -61,11 +63,17 @@ async def async_setup_entry(  # noqa: D103
             unavailable_filters.extend(cls_unavailable_filters)
             cls_unavailable_sensors = getattr(cls, "UNAVAILABLE_SENSORS", [])
             unavailable_sensors.extend(cls_unavailable_sensors)
+            cls_extra_sensors = getattr(cls, "EXTRA_SENSORS", [])
+            extra_sensors.extend(cls_extra_sensors)
 
     sensors = []
 
     for sensor in SENSOR_TYPES:
         if sensor in status and sensor not in unavailable_sensors:
+            sensors.append(PhilipsSensor(coordinator, name, model, sensor))
+
+    for sensor in EXTRA_SENSOR_TYPES:
+        if sensor in status and sensor in extra_sensors:
             sensors.append(PhilipsSensor(coordinator, name, model, sensor))
 
     for _filter in FILTER_TYPES:
@@ -83,7 +91,13 @@ class PhilipsSensor(PhilipsEntity, SensorEntity):
     ) -> None:
         super().__init__(coordinator)
         self._model = model
-        self._description = SENSOR_TYPES[kind]
+
+        # the sensor could be a normal sensor or an extra sensor
+        if kind in SENSOR_TYPES:
+            self._description = SENSOR_TYPES[kind]
+        else:
+            self._description = EXTRA_SENSOR_TYPES[kind]
+
         self._icon_map = self._description.get(FanAttributes.ICON_MAP)
         self._norm_icon = (
             next(iter(self._icon_map.items()))[1]

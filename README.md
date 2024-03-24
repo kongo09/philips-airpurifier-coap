@@ -50,6 +50,12 @@ Philips has recently introduced a proper API to remote control the devices. Howe
 
 Note: `configuration.yaml` is no longer supported and your configuration is not automatically migrated. You have to start fresh.
 
+## Re-configuration
+
+- Should your devices change their IP address on the network, they need to be re-configured
+- If autodiscovery works for your device and network, Home Assistant will discover the device again (latest at the next restart) and identify that it knows it already. The IP address is then automatically adjusted and no user interaction is needed.
+- If autodiscovery doesn't work for you, you can simply add the device again as described above, using its new IP address. Home Assistant will detect that it knows the device already and adjust the configuration.
+
 
 ## Supported models
 
@@ -68,6 +74,7 @@ Note: `configuration.yaml` is no longer supported and your configuration is not 
 - AC3055
 - AC3059
 - AC3259
+- AC3737
 - AC3829
 - AC3836
 - AC3854/50

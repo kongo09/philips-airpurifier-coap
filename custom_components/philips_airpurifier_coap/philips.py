@@ -14,6 +14,7 @@ from aioairctrl import CoAPClient
 from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.core import CALLBACK_TYPE, callback
 from homeassistant.exceptions import ConfigEntryNotReady, PlatformNotReady
+from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, DeviceInfo
 from homeassistant.helpers.entity import Entity
 from homeassistant.util.percentage import (
     ordered_list_item_to_percentage,
@@ -41,9 +42,10 @@ MISSED_PACKAGE_COUNT = 3
 class Coordinator:
     """Class to coordinate the data requests from the Philips API."""
 
-    def __init__(self, client: CoAPClient, host: str) -> None:  # noqa: D107
+    def __init__(self, client: CoAPClient, host: str, mac: str) -> None:  # noqa: D107
         self.client = client
         self._host = host
+        self._mac = mac
 
         # It's None before the first successful update.
         # Components should call async_first_refresh to make sure the first
@@ -206,6 +208,7 @@ class PhilipsEntity(Entity):
         )[0]
         self._firmware = coordinator.status["WifiVersion"]
         self._manufacturer = "Philips"
+        self._mac = coordinator._mac
 
     @property
     def should_poll(self) -> bool:
@@ -213,15 +216,18 @@ class PhilipsEntity(Entity):
         return False
 
     @property
-    def device_info(self):
+    def device_info(self) -> DeviceInfo:
         """Return info about the device."""
-        return {
-            "identifiers": {(DOMAIN, self._serialNumber)},
-            "name": self._name,
-            "model": self._modelName,
-            "manufacturer": self._manufacturer,
-            "sw_version": self._firmware,
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, self._serialNumber)},
+            connections={(CONNECTION_NETWORK_MAC, self._mac)}
+            if self._mac is not None
+            else None,
+            name=self._name,
+            model=self._modelName,
+            manufacturer=self._manufacturer,
+            sw_version=self._firmware,
+        )
 
     @property
     def available(self):
@@ -287,6 +293,7 @@ class PhilipsGenericCoAPFanBase(PhilipsGenericFan):
     AVAILABLE_SWITCHES = []
     AVAILABLE_LIGHTS = []
     AVAILABLE_NUMBERS = []
+    AVAILABLE_BINARY_SENSORS = []
 
     KEY_PHILIPS_POWER = PhilipsApi.POWER
     STATE_POWER_ON = "1"
@@ -524,7 +531,7 @@ class PhilipsGenericCoAPFan(PhilipsGenericCoAPFanBase):
         (FanAttributes.SOFTWARE_VERSION, PhilipsApi.SOFTWARE_VERSION),
         (FanAttributes.WIFI_VERSION, PhilipsApi.WIFI_VERSION),
         (FanAttributes.ERROR_CODE, PhilipsApi.ERROR_CODE),
-        (FanAttributes.ERROR, PhilipsApi.ERROR_CODE, PhilipsApi.ERROR_CODE_MAP),
+        # (FanAttributes.ERROR, PhilipsApi.ERROR_CODE, PhilipsApi.ERROR_CODE_MAP),
         # device configuration
         (FanAttributes.LANGUAGE, PhilipsApi.LANGUAGE),
         (
@@ -600,7 +607,7 @@ class PhilipsNew2GenericCoAPFan(PhilipsGenericCoAPFanBase):
         (FanAttributes.DEVICE_ID, PhilipsApi.DEVICE_ID),
         (FanAttributes.SOFTWARE_VERSION, PhilipsApi.NEW2_SOFTWARE_VERSION),
         (FanAttributes.WIFI_VERSION, PhilipsApi.WIFI_VERSION),
-        # (FanAttributes.ERROR_CODE, PhilipsApi.ERROR_CODE),
+        (FanAttributes.ERROR_CODE, PhilipsApi.NEW2_ERROR_CODE),
         # (FanAttributes.ERROR, PhilipsApi.ERROR_CODE, PhilipsApi.ERROR_CODE_MAP),
         # device configuration
         (
@@ -629,6 +636,7 @@ class PhilipsHumidifierMixin(PhilipsGenericCoAPFanBase):
     """Mixin for humidifiers."""
 
     AVAILABLE_SELECTS = [PhilipsApi.FUNCTION, PhilipsApi.HUMIDITY_TARGET]
+    AVAILABLE_BINARY_SENSORS = [PhilipsApi.ERROR_CODE]
 
 
 # similar to the AC1715, the AC0850 seems to be a new class of devices that
@@ -1172,6 +1180,56 @@ class PhilipsAC3259(PhilipsGenericCoAPFan):
     AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
 
 
+class PhilipsAC3737(PhilipsNew2GenericCoAPFan):
+    """AC3737."""
+
+    AVAILABLE_PRESET_MODES = {
+        PresetMode.AUTO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 2,
+            PhilipsApi.NEW2_MODE_B: 0,
+        },
+        PresetMode.SLEEP: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 2,
+            PhilipsApi.NEW2_MODE_B: 17,
+        },
+        PresetMode.TURBO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 18,
+        },
+    }
+    AVAILABLE_SPEEDS = {
+        PresetMode.SLEEP: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 2,
+            PhilipsApi.NEW2_MODE_B: 17,
+        },
+        PresetMode.SPEED_1: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 2,
+            PhilipsApi.NEW2_MODE_B: 1,
+        },
+        PresetMode.SPEED_2: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 2,
+            PhilipsApi.NEW2_MODE_B: 2,
+        },
+        PresetMode.TURBO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 18,
+        },
+    }
+
+    AVAILABLE_SELECTS = [PhilipsApi.NEW2_HUMIDITY_TARGET]
+    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT2]
+    AVAILABLE_SWITCHES = [PhilipsApi.NEW2_CHILD_LOCK]
+    UNAVAILABLE_SENSORS = [PhilipsApi.NEW2_FAN_SPEED]
+    AVAILABLE_BINARY_SENSORS = [PhilipsApi.NEW2_ERROR_CODE, PhilipsApi.NEW2_MODE_A]
+
+
 class PhilipsAC3829(PhilipsHumidifierMixin, PhilipsGenericCoAPFan):
     """AC3829."""
 
@@ -1412,6 +1470,11 @@ class PhilipsAC4236(PhilipsGenericCoAPFan):
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "S",
             PhilipsApi.SPEED: "s",
+        },
+        PresetMode.SLEEP_ALLERGY: {
+            PhilipsApi.POWER: "1",
+            PhilipsApi.MODE: "AS",
+            PhilipsApi.SPEED: "as",
         },
         PresetMode.SPEED_1: {
             PhilipsApi.POWER: "1",
@@ -1738,6 +1801,7 @@ model_to_class = {
     FanModel.AC3055: PhilipsAC3055,
     FanModel.AC3059: PhilipsAC3059,
     FanModel.AC3259: PhilipsAC3259,
+    FanModel.AC3737: PhilipsAC3737,
     FanModel.AC3829: PhilipsAC3829,
     FanModel.AC3836: PhilipsAC3836,
     FanModel.AC3854_50: PhilipsAC385450,

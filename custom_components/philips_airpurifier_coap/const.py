@@ -112,6 +112,7 @@ class FanModel(StrEnum):
     AC3055 = "AC3055"
     AC3059 = "AC3059"
     AC3259 = "AC3259"
+    AC3737 = "AC3737"
     AC3829 = "AC3829"
     AC3836 = "AC3836"
     AC3854_50 = "AC3854/50"
@@ -222,9 +223,11 @@ class FanAttributes(StrEnum):
     FILTER_NANOPROTECT_CLEAN = "pre_filter"
     FUNCTION = "function"
     HUMIDITY = "humidity"
+    HUMIDIFIER = "humidification"
     HUMIDITY_TARGET = "humidity_target"
     INDOOR_ALLERGEN_INDEX = "indoor_allergen_index"
     LABEL = "label"
+    LEVEL = "level"
     UNIT = "unit"
     VALUE = "value"
     LANGUAGE = "language"
@@ -260,6 +263,7 @@ class FanAttributes(StrEnum):
     TARGET_TEMP = "target_temperature"
     STANDBY_SENSORS = "standby_sensors"
     AUTO_PLUS = "auto_plus"
+    WATER_TANK = "water_tank"
 
 
 class FanUnits(StrEnum):
@@ -364,6 +368,8 @@ class PhilipsApi:
     NEW2_PM25 = "D03221"
     NEW2_GAS = "D03122"
     NEW2_HUMIDITY = "D03125"
+    NEW2_ERROR_CODE = "D03240"
+    NEW2_HUMIDITY_TARGET = "D03128"
     NEW2_FILTER_NANOPROTECT_PREFILTER = "D0520D"
     NEW2_FILTER_NANOPROTECT = "D0540E"
     NEW2_FILTER_NANOPROTECT_PREFILTER_TOTAL = "D05207"
@@ -383,6 +389,7 @@ class PhilipsApi:
     NEW2_AUTO_PLUS_AI = "D03180"
     NEW2_PREFERRED_INDEX = "D0312A#1"
     NEW2_GAS_PREFERRED_INDEX = "D0312A#2"
+    NEW2_ERROR_CODE = "D03240 "
 
     PREFERRED_INDEX_MAP = {
         0: ("Indoor Allergen Index", ICON.IAI),
@@ -447,22 +454,17 @@ class PhilipsApi:
         60: ("60%", ICON.HUMIDITY_BUTTON),
         70: ("max", ICON.HUMIDITY_BUTTON),
     }
-    ERROR_CODE_MAP = {
-        32768: "no water",
-        49153: "pre-filter must be cleaned",
-        49155: "pre-filter must be cleaned",
-        49408: "no water",
-    }
 
 
 SENSOR_TYPES: dict[str, SensorDescription] = {
     # device sensors
-    PhilipsApi.AIR_QUALITY_INDEX: {
-        ATTR_DEVICE_CLASS: SensorDeviceClass.AQI,
-        FanAttributes.ICON_MAP: {0: "mdi:blur"},
-        FanAttributes.LABEL: FanAttributes.AIR_QUALITY_INDEX,
-        ATTR_STATE_CLASS: SensorStateClass.MEASUREMENT,
-    },
+    # NOTE: removed AQI as this turns out not to be a sensor, but a setting of the mobile app
+    # PhilipsApi.AIR_QUALITY_INDEX: {
+    #     ATTR_DEVICE_CLASS: SensorDeviceClass.AQI,
+    #     FanAttributes.ICON_MAP: {0: "mdi:blur"},
+    #     FanAttributes.LABEL: FanAttributes.AIR_QUALITY_INDEX,
+    #     ATTR_STATE_CLASS: SensorStateClass.MEASUREMENT,
+    # },
     PhilipsApi.INDOOR_ALLERGEN_INDEX: {
         FanAttributes.ICON_MAP: {0: ICON.IAI},
         FanAttributes.LABEL: FanAttributes.INDOOR_ALLERGEN_INDEX,
@@ -502,13 +504,13 @@ SENSOR_TYPES: dict[str, SensorDescription] = {
     PhilipsApi.NEW2_GAS: {
         FanAttributes.ICON_MAP: {0: ICON.GAS},
         FanAttributes.LABEL: FanAttributes.GAS,
+        FanAttributes.UNIT: "L",
         ATTR_STATE_CLASS: SensorStateClass.MEASUREMENT,
     },
     PhilipsApi.TOTAL_VOLATILE_ORGANIC_COMPOUNDS: {
         ATTR_DEVICE_CLASS: SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS,
         FanAttributes.ICON_MAP: {0: "mdi:blur"},
         FanAttributes.LABEL: FanAttributes.TOTAL_VOLATILE_ORGANIC_COMPOUNDS,
-        FanAttributes.UNIT: CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
         ATTR_STATE_CLASS: SensorStateClass.MEASUREMENT,
     },
     PhilipsApi.HUMIDITY: {
@@ -595,6 +597,50 @@ SENSOR_TYPES: dict[str, SensorDescription] = {
     #     FanAttributes.UNIT: UnitOfTime.MILLISECONDS,
     #     CONF_ENTITY_CATEGORY: EntityCategory.DIAGNOSTIC,
     # },
+}
+
+BINARY_SENSOR_TYPES: dict[str, SensorDescription] = {
+    # binary device sensors
+    PhilipsApi.ERROR_CODE: {
+        # test for out of water error, which is in bit 9 of the error number
+        FanAttributes.ICON_MAP: {
+            True: "mdi:water",
+            False: "mdi:water-off",
+        },
+        FanAttributes.LABEL: FanAttributes.WATER_TANK,
+        ATTR_DEVICE_CLASS: SensorDeviceClass.MOISTURE,
+        FanAttributes.VALUE: lambda value: not value & (1 << 8),
+        CONF_ENTITY_CATEGORY: EntityCategory.DIAGNOSTIC,
+    },
+    PhilipsApi.NEW2_ERROR_CODE: {
+        # test for out of water error, which is in bit 9 of the error number
+        FanAttributes.ICON_MAP: {
+            True: "mdi:water",
+            False: "mdi:water-off",
+        },
+        FanAttributes.LABEL: FanAttributes.WATER_TANK,
+        ATTR_DEVICE_CLASS: SensorDeviceClass.MOISTURE,
+        FanAttributes.VALUE: lambda value: not value & (1 << 8),
+        CONF_ENTITY_CATEGORY: EntityCategory.DIAGNOSTIC,
+    },
+    PhilipsApi.FUNCTION: {
+        # test if the water container is available and thus humidification switched on
+        FanAttributes.ICON_MAP: {
+            True: PhilipsApi.FUNCTION_MAP["PH"][1],
+            False: PhilipsApi.FUNCTION_MAP["P"][1],
+        },
+        FanAttributes.LABEL: FanAttributes.HUMIDIFIER,
+        FanAttributes.VALUE: lambda value: value == "PH",
+    },
+    PhilipsApi.NEW2_MODE_A: {
+        # test if the water container is available and thus humidification switched on
+        FanAttributes.ICON_MAP: {
+            True: PhilipsApi.FUNCTION_MAP["PH"][1],
+            False: PhilipsApi.FUNCTION_MAP["P"][1],
+        },
+        FanAttributes.LABEL: FanAttributes.HUMIDIFIER,
+        FanAttributes.VALUE: lambda value: value == 4,
+    },
 }
 
 FILTER_TYPES: dict[str, FilterDescription] = {
@@ -753,6 +799,11 @@ SELECT_TYPES: dict[str, SelectDescription] = {
         OPTIONS: PhilipsApi.FUNCTION_MAP,
     },
     PhilipsApi.HUMIDITY_TARGET: {
+        FanAttributes.LABEL: FanAttributes.HUMIDITY_TARGET,
+        CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
+        OPTIONS: PhilipsApi.HUMIDITY_TARGET_MAP,
+    },
+    PhilipsApi.NEW2_HUMIDITY_TARGET: {
         FanAttributes.LABEL: FanAttributes.HUMIDITY_TARGET,
         CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
         OPTIONS: PhilipsApi.HUMIDITY_TARGET_MAP,

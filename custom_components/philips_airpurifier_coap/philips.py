@@ -1498,6 +1498,16 @@ class PhilipsAC4236(PhilipsGenericCoAPFan):
             PhilipsApi.MODE: "S",
             PhilipsApi.SPEED: "s",
         },
+        PresetMode.SLEEP_ALLERGY: {
+            PhilipsApi.POWER: "1",
+            PhilipsApi.MODE: "AS",
+            PhilipsApi.SPEED: "as",
+        },
+        PresetMode.AUTO: {
+            PhilipsApi.POWER: "1", 
+            PhilipsApi.MODE: "AG",
+            PhilipsApi.MODE: "a"
+        },
         PresetMode.SPEED_1: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "M",

@@ -1464,8 +1464,6 @@ class PhilipsAC4236(PhilipsGenericCoAPFan):
     """AC4236."""
 
     AVAILABLE_PRESET_MODES = {
-        PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "AG"},
-        # make speeds available as preset
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "S",
@@ -1475,6 +1473,11 @@ class PhilipsAC4236(PhilipsGenericCoAPFan):
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "AS",
             PhilipsApi.SPEED: "as",
+        },
+        PresetMode.AUTO: {
+            PhilipsApi.POWER: "1", 
+            PhilipsApi.MODE: "AG",
+            PhilipsApi.MODE: "ag",
         },
         PresetMode.SPEED_1: {
             PhilipsApi.POWER: "1",
@@ -1506,7 +1509,7 @@ class PhilipsAC4236(PhilipsGenericCoAPFan):
         PresetMode.AUTO: {
             PhilipsApi.POWER: "1", 
             PhilipsApi.MODE: "AG",
-            PhilipsApi.MODE: "a"
+            PhilipsApi.MODE: "ag",
         },
         PresetMode.SPEED_1: {
             PhilipsApi.POWER: "1",

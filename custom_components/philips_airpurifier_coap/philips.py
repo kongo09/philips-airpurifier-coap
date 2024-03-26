@@ -1508,7 +1508,7 @@ class PhilipsAC4236(PhilipsGenericCoAPFan):
         PresetMode.AUTO_PLUS: {
             PhilipsApi.POWER: "1", 
             PhilipsApi.MODE: "AG",
-        }
+        },
         PresetMode.SPEED_1: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "M",

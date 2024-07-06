@@ -25,7 +25,7 @@ from .const import (
     CONF_MODEL,
     DATA_KEY_COORDINATOR,
     DOMAIN,
-    EXTRA_SENSOR_TYPES,
+    # EXTRA_SENSOR_TYPES,
     FILTER_TYPES,
     SENSOR_TYPES,
     FanAttributes,

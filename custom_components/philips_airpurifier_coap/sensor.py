@@ -72,9 +72,9 @@ async def async_setup_entry(  # noqa: D103
         if sensor in status and sensor not in unavailable_sensors:
             sensors.append(PhilipsSensor(coordinator, name, model, sensor))
 
-    for sensor in EXTRA_SENSOR_TYPES:
-        if sensor in status and sensor in extra_sensors:
-            sensors.append(PhilipsSensor(coordinator, name, model, sensor))
+    # for sensor in EXTRA_SENSOR_TYPES:
+    #     if sensor in status and sensor in extra_sensors:
+    #         sensors.append(PhilipsSensor(coordinator, name, model, sensor))
 
     for _filter in FILTER_TYPES:
         if _filter in status and _filter not in unavailable_filters:

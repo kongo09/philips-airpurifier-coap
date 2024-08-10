@@ -169,6 +169,7 @@ class PresetMode:
         SPEED_1: ICON.SPEED_1,
         SPEED_2: ICON.SPEED_2,
         SPEED_3: ICON.SPEED_3,
+        TURBO: ICON.SPEED_3,
         # we use the sleep mode icon for all related modes
         GENTLE: ICON.SLEEP_MODE,
         NIGHT: ICON.SLEEP_MODE,

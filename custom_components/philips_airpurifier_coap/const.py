@@ -172,6 +172,7 @@ class PresetMode:
         GENTLE: ICON.SLEEP_MODE,
         NIGHT: ICON.SLEEP_MODE,
         SLEEP: ICON.SLEEP_MODE,
+        TURBO: ICON.SPEED_3,
         # unfortunately, the allergy sleep mode has the same icon as the auto mode on the device
         SLEEP_ALLERGY: ICON.AUTO_MODE,
         # some devices have a gas and a pollution mode, but there doesn't seem to be a Philips icon for that
@@ -598,6 +599,10 @@ SENSOR_TYPES: dict[str, SensorDescription] = {
     #     CONF_ENTITY_CATEGORY: EntityCategory.DIAGNOSTIC,
     # },
 }
+
+
+
+EXTRA_SENSOR_TYPES: dict[str, SensorDescription] = {}
 
 BINARY_SENSOR_TYPES: dict[str, SensorDescription] = {
     # binary device sensors

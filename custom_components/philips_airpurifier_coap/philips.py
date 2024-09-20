@@ -383,7 +383,7 @@ class PhilipsGenericCoAPFanBase(PhilipsGenericFan):
     @property
     def supported_features(self) -> int:
         """Return the supported features."""
-        features = FanEntityFeature.PRESET_MODE
+        features = FanEntityFeature.PRESET_MODE | FanEntityFeature.TURN_OFF | FanEntityFeature.TURN_ON
         if self._speeds:
             features |= FanEntityFeature.SET_SPEED
         if self.KEY_OSCILLATION is not None:

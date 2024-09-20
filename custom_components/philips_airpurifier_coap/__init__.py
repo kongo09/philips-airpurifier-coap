@@ -12,6 +12,7 @@ from aioairctrl import CoAPClient
 from getmac import get_mac_address
 
 from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.components.http.view import HomeAssistantView
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST
@@ -48,46 +49,34 @@ class ListingView(HomeAssistantView):
 
     requires_auth = False
 
-    def __init__(self, hass: HomeAssistant, url) -> None:  # noqa: D107
-        self._hass = hass
+    def __init__(self, url, iconpath) -> None:
         self.url = url
+        self.iconpath = iconpath
         self.name = "Icon Listing"
 
-    async def get(self, request):  # noqa: D102
-        return json.dumps(self._hass.data[DOMAIN][ICONS])
+    async def get(self, request):
+        icons = []
+        for (dirpath, dirnames, filenames) in walk(self.iconpath):
+            icons.extend(
+                [
+                    {"name": path.join(dirpath[len(self.iconpath):], fn[:-4])}
+                    for fn in filenames if fn.endswith(".svg")
+                ]
+            )
+        return json.dumps(icons)
 
 
 async def async_setup(hass: HomeAssistant, config) -> bool:
     """Set up the icons for the Philips AirPurifier integration."""
     _LOGGER.debug("async_setup called")
 
-    hass.http.register_static_path(LOADER_URL, hass.config.path(LOADER_PATH), True)
+    await hass.http.async_register_static_paths([StaticPathConfig(LOADER_URL, hass.config.path(LOADER_PATH), True)])
     add_extra_js_url(hass, LOADER_URL)
 
     iset = PAP
     iconpath = hass.config.path(ICONS_PATH + "/" + iset)
-
-    # walk the directory to get the icons
-    icons = []
-    for dirpath, _dirnames, filenames in walk(iconpath):
-        icons.extend(
-            [
-                {"name": path.join(dirpath[len(iconpath) :], fn[:-4])}
-                for fn in filenames
-                if fn.endswith(".svg")
-            ]
-        )
-
-    # store icons
-    data = hass.data.get(DOMAIN)
-    if data is None:
-        hass.data[DOMAIN] = {}
-
-    hass.data[DOMAIN][ICONS] = icons
-
-    # register path and view
-    hass.http.register_static_path(ICONS_URL + "/" + iset, iconpath, True)
-    hass.http.register_view(ListingView(hass, ICONLIST_URL + "/" + iset))
+    await hass.http.async_register_static_paths([StaticPathConfig(ICONS_URL + "/" + iset, iconpath, True)])
+    hass.http.register_view(ListingView(ICONLIST_URL + "/" + iset, iconpath))
 
     return True
 
@@ -151,10 +140,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await coordinator.async_first_refresh()
     _LOGGER.debug("coordinator did first refresh for host %s", host)
 
-    for platform in PLATFORMS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, platform)
-        )
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    )
 
     return True
 

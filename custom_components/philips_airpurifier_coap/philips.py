@@ -519,6 +519,7 @@ class PhilipsGenericCoAPFanBase(PhilipsGenericFan):
 
         return ICON.FAN_SPEED_BUTTON
 
+
 class PhilipsGenericCoAPFan(PhilipsGenericCoAPFanBase):
     """Class to manage a generic Philips CoAP fan."""
 

@@ -508,16 +508,11 @@ class PhilipsGenericCoAPFanBase(PhilipsGenericFan):
     @property
     def icon(self) -> str:
         """Return the icon of the fan."""
+        """Return the icon of the fan."""
+        if self.is_on:
+            return "mdi:air-purifier"
         if not self.is_on:
-            return ICON.POWER_BUTTON
-
-        preset_mode = self.preset_mode
-        if preset_mode is None:
-            return ICON.FAN_SPEED_BUTTON
-        if preset_mode in PresetMode.ICON_MAP:
-            return PresetMode.ICON_MAP[preset_mode]
-
-        return ICON.FAN_SPEED_BUTTON
+            return "mdi:air-purifier-off"
 
 
 class PhilipsGenericCoAPFan(PhilipsGenericCoAPFanBase):

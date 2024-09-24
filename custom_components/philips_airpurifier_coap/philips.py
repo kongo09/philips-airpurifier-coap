@@ -513,6 +513,11 @@ class PhilipsGenericCoAPFanBase(PhilipsGenericFan):
 
         return ICON.FAN_SPEED_BUTTON
 
+    @property
+    def translation_key(self):
+        """translation key of the entity"""
+        return "fan_translation"
+
 
 class PhilipsGenericCoAPFan(PhilipsGenericCoAPFanBase):
     """Class to manage a generic Philips CoAP fan."""
@@ -658,6 +663,44 @@ class PhilipsAC0850(PhilipsNewGenericCoAPFan):
     }
     # the prefilter data is present but doesn't change for this device, so let's take it out
     UNAVAILABLE_FILTERS = [PhilipsApi.FILTER_NANOPROTECT_PREFILTER]
+
+# The AC0850/31 is somewhat similar to the AC0850, but uses the 3rd-generation API
+class PhilipsAC085031(PhilipsNew2GenericCoAPFan):
+    """AC0850/31."""
+
+    AVAILABLE_PRESET_MODES = {
+        PresetMode.AUTO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 0,
+        },
+        PresetMode.SLEEP: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 17,
+        },
+        PresetMode.TURBO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 18,
+        },
+    }
+    # This makes the two static modes available as speeds. There is actually
+    # a distinct 'fan speed' field with additional distinct values, but this
+    # does not appear to be user-settable. This 'fan speed' corresponds to
+    # the following PM2.5 values when the mode is Auto:
+    # - Speed  1 = PM2.5  1-12 (Good)
+    # - Speed  2 = PM2.5 13-35 (Fair)
+    # - Speed  3 = PM2.5 36-55 (Poor)
+    # - Speed 18 = PM2.5   >55 (Very Poor)
+    # Additionally, Speeds 1 and 18 correspond to Sleep and Turbo, respectively.
+    AVAILABLE_SPEEDS = {
+        PresetMode.SLEEP: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 17,
+        },
+        PresetMode.TURBO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 18,
+        },
+    }
 
 
 # the AC1715 seems to be a new class of devices that follows some patterns of its own

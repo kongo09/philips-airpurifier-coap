@@ -265,7 +265,13 @@ class PhilipsGenericFan(PhilipsEntity, FanEntity):
         self._model = model
         self._name = name
         self._unique_id = None
-
+        self._translation_key = "fan_translation"
+    
+    @property
+    def translation_key(self):
+        """Return the translation ID of the fan."""
+        return self._translation_key
+    
     @property
     def unique_id(self) -> Optional[str]:
         """Return the unique ID of the fan."""
@@ -512,12 +518,6 @@ class PhilipsGenericCoAPFanBase(PhilipsGenericFan):
             return PresetMode.ICON_MAP[preset_mode]
 
         return ICON.FAN_SPEED_BUTTON
-
-    @property
-    def translation_key(self):
-        """translation key of the entity"""
-        return "fan_translation"
-
 
 class PhilipsGenericCoAPFan(PhilipsGenericCoAPFanBase):
     """Class to manage a generic Philips CoAP fan."""

@@ -98,6 +98,7 @@ class FanModel(StrEnum):
     """Supported fan models."""
 
     AC0850 = "AC0850"
+    AC0850_31 = "AC0850/31"
     AC1214 = "AC1214"
     AC1715 = "AC1715"
     AC2729 = "AC2729"

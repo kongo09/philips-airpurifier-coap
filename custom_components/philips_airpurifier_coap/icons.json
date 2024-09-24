@@ -1,0 +1,30 @@
+{
+  "entity": {
+    "fan": {
+      "fan_translation": {
+        "state_attributes": {
+          "preset_mode": {
+            "default": "mdi:circle-small",
+            "state": {
+              "allergen": "pap:allergen_mode",
+              "auto": "pap:auto_mode",
+              "auto general": "pap:auto_mode",
+              "bacteria": "pap:bacteria_virus_mode",
+              "gentle/speed 1": "pap:speed_1",
+              "speed 1": "pap:speed_1",
+              "speed 2": "pap:speed_2",
+              "speed 3": "pap:speed_3",
+              "turbo": "pap:speed_3",
+              "gentle": "pap:sleep_mode",
+              "night": "pap:sleep_mode",
+              "sleep": "pap:sleep_mode",
+              "allergy sleep": "pap:auto_mode",
+              "pollution": "pap:auto_mode",
+              "gas": "pap:auto_mode"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "entity": {
+    "fan": {
+      "philips_generic_fan": {
+        "state_attributes": {
+          "preset_mode": {
+            "default": "mdi:circle-small",
+            "state": {
+              "speed 1": "pap:speed_1",
+              "gentle/speed 1": "pap:speed_1",
+              "speed 2": "pap:speed_2",
+              "speed 3": "pap:speed_3",
+              "speed 4": "mdi:numeric-4-circle-outline",
+              "speed 5": "mdi:numeric-5-circle-outline",
+              "speed 6": "mdi:numeric-6-circle-outline",
+              "speed 7": "mdi:numeric-7-circle-outline",
+              "spped 8": "mdi:numeric-8-circle-outline",
+              "spped 9": "mdi:numeric-9-circle-outline",
+              "speed 10": "mdi:numeric-10-circle-outline",
+              "allergen": "pap:allergen_mode",
+              "auto": "pap:auto_mode",
+              "auto general": "pap:auto_mode",
+              "auto+": "pap:auto_mode",
+              "bacteria": "pap:bacteria_virus_mode",
+              "gentle": "mdi:butterfly-outline",
+              "night": "pap:sleep_mode",
+              "sleep": "pap:sleep_mode",
+              "allergy sleep": "pap:allergen_mode",
+              "turbo": "mdi:alpha-t-circle-outline",
+              "gas": "pap:gas",
+              "pollution": "mdi:liquid-spot",
+              "low": "pap:speed_1",
+              "high": "pap:speed_3",
+              "ventilation": "pap:fan_speed_button"
+            }
+          }
+        }
+      }
+    }
+  }
+}

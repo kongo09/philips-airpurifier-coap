@@ -127,6 +127,7 @@ class FanModel(StrEnum):
     AMF765 = "AMF765"
     AMF870 = "AMF870"
     CX5120 = "CX5120"
+    CX3550 = "CX3550/01"
 
 
 class PresetMode:
@@ -158,6 +159,7 @@ class PresetMode:
     LOW = "low"
     HIGH = "high"
     VENTILATION = "ventilation"
+    NATURAL = "natural"
 
     ICON_MAP = {
         ALLERGEN: ICON.ALLERGEN_MODE,
@@ -342,6 +344,11 @@ class PhilipsApi:
         SWITCH_ON: "17920",
         SWITCH_OFF: "0",
     }
+    OSCILLATION_MAP2 = {
+        SWITCH_ON: 17242,
+        SWITCH_OFF: 0,
+    }
+    OSCILLATION_CX355001 = 23040
 
     # the AC1715 seems to follow a new scheme, this should later be refactored
     NEW_NAME = "D01-03"

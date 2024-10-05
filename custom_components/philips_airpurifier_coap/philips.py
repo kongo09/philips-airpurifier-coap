@@ -1785,6 +1785,91 @@ class PhilipsCX5120(PhilipsNew2GenericCoAPFan):
     AVAILABLE_NUMBERS = [PhilipsApi.NEW2_TARGET_TEMP]
 
 
+class PhilipsCX3550(PhilipsNew2GenericCoAPFan):
+    """CX3550."""
+
+    AVAILABLE_PRESET_MODES = {
+        PresetMode.SPEED_1: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 1,
+            PhilipsApi.NEW2_MODE_C: 1,
+        },
+        PresetMode.SPEED_2: {
+            PhilipsApi.POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 2,
+            PhilipsApi.NEW2_MODE_C: 2,
+        },
+        PresetMode.SPEED_3: {
+            PhilipsApi.POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 3,
+            PhilipsApi.NEW2_MODE_C: 3,
+        },
+        PresetMode.NATURAL: {
+            PhilipsApi.POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: -126,
+            PhilipsApi.NEW2_MODE_C: 1,
+        },
+        PresetMode.SLEEP: {
+            PhilipsApi.POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 17,
+            PhilipsApi.NEW2_MODE_C: 2,
+        },
+    }
+    AVAILABLE_SPEEDS = {
+        PresetMode.SPEED_1: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 1,
+            PhilipsApi.NEW2_MODE_C: 1,
+        },
+        PresetMode.SPEED_2: {
+            PhilipsApi.POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 2,
+            PhilipsApi.NEW2_MODE_C: 2,
+        },
+        PresetMode.SPEED_3: {
+            PhilipsApi.POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 3,
+            PhilipsApi.NEW2_MODE_C: 3,
+        },
+    }
+    KEY_OSCILLATION = {
+        PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP2,
+    }
+
+    AVAILABLE_SWITCHES = [PhilipsApi.NEW2_BEEP]
+    AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2]
+
+    @property
+    def oscillating(self) -> bool | None:
+        """Return if the fan is oscillating."""
+
+        key = next(iter(self.KEY_OSCILLATION))
+        status = self._device_status.get(key)
+        on = self.KEY_OSCILLATION.get(key).get(SWITCH_ON)
+        return status is not None and status in [on, PhilipsApi.OSCILLATION_CX355001]
+
+    async def async_oscillate(self, oscillating: bool) -> None:
+        """Osciallate the fan."""
+
+        await super().async_oscillate(oscillating)
+
+        self._device_status[PhilipsApi.NEW2_OSCILLATION] = (
+            PhilipsApi.OSCILLATION_MAP2.get(SWITCH_ON)
+            if oscillating
+            else PhilipsApi.OSCILLATION_MAP2.get(SWITCH_OFF)
+        )
+
+        self.async_write_ha_state()
+
+
 model_to_class = {
     FanModel.AC0850: PhilipsAC0850,
     FanModel.AC1214: PhilipsAC1214,
@@ -1816,4 +1901,5 @@ model_to_class = {
     FanModel.AMF765: PhilipsAMF765,
     FanModel.AMF870: PhilipsAMF870,
     FanModel.CX5120: PhilipsCX5120,
+    FanModel.CX3550: PhilipsCX3550,
 }

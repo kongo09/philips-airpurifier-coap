@@ -1,4 +1,5 @@
 """Philips Air Purifier & Humidifier Binary Sensors."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -54,13 +55,11 @@ async def async_setup_entry(  # noqa: D103
             cls_available_binary_sensors = getattr(cls, "AVAILABLE_BINARY_SENSORS", [])
             available_binary_sensors.extend(cls_available_binary_sensors)
 
-    binary_sensors = []
-
-    for binary_sensor in BINARY_SENSOR_TYPES:
-        if binary_sensor in status and binary_sensor in available_binary_sensors:
-            binary_sensors.append(
-                PhilipsBinarySensor(coordinator, name, model, binary_sensor)
-            )
+    binary_sensors = [
+        PhilipsBinarySensor(coordinator, name, model, binary_sensor)
+        for binary_sensor in BINARY_SENSOR_TYPES
+        if binary_sensor in status and binary_sensor in available_binary_sensors
+    ]
 
     async_add_entities(binary_sensors, update_before_add=False)
 
@@ -89,9 +88,10 @@ class PhilipsBinarySensor(PhilipsEntity, BinarySensorEntity):
         try:
             device_id = self._device_status[PhilipsApi.DEVICE_ID]
             self._attr_unique_id = f"{self._model}-{device_id}-{kind.lower()}"
-        except Exception as e:
+        except KeyError as e:
             _LOGGER.error("Failed retrieving unique_id: %s", e)
-            raise PlatformNotReady
+            raise PlatformNotReady from e
+
         self._attrs: dict[str, Any] = {}
         self.kind = kind
 

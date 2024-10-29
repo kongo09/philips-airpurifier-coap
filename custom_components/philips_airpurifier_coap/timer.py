@@ -1,4 +1,5 @@
 """Timer class to handle instable Philips CoaP API."""
+
 import asyncio
 import contextlib
 import logging
@@ -78,3 +79,7 @@ class Timer:
         """Start the task."""
         if self._task is None:
             self._task = asyncio.ensure_future(self._job())
+
+    def setAutoRestart(self, auto_restart):
+        """Set the autorestart."""
+        self._auto_restart = auto_restart

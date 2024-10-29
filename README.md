@@ -21,7 +21,7 @@ Due to a bug in the Philips devices, this integration is rather instable. It mig
 
 It all goes back to some reverse engineering by @rgerganov and you can read about it here: https://xakcop.com/post/ctrl-air-purifier/
 
-Philips has recently introduced a proper API to remote control the devices. However, this only works with the Philips cloud and it is not public (yet?) but only integrates Google Home, Alexa and IFTTT. Using IFTTT with HA might be a more stable choice: https://ifttt.com/Philips_air_purifer
+Philips has recently introduced a proper API to remote control the devices. However, this only works with the Philips cloud and it is not public (yet?) but only integrates Google Home and Alexa. It used to integrate IFTTT as well, but that seems discontinued.
 
 
 ## Credits
@@ -41,7 +41,7 @@ Philips has recently introduced a proper API to remote control the devices. Howe
 
 ## Configuration
 
-* The integration attempts to autodiscover your purifiers. Autodiscovery is based on the MAC address and original hostname of the devices. Home Assistant will notify you, if that is successful. 
+* The integration attempts to autodiscover your purifiers. Autodiscovery is based on the MAC address and original hostname of the devices. Home Assistant will notify you, if that is successful.
 * Alternatively, go to Configuration -> Devices & Services
 * Click `Add Integration`
 * Search for `Philips AirPurifier` and select it
@@ -59,7 +59,13 @@ Note: `configuration.yaml` is no longer supported and your configuration is not 
 
 ## Supported models
 
-- AC0850
+- AC0850/11 AWS_Philips_AIR
+- AC0850/11 AWS_Philips_AIR_Combo
+- AC0850/20 AWS_Philips_AIR
+- AC0850/20 AWS_Philips_AIR_Combo
+- AC0850/31
+- AC0950
+- AC0951
 - AC1214
 - AC1715
 - AC2729
@@ -73,6 +79,7 @@ Note: `configuration.yaml` is no longer supported and your configuration is not 
 - AC3039
 - AC3055
 - AC3059
+- AC3421
 - AC3259
 - AC3737
 - AC3829
@@ -81,6 +88,7 @@ Note: `configuration.yaml` is no longer supported and your configuration is not 
 - AC3854/51
 - AC3858/50
 - AC3858/51
+- AC3858/83
 - AC3858/86
 - AC4236
 - AC4550
@@ -89,6 +97,7 @@ Note: `configuration.yaml` is no longer supported and your configuration is not 
 - AMF765
 - AMF870
 - CX5120
+- CX3550
 
 
 ## Is your model not supported yet?

@@ -1,4 +1,5 @@
 """Philips Air Purifier & Humidifier Switches."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -24,6 +25,7 @@ from .const import (
     DIMMABLE,
     DOMAIN,
     LIGHT_TYPES,
+    SWITCH_MEDIUM,
     SWITCH_OFF,
     SWITCH_ON,
     FanAttributes,
@@ -58,11 +60,11 @@ async def async_setup_entry(
             cls_available_lights = getattr(cls, "AVAILABLE_LIGHTS", [])
             available_lights.extend(cls_available_lights)
 
-        lights = []
-
-        for light in LIGHT_TYPES:
-            if light in available_lights:
-                lights.append(PhilipsLight(coordinator, name, model, light))
+        lights = [
+            PhilipsLight(coordinator, name, model, light)
+            for light in LIGHT_TYPES
+            if light in available_lights
+        ]
 
         async_add_entities(lights, update_before_add=False)
 
@@ -84,6 +86,7 @@ class PhilipsLight(PhilipsEntity, LightEntity):
         self._description = LIGHT_TYPES[light]
         self._on = self._description.get(SWITCH_ON)
         self._off = self._description.get(SWITCH_OFF)
+        self._medium = self._description.get(SWITCH_MEDIUM)
         self._dimmable = self._description.get(DIMMABLE)
         self._attr_device_class = self._description.get(ATTR_DEVICE_CLASS)
         self._attr_icon = self._description.get(ATTR_ICON)
@@ -94,6 +97,7 @@ class PhilipsLight(PhilipsEntity, LightEntity):
 
         if self._dimmable is None:
             self._dimmable = False
+            self._medium = None
 
         if self._dimmable:
             self._attr_color_mode = ColorMode.BRIGHTNESS
@@ -105,38 +109,43 @@ class PhilipsLight(PhilipsEntity, LightEntity):
         try:
             device_id = self._device_status[PhilipsApi.DEVICE_ID]
             self._attr_unique_id = f"{self._model}-{device_id}-{light.lower()}"
-        except Exception as e:
-            _LOGGER.error("Failed retrieving unique_id: %s", e)
-            raise PlatformNotReady
+        except KeyError as e:
+            _LOGGER.error("Failed retrieving unique_id due to missing key: %s", e)
+            raise PlatformNotReady from e
+        except TypeError as e:
+            _LOGGER.error("Failed retrieving unique_id due to type error: %s", e)
+            raise PlatformNotReady from e
+
         self._attrs: dict[str, Any] = {}
-        self.kind = light
+        self.kind = light.partition("#")[0]
 
     @property
     def is_on(self) -> bool:
         """Return if the light is on."""
         status = int(self._device_status.get(self.kind))
         # _LOGGER.debug("is_on, kind: %s - status: %s - on: %s", self.kind, status, self._on)
-        if self._dimmable:
-            return status > 0
-        else:
-            return status == int(self._on)
+        return int(status) != int(self._off)
 
     @property
     def brightness(self) -> int | None:
         """Return the brightness of the light."""
         if self._dimmable:
             brightness = int(self._device_status.get(self.kind))
-            return round(255 * brightness / 100)
-        else:
-            return None
+            if self._medium and brightness == int(self._medium):
+                return 128
+            return round(255 * brightness / int(self._on))
+        return None
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the light on."""
         if self._dimmable:
             if ATTR_BRIGHTNESS in kwargs:
-                value = round(100 * int(kwargs[ATTR_BRIGHTNESS]) / 255)
+                if self._medium and kwargs[ATTR_BRIGHTNESS] < 255:
+                    value = self._medium
+                else:
+                    value = round(int(self._on) * int(kwargs[ATTR_BRIGHTNESS]) / 255)
             else:
-                value = 100
+                value = int(self._on)
         else:
             value = self._on
 

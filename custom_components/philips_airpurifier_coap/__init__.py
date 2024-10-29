@@ -1,4 +1,5 @@
 """Support for Philips AirPurifier with CoAP."""
+
 from __future__ import annotations
 
 import asyncio
@@ -6,7 +7,8 @@ from functools import partial
 from ipaddress import IPv6Address, ip_address
 import json
 import logging
-from os import path, walk
+from os import walk
+from pathlib import Path
 
 from aioairctrl import CoAPClient
 from getmac import get_mac_address
@@ -25,7 +27,6 @@ from .const import (
     DATA_KEY_COORDINATOR,
     DOMAIN,
     ICONLIST_URL,
-    ICONS,
     ICONS_PATH,
     ICONS_URL,
     LOADER_PATH,
@@ -37,7 +38,7 @@ from .philips import Coordinator
 _LOGGER = logging.getLogger(__name__)
 
 
-PLATFORMS = ["fan", "binary_sensor", "sensor", "switch", "light", "select", "number"]
+PLATFORMS = ["binary_sensor", "fan", "light", "number", "select", "sensor", "switch"]
 
 
 # icons code thanks to Thomas Loven:
@@ -50,17 +51,20 @@ class ListingView(HomeAssistantView):
     requires_auth = False
 
     def __init__(self, url, iconpath) -> None:
+        """Initialize the ListingView with a URL and icon path."""
         self.url = url
         self.iconpath = iconpath
         self.name = "Icon Listing"
 
     async def get(self, request):
+        """Handle GET request to provide a JSON list of the used icons."""
         icons = []
-        for (dirpath, dirnames, filenames) in walk(self.iconpath):
+        for dirpath, _dirnames, filenames in walk(self.iconpath):
             icons.extend(
                 [
-                    {"name": path.join(dirpath[len(self.iconpath):], fn[:-4])}
-                    for fn in filenames if fn.endswith(".svg")
+                    {"name": (Path(dirpath[len(self.iconpath) :]) / fn[:-4]).as_posix()}
+                    for fn in filenames
+                    if fn.endswith(".svg")
                 ]
             )
         return json.dumps(icons)
@@ -70,12 +74,16 @@ async def async_setup(hass: HomeAssistant, config) -> bool:
     """Set up the icons for the Philips AirPurifier integration."""
     _LOGGER.debug("async_setup called")
 
-    await hass.http.async_register_static_paths([StaticPathConfig(LOADER_URL, hass.config.path(LOADER_PATH), True)])
+    await hass.http.async_register_static_paths(
+        [StaticPathConfig(LOADER_URL, hass.config.path(LOADER_PATH), True)]
+    )
     add_extra_js_url(hass, LOADER_URL)
 
     iset = PAP
     iconpath = hass.config.path(ICONS_PATH + "/" + iset)
-    await hass.http.async_register_static_paths([StaticPathConfig(ICONS_URL + "/" + iset, iconpath, True)])
+    await hass.http.async_register_static_paths(
+        [StaticPathConfig(ICONS_URL + "/" + iset, iconpath, True)]
+    )
     hass.http.register_view(ListingView(ICONLIST_URL + "/" + iset, iconpath))
 
     return True

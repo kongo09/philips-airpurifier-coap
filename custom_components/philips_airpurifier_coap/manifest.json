@@ -15,6 +15,9 @@
       "macaddress": "849DC2*"
     },
     {
+      "macaddress": "80A036*"
+    },
+    {
       "hostname": "mxchip*"
     },
     {
@@ -26,5 +29,5 @@
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/kongo09/philips-airpurifier-coap/issues",
   "requirements": ["aioairctrl==0.2.5", "getmac==0.9.4"],
-  "version": "0.18.9"
+  "version": "0.18.10"
 }

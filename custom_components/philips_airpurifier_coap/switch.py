@@ -1,4 +1,5 @@
 """Philips Air Purifier & Humidifier Switches."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -57,11 +58,11 @@ async def async_setup_entry(
             cls_available_switches = getattr(cls, "AVAILABLE_SWITCHES", [])
             available_switches.extend(cls_available_switches)
 
-        switches = []
-
-        for switch in SWITCH_TYPES:
-            if switch in available_switches:
-                switches.append(PhilipsSwitch(coordinator, name, model, switch))
+        switches = [
+            PhilipsSwitch(coordinator, name, model, switch)
+            for switch in SWITCH_TYPES
+            if switch in available_switches
+        ]
 
         async_add_entities(switches, update_before_add=False)
 
@@ -93,9 +94,10 @@ class PhilipsSwitch(PhilipsEntity, SwitchEntity):
         try:
             device_id = self._device_status[PhilipsApi.DEVICE_ID]
             self._attr_unique_id = f"{self._model}-{device_id}-{switch.lower()}"
-        except Exception as e:
+        except KeyError as e:
             _LOGGER.error("Failed retrieving unique_id: %s", e)
-            raise PlatformNotReady
+            raise PlatformNotReady from e
+
         self._attrs: dict[str, Any] = {}
         self.kind = switch
 

@@ -1,4 +1,5 @@
 """Constants for Philips AirPurifier integration."""
+
 from __future__ import annotations
 
 from enum import StrEnum
@@ -89,7 +90,9 @@ CONF_MODEL = "model"
 CONF_DEVICE_ID = "device_id"
 
 SWITCH_ON = "on"
+TEST_ON = "on"
 SWITCH_OFF = "off"
+SWITCH_MEDIUM = "medium"
 OPTIONS = "options"
 DIMMABLE = "dimmable"
 
@@ -97,7 +100,13 @@ DIMMABLE = "dimmable"
 class FanModel(StrEnum):
     """Supported fan models."""
 
-    AC0850 = "AC0850"
+    AC0850_11 = "AC0850/11 AWS_Philips_AIR"
+    AC0850_11C = "AC0850/11 AWS_Philips_AIR_Combo"
+    AC0850_20 = "AC0850/20 AWS_Philips_AIR"
+    AC0850_20C = "AC0850/20 AWS_Philips_AIR_Combo"
+    AC0850_31 = "AC0850/31"
+    AC0950 = "AC0950"
+    AC0951 = "AC0951"
     AC1214 = "AC1214"
     AC1715 = "AC1715"
     AC2729 = "AC2729"
@@ -112,6 +121,7 @@ class FanModel(StrEnum):
     AC3055 = "AC3055"
     AC3059 = "AC3059"
     AC3259 = "AC3259"
+    AC3421 = "AC3421"
     AC3737 = "AC3737"
     AC3829 = "AC3829"
     AC3836 = "AC3836"
@@ -119,6 +129,7 @@ class FanModel(StrEnum):
     AC3854_51 = "AC3854/51"
     AC3858_50 = "AC3858/50"
     AC3858_51 = "AC3858/51"
+    AC3858_83 = "AC3858/83"
     AC3858_86 = "AC3858/86"
     AC4236 = "AC4236"
     AC4550 = "AC4550"
@@ -126,6 +137,7 @@ class FanModel(StrEnum):
     AC5659 = "AC5659"
     AMF765 = "AMF765"
     AMF870 = "AMF870"
+    CX3550 = "CX3550"
     CX5120 = "CX5120"
 
 
@@ -153,11 +165,13 @@ class PresetMode:
     SLEEP = "Schlafmodus"
     SLEEP_ALLERGY = "Allergie Schlafmodus"
     TURBO = "Turbo Modus"
+    MEDIUM = "Medium"
     GAS = "Gas"
     POLLUTION = "Verschmutzung"
     LOW = "low"
     HIGH = "high"
     VENTILATION = "Lüftung"
+    NATURAL = "natural"
 
     ICON_MAP = {
         ALLERGEN: ICON.ALLERGEN_MODE,
@@ -342,6 +356,10 @@ class PhilipsApi:
         SWITCH_ON: "17920",
         SWITCH_OFF: "0",
     }
+    OSCILLATION_MAP2 = {
+        SWITCH_ON: [17242, 23040],
+        SWITCH_OFF: 0,
+    }
 
     # the AC1715 seems to follow a new scheme, this should later be refactored
     NEW_NAME = "D01-03"
@@ -361,6 +379,7 @@ class PhilipsApi:
     NEW2_POWER = "D03102"
     NEW2_DISPLAY_BACKLIGHT = "D0312D"
     NEW2_DISPLAY_BACKLIGHT2 = "D03105"
+    NEW2_DISPLAY_BACKLIGHT3 = "D03105#1"  # dimmable in 3 steps
     NEW2_TEMPERATURE = "D03224"
     NEW2_SOFTWARE_VERSION = "D01S12"
     NEW2_CHILD_LOCK = "D03103"
@@ -390,16 +409,15 @@ class PhilipsApi:
     NEW2_AUTO_PLUS_AI = "D03180"
     NEW2_PREFERRED_INDEX = "D0312A#1"
     NEW2_GAS_PREFERRED_INDEX = "D0312A#2"
-    NEW2_ERROR_CODE = "D03240 "
 
     PREFERRED_INDEX_MAP = {
-        0: ("Indoor Allergen Index", ICON.IAI),
-        1: ("PM2.5", ICON.PM25),
+        "0": ("Indoor Allergen Index", ICON.IAI),
+        "1": ("PM2.5", ICON.PM25),
     }
     GAS_PREFERRED_INDEX_MAP = {
-        0: ("Indoor Allergen Index", ICON.IAI),
-        1: ("PM2.5", ICON.PM25),
-        2: ("Gas", ICON.GAS),
+        "0": ("Indoor Allergen Index", ICON.IAI),
+        "1": ("PM2.5", ICON.PM25),
+        "2": ("Gas", ICON.GAS),
     }
     NEW_PREFERRED_INDEX_MAP = {
         "IAI": ("Indoor Allergen Index", ICON.IAI),
@@ -512,6 +530,7 @@ SENSOR_TYPES: dict[str, SensorDescription] = {
         ATTR_DEVICE_CLASS: SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS,
         FanAttributes.ICON_MAP: {0: "mdi:blur"},
         FanAttributes.LABEL: FanAttributes.TOTAL_VOLATILE_ORGANIC_COMPOUNDS,
+        FanAttributes.UNIT: CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
         ATTR_STATE_CLASS: SensorStateClass.MEASUREMENT,
     },
     PhilipsApi.HUMIDITY: {
@@ -599,7 +618,6 @@ SENSOR_TYPES: dict[str, SensorDescription] = {
     #     CONF_ENTITY_CATEGORY: EntityCategory.DIAGNOSTIC,
     # },
 }
-
 
 
 EXTRA_SENSOR_TYPES: dict[str, SensorDescription] = {}
@@ -733,15 +751,6 @@ SWITCH_TYPES: dict[str, SwitchDescription] = {
         SWITCH_ON: 100,
         SWITCH_OFF: 0,
     },
-    # Oscillation is part of the fan model, so the switch is removed here
-    #
-    # PhilipsApi.NEW2_SWING: {
-    #     ATTR_ICON: ICON.ROTATE,
-    #     FanAttributes.LABEL: FanAttributes.SWING,
-    #     CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
-    #     SWITCH_ON: 17920,
-    #     SWITCH_OFF: 0,
-    # },
     PhilipsApi.NEW2_STANDBY_SENSORS: {
         ATTR_ICON: "mdi:power-settings",
         FanAttributes.LABEL: FanAttributes.STANDBY_SENSORS,
@@ -793,6 +802,15 @@ LIGHT_TYPES: dict[str, LightDescription] = {
         CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
         SWITCH_ON: 100,
         SWITCH_OFF: 0,
+        DIMMABLE: True,
+    },
+    PhilipsApi.NEW2_DISPLAY_BACKLIGHT3: {
+        ATTR_ICON: ICON.LIGHT_DIMMING_BUTTON,
+        FanAttributes.LABEL: FanAttributes.DISPLAY_BACKLIGHT,
+        CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
+        SWITCH_ON: 123,
+        SWITCH_OFF: 0,
+        SWITCH_MEDIUM: 115,
         DIMMABLE: True,
     },
 }

@@ -1,4 +1,5 @@
 """Type definitions for Philips AirPurifier integration."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -24,7 +25,7 @@ class SensorDescription(_SensorDescription, total=False):
     unit: str
     state_class: str
     value: Callable[[Any, DeviceStatus], StateType]
-    icon_map: [int, str]
+    icon_map: list[tuple[int, str]]
     # warn_value: int
     # warn_icon: str
 
@@ -35,7 +36,7 @@ class FilterDescription(TypedDict):
     prefix: str
     postfix: str
     icon: str
-    icon_map: [int, str]
+    icon_map: list[tuple[int, str]]
     # warn_icon: str
     # warn_value: int
 

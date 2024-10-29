@@ -1,4 +1,5 @@
 """Philips Air Purifier & Humidifier Selects."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -55,11 +56,11 @@ async def async_setup_entry(
             cls_available_selects = getattr(cls, "AVAILABLE_SELECTS", [])
             available_selects.extend(cls_available_selects)
 
-        selects = []
-
-        for select in SELECT_TYPES:
-            if select in available_selects:
-                selects.append(PhilipsSelect(coordinator, name, model, select))
+        selects = [
+            PhilipsSelect(coordinator, name, model, select)
+            for select in SELECT_TYPES
+            if select in available_selects
+        ]
 
         async_add_entities(selects, update_before_add=False)
 
@@ -98,9 +99,13 @@ class PhilipsSelect(PhilipsEntity, SelectEntity):
         try:
             device_id = self._device_status[PhilipsApi.DEVICE_ID]
             self._attr_unique_id = f"{self._model}-{device_id}-{select.lower()}"
-        except Exception as e:
-            _LOGGER.error("Failed retrieving unique_id: %s", e)
-            raise PlatformNotReady
+        except KeyError as e:
+            _LOGGER.error("Failed retrieving unique_id due to missing key: %s", e)
+            raise PlatformNotReady from e
+        except TypeError as e:
+            _LOGGER.error("Failed retrieving unique_id due to type error: %s", e)
+            raise PlatformNotReady from e
+
         self._attrs: dict[str, Any] = {}
         self.kind = select.partition("#")[0]
 
@@ -108,6 +113,7 @@ class PhilipsSelect(PhilipsEntity, SelectEntity):
     def current_option(self) -> str:
         """Return the currently selected option."""
         option = self._device_status.get(self.kind)
+        _LOGGER.debug("current_option: %s", option)
         if option in self._options:
             return self._options[option]
         return None
@@ -128,9 +134,10 @@ class PhilipsSelect(PhilipsEntity, SelectEntity):
                 option_key,
             )
             await self.coordinator.client.set_control_value(self.kind, option_key)
-        except Exception as e:
-            # TODO: catching Exception is actually too broad and needs to be tightened
-            _LOGGER.error("Failed setting option: '%s' with error: %s", option, e)
+        except KeyError as e:
+            _LOGGER.error("Invalid option key: '%s' with error: %s", option, e)
+        except ValueError as e:
+            _LOGGER.error("Invalid value for option: '%s' with error: %s", option, e)
 
     @property
     def icon(self) -> str:

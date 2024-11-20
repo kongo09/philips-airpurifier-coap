@@ -9,6 +9,7 @@ import logging
 from typing import Any
 
 from homeassistant.components.fan import FanEntity, FanEntityFeature
+from homeassistant.components.humidifier import HumidifierEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, DeviceInfo
@@ -537,6 +538,53 @@ class PhilipsHumidifierMixin(PhilipsGenericCoAPFanBase):
     AVAILABLE_SELECTS = [PhilipsApi.FUNCTION, PhilipsApi.HUMIDITY_TARGET]
     AVAILABLE_BINARY_SENSORS = [PhilipsApi.ERROR_CODE]
 
+class PhilipsNew2GenericCoAPHumidifier(PhilipsNew2GenericCoAPFan, HumidifierEntity):
+    """Class to manage a generic Philips CoAP humidifier."""
+
+    AVAILABLE_NUMBERS = [PhilipsApi.NEW2_HUMIDITY_TARGET2]  # For humidity control
+
+    def __init__(self, hass, entry, config_entry_data):
+        """Initialize the PhilipsNew2GenericCoAPHumidifier."""
+        super().__init__(hass, entry, config_entry_data)
+
+        # Define humidifier-specific modes and attributes
+        self._attr_humidifier_modes = list(self.AVAILABLE_PRESET_MODES.keys())
+        self._humidity_min = 30  # Minimum target humidity (from const.py)
+        self._humidity_max = 70  # Maximum target humidity
+        self._humidity_step = 5  # Step size for humidity adjustment
+
+    @property
+    def is_on(self) -> bool:
+        """Return if the humidifier is on."""
+        return self._device_status.get(PhilipsApi.NEW2_POWER) == 1
+
+    @property
+    def target_humidity(self) -> int | None:
+        """Return the target humidity level."""
+        return self._device_status.get(PhilipsApi.NEW2_HUMIDITY_TARGET2)
+
+    async def async_set_humidity(self, humidity: int) -> None:
+        """Set the target humidity."""
+        if humidity < self._humidity_min or humidity > self._humidity_max:
+            raise ValueError(f"Humidity must be between {self._humidity_min} and {self._humidity_max}")
+        if (humidity - self._humidity_min) % self._humidity_step != 0:
+            raise ValueError(f"Humidity must be set in steps of {self._humidity_step}")
+
+        # Send command to set the humidity level
+        await self.coordinator.client.set_control_value(PhilipsApi.NEW2_HUMIDITY_TARGET2, humidity)
+        self._device_status[PhilipsApi.NEW2_HUMIDITY_TARGET2] = humidity
+        self._handle_coordinator_update()
+
+    @property
+    def mode(self) -> str | None:
+        """Return the current mode of the humidifier."""
+        return self.preset_mode  # Reuse preset mode logic
+
+    async def async_set_mode(self, mode: str) -> None:
+        """Set the humidifier mode."""
+        if mode not in self._attr_humidifier_modes:
+            raise ValueError(f"Invalid mode: {mode}")
+        await self.async_set_preset_mode(mode)
 
 # similar to the AC1715, the AC0850 seems to be a new class of devices that
 # follows some patterns of its own
@@ -1912,7 +1960,7 @@ class PhilipsCX3550(PhilipsNew2GenericCoAPFan):
     AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2]
 
 
-class PhilipsHU5710(PhilipsNew2GenericCoAPFan):
+class PhilipsHU5710(PhilipsNew2GenericCoAPHumidifier):
     """HU5710."""
 
     AVAILABLE_PRESET_MODES = {

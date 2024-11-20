@@ -41,7 +41,7 @@ from .model import DeviceInformation
 _LOGGER = logging.getLogger(__name__)
 
 
-PLATFORMS = ["binary_sensor", "fan", "light", "number", "select", "sensor", "switch"]
+PLATFORMS = ["binary_sensor", "fan",  "humidifier", "light", "number", "select", "sensor", "switch"]
 
 
 # icons code thanks to Thomas Loven:

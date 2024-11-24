@@ -580,7 +580,7 @@ class PhilipsAC085020C(PhilipsAC085011C):
     """AC0850/20 with firmware AWS_Philips_AIR_Combo."""
 
 
-class PhilipsAC085031(PhilipsAC085011C):
+class PhilipsAC085031(PhilipsAC085011):
     """AC0850/31."""
 
 

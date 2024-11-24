@@ -588,6 +588,10 @@ class PhilipsAC085081(PhilipsAC085011C):
     """AC0850/81."""
 
 
+class PhilipsAC085085(PhilipsAC085011):
+    """AC0850/85."""
+
+
 class PhilipsAC0950(PhilipsNew2GenericFan):
     """AC0950."""
 
@@ -1987,6 +1991,7 @@ model_to_class = {
     FanModel.AC0850_20C: PhilipsAC085020C,
     FanModel.AC0850_31: PhilipsAC085031,
     FanModel.AC0850_81: PhilipsAC085081,
+    FanModel.AC0850_85: PhilipsAC085085,
     FanModel.AC0950: PhilipsAC0950,
     FanModel.AC0951: PhilipsAC0951,
     FanModel.AC1214: PhilipsAC1214,

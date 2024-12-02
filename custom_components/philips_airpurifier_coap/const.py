@@ -153,6 +153,7 @@ class FanModel(StrEnum):
     AC5660 = "AC5660"
     AMF765 = "AMF765"
     AMF870 = "AMF870"
+    CX3120 = "CX3120"
     CX3550 = "CX3550"
     CX5120 = "CX5120"
     HU1509 = "HU1509"

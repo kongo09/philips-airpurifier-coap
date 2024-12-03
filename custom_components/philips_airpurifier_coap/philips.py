@@ -1805,7 +1805,7 @@ class PhilipsCX3120(PhilipsNew2GenericFan):
     """CX3120."""
 
     AVAILABLE_PRESET_MODES = {
-        PresetMode.AUTO: {
+        PresetMode.AUTO_PLUS: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 3,
             PhilipsApi.NEW2_MODE_B: 0,
@@ -1814,6 +1814,11 @@ class PhilipsCX3120(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 3,
             PhilipsApi.NEW2_MODE_B: 65,
+        },
+        PresetMode.MEDIUM: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 67,
         },
         PresetMode.LOW: {
             PhilipsApi.NEW2_POWER: 1,
@@ -1832,6 +1837,11 @@ class PhilipsCX3120(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_A: 3,
             PhilipsApi.NEW2_MODE_B: 65,
         },
+        PresetMode.MEDIUM: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 67,
+        },
         PresetMode.LOW: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 3,
@@ -1839,11 +1849,11 @@ class PhilipsCX3120(PhilipsNew2GenericFan):
         },
     }
     KEY_OSCILLATION = {
-        PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP,
+        PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP3,
     }
 
     UNAVAILABLE_SENSORS = [PhilipsApi.NEW2_FAN_SPEED, PhilipsApi.NEW2_GAS]
-    AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2]
+    AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2, PhilipsApi.NEW2_CHILD_LOCK]
     AVAILABLE_NUMBERS = [PhilipsApi.NEW2_TARGET_TEMP]
 
 

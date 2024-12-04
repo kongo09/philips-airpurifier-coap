@@ -338,19 +338,14 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
             return None
 
         key = next(iter(self.KEY_OSCILLATION))
+        values = self.KEY_OSCILLATION.get(key)
+        off = values.get(SWITCH_OFF)
         status = self._device_status.get(key)
-        on = self.KEY_OSCILLATION.get(key).get(SWITCH_ON)
 
         if status is None:
             return None
 
-        if isinstance(on, int):
-            return status == on
-
-        if isinstance(on, list):
-            return status in on
-
-        return None
+        return status != off
 
     async def async_oscillate(self, oscillating: bool) -> None:
         """Osciallate the fan."""
@@ -1853,8 +1848,9 @@ class PhilipsCX3120(PhilipsNew2GenericFan):
     }
 
     UNAVAILABLE_SENSORS = [PhilipsApi.NEW2_FAN_SPEED, PhilipsApi.NEW2_GAS]
-    AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2, PhilipsApi.NEW2_CHILD_LOCK]
+    AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2]
     AVAILABLE_NUMBERS = [PhilipsApi.NEW2_TARGET_TEMP]
+    AVAILABLE_SWITCHES = [PhilipsApi.NEW2_CHILD_LOCK]
 
 
 class PhilipsCX5120(PhilipsNew2GenericFan):

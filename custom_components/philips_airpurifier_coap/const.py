@@ -387,8 +387,8 @@ class PhilipsApi:
         SWITCH_OFF: 0,
     }
     OSCILLATION_MAP3 = {
-        SWITCH_ON: "45",
-        SWITCH_OFF: "0",
+        SWITCH_ON: 45,
+        SWITCH_OFF: 0,
     }
 
     # the AC1715 seems to follow a new scheme, this should later be refactored

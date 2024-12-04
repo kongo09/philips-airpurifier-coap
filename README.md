@@ -247,5 +247,6 @@ The integration also provides the original Philips icons for your use in the fro
 | ![Preview](./custom_components/philips_airpurifier_coap/icons/pap/oscillate.svg)               | oscillate               |
 | ![Preview](./custom_components/philips_airpurifier_coap/icons/pap/heating.svg)                 | heating                 |
 | ![Preview](./custom_components/philips_airpurifier_coap/icons/pap/gas.svg)                     | gas                     |
+| ![Preview](./custom_components/philips_airpurifier_coap/icons/pap/circle.svg)                  | circle                  |
 
 Note: you might have to clear your browser cache after installation to see the icons.

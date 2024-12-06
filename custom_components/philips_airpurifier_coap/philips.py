@@ -338,19 +338,14 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
             return None
 
         key = next(iter(self.KEY_OSCILLATION))
+        values = self.KEY_OSCILLATION.get(key)
+        off = values.get(SWITCH_OFF)
         status = self._device_status.get(key)
-        on = self.KEY_OSCILLATION.get(key).get(SWITCH_ON)
 
         if status is None:
             return None
 
-        if isinstance(on, int):
-            return status == on
-
-        if isinstance(on, list):
-            return status in on
-
-        return None
+        return status != off
 
     async def async_oscillate(self, oscillating: bool) -> None:
         """Osciallate the fan."""
@@ -1801,6 +1796,63 @@ class PhilipsAMF870(PhilipsAMFxxx):
     AVAILABLE_NUMBERS = [PhilipsApi.NEW2_TARGET_TEMP]
 
 
+class PhilipsCX3120(PhilipsNew2GenericFan):
+    """CX3120."""
+
+    AVAILABLE_PRESET_MODES = {
+        PresetMode.AUTO_PLUS: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 0,
+        },
+        PresetMode.VENTILATION: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: -127,
+        },
+        PresetMode.LOW: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 66,
+        },
+        PresetMode.MEDIUM: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 67,
+        },
+        PresetMode.HIGH: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 65,
+        },
+    }
+    AVAILABLE_SPEEDS = {
+        PresetMode.LOW: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 66,
+        },
+        PresetMode.MEDIUM: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 67,
+        },
+        PresetMode.HIGH: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 65,
+        },
+    }
+    KEY_OSCILLATION = {
+        PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP3,
+    }
+
+    UNAVAILABLE_SENSORS = [PhilipsApi.NEW2_FAN_SPEED, PhilipsApi.NEW2_GAS]
+    AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2]
+    AVAILABLE_NUMBERS = [PhilipsApi.NEW2_TARGET_TEMP]
+    AVAILABLE_SWITCHES = [PhilipsApi.NEW2_CHILD_LOCK]
+
+
 class PhilipsCX5120(PhilipsNew2GenericFan):
     """CX5120."""
 
@@ -1810,32 +1862,32 @@ class PhilipsCX5120(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_A: 3,
             PhilipsApi.NEW2_MODE_B: 0,
         },
-        PresetMode.HIGH: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 3,
-            PhilipsApi.NEW2_MODE_B: 65,
-        },
-        PresetMode.LOW: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 3,
-            PhilipsApi.NEW2_MODE_B: 66,
-        },
         PresetMode.VENTILATION: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
             PhilipsApi.NEW2_MODE_B: -127,
         },
-    }
-    AVAILABLE_SPEEDS = {
+        PresetMode.LOW: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 66,
+        },
         PresetMode.HIGH: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 3,
             PhilipsApi.NEW2_MODE_B: 65,
         },
+    }
+    AVAILABLE_SPEEDS = {
         PresetMode.LOW: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 3,
             PhilipsApi.NEW2_MODE_B: 66,
+        },
+        PresetMode.HIGH: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 3,
+            PhilipsApi.NEW2_MODE_B: 65,
         },
     }
     KEY_OSCILLATION = {
@@ -1922,9 +1974,9 @@ class PhilipsHU1509(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
         },
-        PresetMode.HIGH: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 65},
-        PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
         PresetMode.SLEEP: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 17},
+        PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
+        PresetMode.HIGH: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 65},
     }
     AVAILABLE_SPEEDS = {
         PresetMode.SLEEP: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 17},
@@ -1960,9 +2012,9 @@ class PhilipsHU5710(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
         },
-        PresetMode.HIGH: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 65},
-        PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
         PresetMode.SLEEP: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 17},
+        PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
+        PresetMode.HIGH: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 65},
     }
     AVAILABLE_SPEEDS = {
         PresetMode.SLEEP: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 17},
@@ -2035,6 +2087,7 @@ model_to_class = {
     FanModel.AC5660: PhilipsAC5660,
     FanModel.AMF765: PhilipsAMF765,
     FanModel.AMF870: PhilipsAMF870,
+    FanModel.CX3120: PhilipsCX3120,
     FanModel.CX5120: PhilipsCX5120,
     FanModel.CX3550: PhilipsCX3550,
     FanModel.HU1509: PhilipsHU1510,

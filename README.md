@@ -107,6 +107,7 @@ Note: Some of these models seem to have a newer firmware that does not allow loc
 - AC5659
 - AMF765
 - AMF870
+- CX3120
 - CX5120
 - CX3550
 - HU1509
@@ -246,5 +247,6 @@ The integration also provides the original Philips icons for your use in the fro
 | ![Preview](./custom_components/philips_airpurifier_coap/icons/pap/oscillate.svg)               | oscillate               |
 | ![Preview](./custom_components/philips_airpurifier_coap/icons/pap/heating.svg)                 | heating                 |
 | ![Preview](./custom_components/philips_airpurifier_coap/icons/pap/gas.svg)                     | gas                     |
+| ![Preview](./custom_components/philips_airpurifier_coap/icons/pap/circle.svg)                  | circle                  |
 
 Note: you might have to clear your browser cache after installation to see the icons.

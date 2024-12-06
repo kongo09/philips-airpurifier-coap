@@ -153,6 +153,7 @@ class FanModel(StrEnum):
     AC5660 = "AC5660"
     AMF765 = "AMF765"
     AMF870 = "AMF870"
+    CX3120 = "CX3120"
     CX3550 = "CX3550"
     CX5120 = "CX5120"
     HU1509 = "HU1509"
@@ -383,6 +384,10 @@ class PhilipsApi:
     }
     OSCILLATION_MAP2 = {
         SWITCH_ON: [17242, 23040],
+        SWITCH_OFF: 0,
+    }
+    OSCILLATION_MAP3 = {
+        SWITCH_ON: 45,
         SWITCH_OFF: 0,
     }
 

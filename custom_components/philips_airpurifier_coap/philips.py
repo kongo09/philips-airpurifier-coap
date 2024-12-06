@@ -576,7 +576,19 @@ class PhilipsAC085020C(PhilipsAC085011C):
 
 
 class PhilipsAC085031(PhilipsAC085011):
-    """AC0850/31."""
+    """AC0850/31 with firmware AWS_Philips_AIR."""
+
+
+class PhilipsAC085031C(PhilipsAC085011C):
+    """AC0850/31 with firmware AWS_Philips_AIR_Combo."""
+
+
+class PhilipsAC085041(PhilipsAC085011):
+    """AC0850/41 with firmware AWS_Philips_AIR."""
+
+
+class PhilipsAC085041C(PhilipsAC085011C):
+    """AC0850/41 with firmware AWS_Philips_AIR_Combo."""
 
 
 class PhilipsAC085081(PhilipsAC085011C):
@@ -2046,6 +2058,9 @@ model_to_class = {
     FanModel.AC0850_20: PhilipsAC085020,
     FanModel.AC0850_20C: PhilipsAC085020C,
     FanModel.AC0850_31: PhilipsAC085031,
+    FanModel.AC0850_31C: PhilipsAC085031C,
+    FanModel.AC0850_41: PhilipsAC085041,
+    FanModel.AC0850_41C: PhilipsAC085041C,
     FanModel.AC0850_81: PhilipsAC085081,
     FanModel.AC0850_85: PhilipsAC085085,
     FanModel.AC0950: PhilipsAC0950,

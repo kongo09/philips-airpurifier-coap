@@ -302,7 +302,10 @@ class FanAttributes(StrEnum):
     MAX = "max"
     STEP = "step"
     TIMER = "timer"
+    TEMPERATURE = "temperature"
     TARGET_TEMP = "target_temperature"
+    MIN_TEMPERATURE = "min_temperature"
+    MAX_TEMPERATURE = "max_temperature"
     STANDBY_SENSORS = "standby_sensors"
     AUTO_PLUS = "auto_plus"
     WATER_TANK = "water_tank"
@@ -1012,5 +1015,17 @@ HUMIDIFIER_TYPES: dict[str, HumidifierDescription] = {
         FanAttributes.MAX_HUMIDITY: 70,
         FanAttributes.MIN_HUMIDITY: 30,
         FanAttributes.STEP: 5,
+    },
+}
+
+HEATER_TYPES: dict[str, HumidifierDescription] = {
+    PhilipsApi.NEW2_TARGET_TEMP: {
+        FanAttributes.TEMPERATURE: PhilipsApi.TEMPERATURE,
+        FanAttributes.POWER: PhilipsApi.POWER,
+        FanAttributes.ON: PhilipsApi.POWER_MAP[SWITCH_ON],
+        FanAttributes.OFF: PhilipsApi.POWER_MAP[SWITCH_OFF],
+        FanAttributes.MIN_TEMPERATURE: 1,
+        FanAttributes.MAX_TEMPERATURE: 37,
+        FanAttributes.STEP: 1,
     },
 }

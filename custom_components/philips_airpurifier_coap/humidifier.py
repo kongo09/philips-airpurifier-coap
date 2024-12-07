@@ -17,7 +17,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
 
 from .config_entry_data import ConfigEntryData
-from .const import DOMAIN, HUMIDIFIER_TYPES, FanAttributes, FanFunction
+from .const import DOMAIN, HEATER_TYPES, FanAttributes, FanFunction
 from .philips import PhilipsGenericControlBase, model_to_class
 
 _LOGGER = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ async def async_setup_entry(
             PhilipsHumidifier(
                 hass, entry, config_entry_data, humidifier, available_preset_modes
             )
-            for humidifier in HUMIDIFIER_TYPES
+            for humidifier in HEATER_TYPES
             if humidifier in available_humidifiers
         ]
 
@@ -83,7 +83,7 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
         self._model = config_entry_data.device_information.model
         latest_status = config_entry_data.latest_status
 
-        self._description = HUMIDIFIER_TYPES[humidifier]
+        self._description = HEATER_TYPES[humidifier]
         self._attr_device_class = HumidifierDeviceClass.HUMIDIFIER
 
         device_id = config_entry_data.device_information.device_id

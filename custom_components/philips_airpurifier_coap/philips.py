@@ -210,18 +210,6 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
 
         super().__init__(hass, entry, config_entry_data)
 
-        # self._attr_name = next(
-        #     name
-        #     for name in (
-        #         self._device_status.get(key)
-        #         for key in [
-        #             PhilipsApi.NAME,
-        #             PhilipsApi.NEW_NAME,
-        #             PhilipsApi.NEW2_NAME,
-        #         ]
-        #     )
-        #     if name
-        # )
         model = config_entry_data.device_information.model
         device_id = config_entry_data.device_information.device_id
         self._attr_unique_id = f"{model}-{device_id}"
@@ -1864,6 +1852,9 @@ class PhilipsCX3120(PhilipsNew2GenericFan):
     AVAILABLE_NUMBERS = [PhilipsApi.NEW2_TARGET_TEMP]
     AVAILABLE_SWITCHES = [PhilipsApi.NEW2_CHILD_LOCK]
 
+    CREATE_FAN = True  # later set to false once everything is working
+    AVAILABLE_HEATERS = [PhilipsApi.NEW2_TARGET_TEMP]
+
 
 class PhilipsCX5120(PhilipsNew2GenericFan):
     """CX5120."""
@@ -1911,6 +1902,9 @@ class PhilipsCX5120(PhilipsNew2GenericFan):
     UNAVAILABLE_SENSORS = [PhilipsApi.NEW2_FAN_SPEED, PhilipsApi.NEW2_GAS]
     AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2]
     AVAILABLE_NUMBERS = [PhilipsApi.NEW2_TARGET_TEMP]
+
+    CREATE_FAN = True  # later set to false once everything is working
+    AVAILABLE_HEATERS = [PhilipsApi.NEW2_TARGET_TEMP]
 
 
 class PhilipsCX3550(PhilipsNew2GenericFan):

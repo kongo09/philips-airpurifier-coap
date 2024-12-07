@@ -44,6 +44,9 @@
     },
     "humidifier": {
       "pap": {
+        "state": {
+          "off": "pap:power_button"
+        },
         "state_attributes": {
           "mode": {
             "state": {
@@ -70,6 +73,30 @@
           },
           "current_humidity": {
             "default": "pap:humidity_button"
+          }
+        }
+      }
+    },
+    "climate": {
+      "pap": {
+        "state": {
+          "off": "pap:power_button"
+        },
+        "state_attributes": {
+          "fan_mode": {
+            "state": {
+              "auto": "pap:auto_mode",
+              "high": "pap:temp_high",
+              "medium": "pap:temp_medium",
+              "low": "pap:temp_low",
+              "ventilation": "pap:fan_speed_button"
+            }
+          },
+          "swing_mode": {
+            "state": {
+              "off": "pap:rotate",
+              "on": "pap:rotate"
+            }
           }
         }
       }

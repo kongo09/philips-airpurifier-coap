@@ -115,6 +115,8 @@ class FanModel(StrEnum):
     AC0850_31C = "AC0850/31 AWS_Philips_AIR_Combo"
     AC0850_41 = "AC0850/41 AWS_Philips_AIR"
     AC0850_41C = "AC0850/41 AWS_Philips_AIR_Combo"
+    AC0850_70 = "AC0850/70 AWS_Philips_AIR"
+    AC0850_70C = "AC0850/70 AWS_Philips_AIR_Combo"
     AC0850_81 = "AC0850/81"
     AC0850_85 = "AC0850/85"
     AC0950 = "AC0950"

@@ -46,6 +46,7 @@ PLATFORMS = [
     "binary_sensor",
     "fan",
     "humidifier",
+    "climate",
     "light",
     "number",
     "select",

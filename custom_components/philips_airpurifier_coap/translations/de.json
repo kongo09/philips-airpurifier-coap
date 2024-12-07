@@ -100,6 +100,7 @@
     },
     "climate": {
       "pap": {
+        "name:": "Heizlüfter",
         "state": {
           "on": "An",
           "off": "Aus"

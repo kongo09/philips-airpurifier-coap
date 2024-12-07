@@ -44,9 +44,9 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [
     "binary_sensor",
+    "climate",
     "fan",
     "humidifier",
-    "climate",
     "light",
     "number",
     "select",

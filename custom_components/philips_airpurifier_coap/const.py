@@ -24,6 +24,7 @@ from homeassistant.helpers.entity import EntityCategory
 
 from .model import (
     FilterDescription,
+    HeaterDescription,
     HumidifierDescription,
     LightDescription,
     NumberDescription,
@@ -1018,7 +1019,7 @@ HUMIDIFIER_TYPES: dict[str, HumidifierDescription] = {
     },
 }
 
-HEATER_TYPES: dict[str, HumidifierDescription] = {
+HEATER_TYPES: dict[str, HeaterDescription] = {
     PhilipsApi.NEW2_TARGET_TEMP: {
         FanAttributes.TEMPERATURE: PhilipsApi.TEMPERATURE,
         FanAttributes.POWER: PhilipsApi.POWER,

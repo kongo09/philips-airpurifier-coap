@@ -98,6 +98,33 @@
         }
       }
     },
+    "climate": {
+      "pap": {
+        "state": {
+          "on": "An",
+          "off": "Aus"
+        },
+        "state_attributes": {
+          "fan_mode": {
+            "name": "Modus",
+            "state": {
+              "auto": "Auto",
+              "high": "Hoch",
+              "medium": "Medium",
+              "low": "Niedrig",
+              "ventilation": "Belüftung"
+            }
+          },
+          "swing_mode": {
+            "name": "Rotationsmodus",
+            "state": {
+              "off": "Aus",
+              "on": "An"
+            }
+          }
+        }
+      }
+    },
     "binary_sensor": {
       "water_tank": {
         "name": "Wassertank",

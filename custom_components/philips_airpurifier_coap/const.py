@@ -392,7 +392,7 @@ class PhilipsApi:
         SWITCH_OFF: "0",
     }
     OSCILLATION_MAP2 = {
-        SWITCH_ON: [17242, 23040],
+        SWITCH_ON: 17242,
         SWITCH_OFF: 0,
     }
     OSCILLATION_MAP3 = {

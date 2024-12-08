@@ -346,14 +346,12 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
         on = values.get(SWITCH_ON)
         off = values.get(SWITCH_OFF)
 
-        on_value = on if isinstance(on, int) else on[0]
-
         if oscillating:
-            await self.coordinator.client.set_control_value(key, on_value)
+            await self.coordinator.client.set_control_value(key, on)
         else:
             await self.coordinator.client.set_control_value(key, off)
 
-        self._device_status[key] = on_value if oscillating else off
+        self._device_status[key] = on if oscillating else off
         self._handle_coordinator_update()
 
     @property

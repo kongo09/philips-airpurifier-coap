@@ -103,7 +103,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         config_entry_data: ConfigEntryData,
         heater: str,
         available_preset_modes: list[str],
-        available_oscillation: dict[str, dict[str, str]],
+        available_oscillation: dict[str, dict[str, Any]],
     ) -> None:
         """Initialize the select."""
 

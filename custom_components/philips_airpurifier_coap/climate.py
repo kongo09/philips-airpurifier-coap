@@ -209,10 +209,10 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
 
         value = self._device_status.get(self._oscillation_key)
         _LOGGER.debug("Swing mode value: %s", value)
-        if value == self._oscillation_modes[SWITCH_ON]:
-            return SWING_ON
+        if value == self._oscillation_modes[SWITCH_OFF]:
+            return SWING_OFF
 
-        return SWING_OFF
+        return SWING_ON
 
     async def async_set_swing_mode(self, swing_mode: str) -> None:
         """Set the swing mode of the heater."""

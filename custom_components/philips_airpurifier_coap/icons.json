@@ -95,14 +95,6 @@
               "ventilation": "pap:circulate"
             }
           },
-          "hvac_mode": {
-            "state": {
-              "off": "pap:power_button",
-              "auto": "pap:auto_mode",
-              "fan_only": "pap:circulate",
-              "heat": "pap:heating"
-            }
-          },
           "swing_mode": {
             "state": {
               "off": "pap:rotate",

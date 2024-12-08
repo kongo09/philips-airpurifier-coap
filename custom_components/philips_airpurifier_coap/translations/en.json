@@ -102,7 +102,6 @@
       "pap": {
         "name:": "Fan heater",
         "state": {
-          "on": "On",
           "off": "Off",
           "auto": "Auto",
           "fan_only": "Ventilation",

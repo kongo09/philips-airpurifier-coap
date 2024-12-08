@@ -60,9 +60,11 @@ async def async_setup_entry(
 
             # Get the available oscillation from the base classes
             cls_available_oscillation = getattr(cls, "KEY_OSCILLATION", {})
+            _LOGGER.debug("Available oscillation: %s", cls_available_oscillation)
             if cls_available_oscillation:
                 available_oscillation.update(cls_available_oscillation)
 
+        _LOGGER.debug("Avaiable oscillation: %s", available_oscillation)
         heaters = [
             PhilipsHeater(
                 hass,

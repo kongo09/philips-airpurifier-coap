@@ -849,10 +849,11 @@ class PhilipsAC2729(PhilipsGenericFan):
     AVAILABLE_HUMIDIFIERS = [PhilipsApi.HUMIDITY_TARGET]
     AVAILABLE_BINARY_SENSORS = [PhilipsApi.ERROR_CODE]
 
-    AVAILABLE_HEATERS = [PhilipsApi.NEW2_TARGET_TEMP]
-    KEY_OSCILLATION = {
-        PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP3,
-    }
+    # only for experimental purposes
+    # AVAILABLE_HEATERS = [PhilipsApi.NEW2_TARGET_TEMP]
+    # KEY_OSCILLATION = {
+    #     PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP3,
+    # }
 
 
 class PhilipsAC2889(PhilipsGenericFan):
@@ -1905,7 +1906,7 @@ class PhilipsCX5120(PhilipsNew2GenericFan):
         },
     }
     KEY_OSCILLATION = {
-        PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP,
+        PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP2,
     }
 
     AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT2]

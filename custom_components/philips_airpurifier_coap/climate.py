@@ -11,14 +11,22 @@ from homeassistant.components.climate import (
     SWING_ON,
     ClimateEntity,
     ClimateEntityFeature,
+    HVACMode,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_TEMPERATURE
+from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
 
 from .config_entry_data import ConfigEntryData
-from .const import DOMAIN, HEATER_TYPES, SWITCH_OFF, SWITCH_ON, FanAttributes
+from .const import (
+    DOMAIN,
+    HEATER_TYPES,
+    SWITCH_OFF,
+    SWITCH_ON,
+    FanAttributes,
+    PresetMode,
+)
 from .philips import PhilipsGenericControlBase, model_to_class
 
 _LOGGER = logging.getLogger(__name__)
@@ -53,7 +61,8 @@ async def async_setup_entry(
 
             # Get the available oscillation from the base classes
             cls_available_oscillation = getattr(cls, "KEY_OSCILLATION", {})
-            available_oscillation.update(cls_available_oscillation)
+            if cls_available_oscillation:
+                available_oscillation.update(cls_available_oscillation)
 
         heaters = [
             PhilipsHeater(
@@ -79,6 +88,13 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
     """Define a Philips AirPurifier heater."""
 
     _attr_is_on: bool | None = False
+    _attr_temperature_unit: str = UnitOfTemperature.CELSIUS
+    _attr_hvac_modes: list[HVACMode] = [
+        HVACMode.OFF,
+        HVACMode.HEAT,
+        HVACMode.AUTO,
+        HVACMode.FAN_ONLY,
+    ]
 
     def __init__(
         self,
@@ -102,8 +118,8 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         self._attr_unique_id = f"{self._model}-{device_id}-{heater.lower()}"
 
         # preset modes in the climate entity are used for HVAC, so we use fan modes
-        self._fan_modes = available_preset_modes
-        self._attr_fan_modes = list(self._fan_modes.keys())
+        self._preset_modes = available_preset_modes
+        self._attr_preset_modes = list(self._preset_modes.keys())
 
         self._power_key = self._description[FanAttributes.POWER]
         self._temperature_target_key = heater.partition("#")[0]
@@ -117,7 +133,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
 
         self._attr_supported_features = (
             ClimateEntityFeature.TARGET_TEMPERATURE
-            | ClimateEntityFeature.FAN_MODE
+            | ClimateEntityFeature.PRESET_MODE
             | ClimateEntityFeature.TURN_ON
             | ClimateEntityFeature.TURN_OFF
         )
@@ -135,27 +151,48 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         return self._device_status.get(self._temperature_target_key)
 
     @property
-    def fan_mode(self) -> str | None:
+    def hvac_mode(self) -> HVACMode | None:
+        """Return the current HVAC mode."""
+        if not self.is_on:
+            return HVACMode.OFF
+        if self.preset_mode == PresetMode.AUTO:
+            return HVACMode.AUTO
+        if self.preset_mode == PresetMode.VENTILATION:
+            return HVACMode.FAN_ONLY
+        return HVACMode.HEAT
+
+    async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
+        """Set the HVAC mode of the heater."""
+        if hvac_mode == HVACMode.OFF:
+            await self.async_turn_off()
+        elif hvac_mode == HVACMode.AUTO:
+            await self.async_set_preset_mode(PresetMode.AUTO)
+        elif hvac_mode == HVACMode.FAN_ONLY:
+            await self.async_set_preset_mode(PresetMode.VENTILATION)
+        elif hvac_mode == HVACMode.HEAT:
+            await self.async_set_preset_mode(PresetMode.LOW)
+
+    @property
+    def preset_mode(self) -> str | None:
         """Return the current fan mode."""
 
-        if self._function_key == self._power_key:
-            for fan_mode, status_pattern in self._fan_modes.items():
-                for k, v in status_pattern.items():
-                    status = self._device_status.get(k)
-                    if status != v:
-                        break
-                else:
-                    return fan_mode
+        for fan_mode, status_pattern in self._preset_modes.items():
+            for k, v in status_pattern.items():
+                status = self._device_status.get(k)
+                if status != v:
+                    break
+            else:
+                return fan_mode
 
         # no mode found
         return None
 
-    async def async_set_fan_mode(self, fan_mode: str) -> None:
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set the fan mode of the heater."""
-        if fan_mode not in self._attr_fan_modes:
+        if preset_mode not in self._attr_preset_modes:
             return
 
-        status_pattern = self._fan_modes.get(fan_mode)
+        status_pattern = self._preset_modes.get(preset_mode)
         await self.coordinator.client.set_control_values(data=status_pattern)
         self._device_status.update(status_pattern)
         self._handle_coordinator_update()

@@ -103,11 +103,14 @@
         "name:": "Fan heater",
         "state": {
           "on": "On",
-          "off": "Off"
+          "off": "Off",
+          "auto": "Auto",
+          "fan_only": "Ventilation",
+          "heat": "Heating"
         },
         "state_attributes": {
-          "fan_mode": {
-            "name": "Mode",
+          "preset_mode": {
+            "name": "Preset mode",
             "state": {
               "auto": "Auto",
               "high": "High",
@@ -119,9 +122,12 @@
           "swing_mode": {
             "name": "Swing mode",
             "state": {
-              "off": "Off",
-              "on": "On"
+              "on": "On",
+              "off": "Off"
             }
+          },
+          "current_temperature": {
+            "name": "Current temperature"
           }
         }
       }

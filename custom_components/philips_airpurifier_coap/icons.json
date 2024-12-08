@@ -80,16 +80,27 @@
     "climate": {
       "pap": {
         "state": {
-          "off": "pap:power_button"
+          "off": "pap:power_button",
+          "auto": "pap:auto_mode",
+          "fan_only": "pap:circulate",
+          "heat": "pap:heating"
         },
         "state_attributes": {
-          "fan_mode": {
+          "preset_mode": {
             "state": {
               "auto": "pap:auto_mode",
               "high": "pap:temp_high",
               "medium": "pap:temp_medium",
               "low": "pap:temp_low",
-              "ventilation": "pap:fan_speed_button"
+              "ventilation": "pap:circulate"
+            }
+          },
+          "hvac_mode": {
+            "state": {
+              "off": "pap:power_button",
+              "auto": "pap:auto_mode",
+              "fan_only": "pap:circulate",
+              "heat": "pap:heating"
             }
           },
           "swing_mode": {

@@ -103,15 +103,18 @@
         "name:": "Heizlüfter",
         "state": {
           "on": "An",
-          "off": "Aus"
+          "off": "Aus",
+          "auto": "Auto",
+          "fan_only": "Belüftung",
+          "heat": "Heizung"
         },
         "state_attributes": {
-          "fan_mode": {
-            "name": "Modus",
+          "preset_mode": {
+            "name": "Voreinstellung",
             "state": {
               "auto": "Auto",
               "high": "Hoch",
-              "medium": "Medium",
+              "medium": "Mittel",
               "low": "Niedrig",
               "ventilation": "Belüftung"
             }
@@ -119,9 +122,12 @@
           "swing_mode": {
             "name": "Rotationsmodus",
             "state": {
-              "off": "Aus",
-              "on": "An"
+              "on": "An",
+              "off": "Aus"
             }
+          },
+          "current_temperature": {
+            "name": "Aktuelle Temperatur"
           }
         }
       }

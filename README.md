@@ -65,8 +65,12 @@ Note: Some of these models seem to have a newer firmware that does not allow loc
 - AC0850/11 AWS_Philips_AIR_Combo
 - AC0850/20 AWS_Philips_AIR
 - AC0850/20 AWS_Philips_AIR_Combo
-- AC0850/31
-- AC0850/41
+- AC0850/31 AWS_Philips_AIR
+- AC0850/31 AWS_Philips_AIR_Combo
+- AC0850/41 AWS_Philips_AIR
+- AC0850/41 AWS_Philips_AIR_Combo
+- AC0850/70 AWS_Philips_AIR
+- AC0850/70 AWS_Philips_AIR_Combo
 - AC0850/81
 - AC0850/85
 - AC0950

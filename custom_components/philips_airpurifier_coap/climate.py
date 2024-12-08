@@ -38,14 +38,13 @@ async def async_setup_entry(
     async_add_entities: Callable[[list[Entity], bool], None],
 ) -> None:
     """Set up the climate platform."""
-    _LOGGER.debug("Setting up climate platform")
+
     config_entry_data: ConfigEntryData = hass.data[DOMAIN][entry.entry_id]
 
     model = config_entry_data.device_information.model
 
     model_class = model_to_class.get(model)
     if model_class:
-        _LOGGER.debug("Setting up climate platform for model %s", model)
         available_heaters = []
         available_preset_modes = {}
         available_oscillation = {}
@@ -76,7 +75,6 @@ async def async_setup_entry(
             for heater in HEATER_TYPES
             if heater in available_heaters
         ]
-        _LOGGER.debug("Adding %s heaters", len(heaters))
         async_add_entities(heaters, update_before_add=False)
 
     else:
@@ -106,7 +104,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         available_oscillation: dict[str, dict[str, str]],
     ) -> None:
         """Initialize the select."""
-        _LOGGER.debug("Initializing heater %s", heater)
+
         super().__init__(hass, config, config_entry_data)
 
         self._model = config_entry_data.device_information.model

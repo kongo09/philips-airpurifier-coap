@@ -95,6 +95,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         HVACMode.AUTO,
         HVACMode.FAN_ONLY,
     ]
+    _attr_target_temperature_step: float = 1.0
 
     def __init__(
         self,

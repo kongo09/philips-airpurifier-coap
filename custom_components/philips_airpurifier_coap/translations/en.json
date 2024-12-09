@@ -100,7 +100,6 @@
     },
     "climate": {
       "pap": {
-        "name:": "Fan heater",
         "state": {
           "off": "Off",
           "auto": "Auto",

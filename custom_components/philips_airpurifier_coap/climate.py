@@ -64,7 +64,6 @@ async def async_setup_entry(
             if cls_available_oscillation:
                 available_oscillation.update(cls_available_oscillation)
 
-        _LOGGER.debug("Avaiable oscillation: %s", available_oscillation)
         heaters = [
             PhilipsHeater(
                 hass,
@@ -140,15 +139,11 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         )
 
         # some devices can oscillate
-        _LOGGER.debug("Available oscillation: %s", available_oscillation)
         if available_oscillation:
             self._oscillation_key = list(available_oscillation.keys())[0]
-            _LOGGER.debug("Oscillation key: %s", self._oscillation_key)
             self._oscillation_modes = available_oscillation[self._oscillation_key]
-            _LOGGER.debug("Oscillation modes: %s", self._oscillation_modes)
             self._attr_supported_features |= ClimateEntityFeature.SWING_MODE
             self._attr_swing_modes = [SWING_ON, SWING_OFF]
-            _LOGGER.debug("Support swing mode: %s", self._attr_swing_modes)
 
     @property
     def target_temperature(self) -> int | None:
@@ -209,7 +204,6 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
             return None
 
         value = self._device_status.get(self._oscillation_key)
-        _LOGGER.debug("Swing mode value: %s", value)
         if value == self._oscillation_modes[SWITCH_OFF]:
             return SWING_OFF
 
@@ -217,16 +211,13 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
 
     async def async_set_swing_mode(self, swing_mode: str) -> None:
         """Set the swing mode of the heater."""
-        _LOGGER.debug("Set swing mode: %s", swing_mode)
         if swing_mode not in self._attr_swing_modes:
             return
 
         if swing_mode == SWING_ON:
             value = self._oscillation_modes[SWITCH_ON]
-            _LOGGER.debug("Set swing mode value: %s", value)
         else:
             value = self._oscillation_modes[SWITCH_OFF]
-            _LOGGER.debug("Set swing mode value: %s", value)
 
         await self.coordinator.client.set_control_value(self._oscillation_key, value)
         self._device_status[self._oscillation_key] = value

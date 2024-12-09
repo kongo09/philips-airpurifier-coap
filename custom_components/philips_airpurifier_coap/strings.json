@@ -98,6 +98,39 @@
         }
       }
     },
+    "climate": {
+      "pap": {
+        "name": "Fan heater",
+        "state": {
+          "off": "Off",
+          "auto": "Auto",
+          "fan_only": "Ventilation",
+          "heat": "Heating"
+        },
+        "state_attributes": {
+          "preset_mode": {
+            "name": "Preset mode",
+            "state": {
+              "auto": "Auto",
+              "high": "High",
+              "medium": "Medium",
+              "low": "Low",
+              "ventilation": "Ventilation"
+            }
+          },
+          "swing_mode": {
+            "name": "Swing mode",
+            "state": {
+              "on": "On",
+              "off": "Off"
+            }
+          },
+          "current_temperature": {
+            "name": "Current temperature"
+          }
+        }
+      }
+    },
     "binary_sensor": {
       "water_tank": {
         "name": "Water tank",

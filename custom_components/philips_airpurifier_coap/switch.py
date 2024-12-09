@@ -86,7 +86,7 @@ class PhilipsSwitch(PhilipsEntity, SwitchEntity):
     @property
     def is_on(self) -> bool:
         """Return if switch is on."""
-        return self._device_status.get(self.kind) == self._on
+        return self._device_status.get(self.kind) != self._off
 
     async def async_turn_on(self, **kwargs) -> None:
         """Switch the switch on."""

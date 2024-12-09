@@ -96,7 +96,6 @@ class NumberDescription(TypedDict):
 class HumidifierDescription(TypedDict):
     """Humidifier description class."""
 
-    icon: str
     label: str
     humidity: str
     power: str
@@ -108,3 +107,15 @@ class HumidifierDescription(TypedDict):
     switch: bool
     max_humidity: str
     min_humidity: str
+
+
+class HeaterDescription(TypedDict):
+    """Heater description class."""
+
+    temperature: str
+    power: str
+    on: Any
+    off: Any
+    min_temperature: int
+    max_temperature: int
+    step: int

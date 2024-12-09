@@ -24,6 +24,7 @@ from homeassistant.helpers.entity import EntityCategory
 
 from .model import (
     FilterDescription,
+    HeaterDescription,
     HumidifierDescription,
     LightDescription,
     NumberDescription,
@@ -304,7 +305,10 @@ class FanAttributes(StrEnum):
     MAX = "max"
     STEP = "step"
     TIMER = "timer"
+    TEMPERATURE = "temperature"
     TARGET_TEMP = "target_temperature"
+    MIN_TEMPERATURE = "min_temperature"
+    MAX_TEMPERATURE = "max_temperature"
     STANDBY_SENSORS = "standby_sensors"
     AUTO_PLUS = "auto_plus"
     WATER_TANK = "water_tank"
@@ -384,11 +388,11 @@ class PhilipsApi:
     }
 
     OSCILLATION_MAP = {
-        SWITCH_ON: "17920",
-        SWITCH_OFF: "0",
+        SWITCH_ON: 17920,
+        SWITCH_OFF: 0,
     }
     OSCILLATION_MAP2 = {
-        SWITCH_ON: [17242, 23040],
+        SWITCH_ON: 17242,
         SWITCH_OFF: 0,
     }
     OSCILLATION_MAP3 = {
@@ -1014,5 +1018,17 @@ HUMIDIFIER_TYPES: dict[str, HumidifierDescription] = {
         FanAttributes.MAX_HUMIDITY: 70,
         FanAttributes.MIN_HUMIDITY: 30,
         FanAttributes.STEP: 5,
+    },
+}
+
+HEATER_TYPES: dict[str, HeaterDescription] = {
+    PhilipsApi.NEW2_TARGET_TEMP: {
+        FanAttributes.TEMPERATURE: PhilipsApi.TEMPERATURE,
+        FanAttributes.POWER: PhilipsApi.NEW2_POWER,
+        FanAttributes.ON: 1,
+        FanAttributes.OFF: 0,
+        FanAttributes.MIN_TEMPERATURE: 1,
+        FanAttributes.MAX_TEMPERATURE: 37,
+        FanAttributes.STEP: 1,
     },
 }

@@ -200,24 +200,34 @@ class PresetMode:
     NATURAL = "natural"
 
     ICON_MAP = {
-        ALLERGEN: ICON.ALLERGEN_MODE,
-        AUTO: ICON.AUTO_MODE,
-        AUTO_GENERAL: ICON.AUTO_MODE,
-        BACTERIA: ICON.BACTERIA_VIRUS_MODE,
-        POLLUTION: ICON.POLLUTION_MODE,
-        SPEED_GENTLE_1: ICON.SPEED_1,
-        SPEED_1: ICON.SPEED_1,
-        SPEED_2: ICON.SPEED_2,
-        SPEED_3: ICON.SPEED_3,
-        TURBO: ICON.SPEED_3,
-        # we use the sleep mode icon for all related modes
-        GENTLE: ICON.SLEEP_MODE,
-        NIGHT: ICON.SLEEP_MODE,
-        SLEEP: ICON.SLEEP_MODE,
-        # unfortunately, the allergy sleep mode has the same icon as the auto mode on the device
-        SLEEP_ALLERGY: ICON.AUTO_MODE,
-        # some devices have a gas mode, but there doesn't seem to be a Philips icon for that
-        GAS: ICON.AUTO_MODE,
+        SPEED_1: "pap:speed_1",
+        SPEED_GENTLE_1: "pap:speed_1",
+        SPEED_2: "pap:speed_2",
+        SPEED_3: "pap:speed_3",
+        SPEED_4: "pap:fan_speed_button",
+        SPEED_5: "pap:fan_speed_button",
+        SPEED_6: "pap:fan_speed_button",
+        SPEED_7: "pap:fan_speed_button",
+        SPEED_8: "pap:fan_speed_button",
+        SPEED_9: "pap:fan_speed_button",
+        SPEED_10: "pap:fan_speed_button",
+        ALLERGEN: "pap:allergen_mode",
+        AUTO: "pap:auto_mode_button",
+        AUTO_GENERAL: "pap:auto_mode_button",
+        AUTO_PLUS: "pap:auto_mode_button",
+        BACTERIA: "pap:bacteria_virus_mode",
+        GENTLE: "pap:speed_1",
+        NIGHT: "pap:sleep_mode",
+        SLEEP: "pap:sleep_mode",
+        SLEEP_ALLERGY: "pap:sleep_mode",
+        TURBO: "pap:speed_3",
+        MEDIUM: "pap:speed_2",
+        GAS: "pap:gas",
+        POLLUTION: "pap:pollution_mode",
+        LOW: "pap:speed_1",
+        HIGH: "pap:speed_3",
+        VENTILATION: "pap:circulate",
+        NATURAL: "pap:fan_speed_button",
     }
 
 

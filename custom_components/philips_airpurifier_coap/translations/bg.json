@@ -1,0 +1,277 @@
+{
+  "title": "Philips Пречиствател на въздух",
+  "config": {
+    "abort": {
+      "already_configured": "Устройството вече е конфигурирано",
+      "model_unsupported": "Моделът не се поддържа",
+      "timeout": "Времето изтече, не може да се свърже с устройството"
+    },
+    "step": {
+      "user": {
+        "title": "Нов Philips Пречиствател на въздух",
+        "data": {
+          "host": "Име на устройството (device hostname) или IP адрес"
+        }
+      },
+      "confirm": {
+        "description": "Искате ли да настроите {model} {name}?"
+      }
+    },
+    "error": {
+      "host": "Адресът на устройството е задължителен",
+      "connect": "Не може да се свърже с устройството"
+    }
+  },
+  "entity": {
+    "fan": {
+      "pap": {
+        "state_attributes": {
+          "preset_mode": {
+            "name": "Зададен режим",
+            "state": {
+              "auto": "Автоматичен",
+              "auto_general": "Автоматичен/Общ",
+              "auto_plus": "Автоматичен+",
+              "bacteria": "Бактерии",
+              "allergen": "Алерген",
+              "gentle": "Нежен",
+              "night": "Нощ",
+              "sleep": "Сън",
+              "sleep_allergy": "Сън/Алергия",
+              "turbo": "Турбо",
+              "medium": "Средна",
+              "gas": "Газ",
+              "pollution": "Замърсяване",
+              "low": "Ниска",
+              "high": "Висока",
+              "ventilation": "Вентилация",
+              "natural": "Естествен",
+              "speed_1": "Скорост 1",
+              "gentle_speed_1": "Нежен/Скорост 1",
+              "speed_2": "Скорост 2",
+              "speed_3": "Скорост 3",
+              "speed_4": "Скорост 4",
+              "speed_5": "Скорост 5",
+              "speed_6": "Скорост 6",
+              "speed_7": "Скорост 7",
+              "speed_8": "Скорост 8",
+              "speed_9": "Скорост 9",
+              "speed_10": "Скорост 10"
+            }
+          }
+        }
+      }
+    },
+    "humidifier": {
+      "pap": {
+        "state": {
+          "on": "Включен",
+          "off": "Изключен"
+        },
+        "state_attributes": {
+          "mode": {
+            "state": {
+              "purification": "Пречистване",
+              "purification_humidification": "Пречистване и овлажняване",
+              "auto": "Автоматичен",
+              "allergen": "Алерген",
+              "sleep": "Сън",
+              "night": "Нощ",
+              "turbo": "Турбо",
+              "high": "Висока",
+              "medium": "Средна",
+              "speed_1": "Скорост 1",
+              "speed_2": "Скорост 2",
+              "speed_3": "Скорост 3"
+            }
+          },
+          "action": {
+            "state": {
+              "off": "Изключен",
+              "humidifying": "Овлажнява",
+              "idle": "Неактивен"
+            }
+          },
+          "current_humidity": {
+            "name": "Текуща влажност"
+          }
+        }
+      }
+    },
+    "climate": {
+      "pap": {
+        "name": "Вентилаторна печка",
+        "state": {
+          "off": "Изключен",
+          "auto": "Автоматичен",
+          "fan_only": "Само вентилация",
+          "heat": "Отопление"
+        },
+        "state_attributes": {
+          "preset_mode": {
+            "name": "Предварително зададен режим",
+            "state": {
+              "auto": "Автоматичен",
+              "high": "Висок",
+              "medium": "Среден",
+              "low": "Нисък",
+              "ventilation": "Вентилация"
+            }
+          },
+          "swing_mode": {
+            "name": "Режим на люлеене",
+            "state": {
+              "on": "Включен",
+              "off": "Изключен"
+            }
+          },
+          "current_temperature": {
+            "name": "Текуща температура"
+          }
+        }
+      }
+    },
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Резервоар за вода",
+        "state": {
+          "on": "Не е празен",
+          "off": "Празен"
+        }
+      },
+      "humidification": {
+        "name": "Овлажняване",
+        "state": {
+          "on": "Включен",
+          "off": "Изключен"
+        }
+      }
+    },
+    "sensor": {
+      "indoor_allergen_index": {
+        "name": "Индекс на вътрешни алергени"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "gas": {
+        "name": "Газ"
+      },
+      "total_volatile_organic_compounds": {
+        "name": "Общо количество летливи органични съединения"
+      },
+      "humidity": {
+        "name": "Влажност"
+      },
+      "time_remaining": {
+        "name": "Оставащо време"
+      },
+      "temperature": {
+        "name": "Температура"
+      },
+      "water_level": {
+        "name": "Ниво на вода"
+      },
+      "rssi": {
+        "name": "RSSI"
+      },
+      "pre_filter": {
+        "name": "Предфилтър"
+      },
+      "hepa_filter": {
+        "name": "HEPA филтър"
+      },
+      "active_carbon_filter": {
+        "name": "Активен въглен филтър"
+      },
+      "wick": {
+        "name": "Филтър"
+      },
+      "nanoprotect_filter": {
+        "name": "NanoProtect филтър"
+      }
+    },
+    "switch": {
+      "child_lock": {
+        "name": "Защита от деца"
+      },
+      "beep": {
+        "name": "Звуков сигнал"
+      },
+      "standby_sensors": {
+        "name": "Сензори в режим на готовност"
+      },
+      "auto_plus": {
+        "name": "Автоматичен плюс"
+      },
+      "auto_quickdry_mode": {
+        "name": "Автоматичен режим за бързо сушене"
+      },
+      "quickdry_mode": {
+        "name": "Режим за бързо сушене"
+      }
+    },
+    "light": {
+      "display_backlight": {
+        "name": "Подсветка на дисплея"
+      },
+      "light_brightness": {
+        "name": "Яркост на светлината"
+      }
+    },
+    "select": {
+      "function": {
+        "name": "Функция",
+        "state": {
+          "purification": "Пречистване",
+          "purification_humidification": "Пречистване и овлажняване",
+          "fan": "Вентилатор",
+          "circulation": "Циркулация",
+          "heating": "Отопление"
+        }
+      },
+      "lamp_mode": {
+        "name": "Режим на лампата",
+        "state": {
+          "off": "Изключен",
+          "air_quality": "Качество на въздуха",
+          "ambient_light_mode": "Околна светлина",
+          "humidity": "Влажност"
+        }
+      },
+      "ambient_light_mode": {
+        "name": "Амбиентна светлина",
+        "state": {
+          "off": "Изключен",
+          "warm": "Топъл",
+          "dawn": "Зазоряване",
+          "calm": "Спокоен",
+          "breath": "Дишане"
+        }
+      },
+      "preferred_index": {
+        "name": "Предпочитан индекс",
+        "state": {
+          "indoor_allergen_index": "Индекс на вътрешни алергени",
+          "pm25": "PM2.5",
+          "gas": "Газ"
+        }
+      },
+      "timer": {
+        "name": "Таймер",
+        "state": {
+          "off": "Изключен",
+          "on": "Включен"
+        }
+      }
+    },
+    "number": {
+      "oscillaton": {
+        "name": "Осцилация"
+      },
+      "target_temp": {
+        "name": "Целева температура"
+      }
+    }
+  }
+}

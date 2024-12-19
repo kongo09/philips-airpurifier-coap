@@ -847,6 +847,7 @@ class PhilipsAC2729(PhilipsGenericFan):
     AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
     AVAILABLE_SELECTS = [PhilipsApi.PREFERRED_INDEX]
     AVAILABLE_HUMIDIFIERS = [PhilipsApi.HUMIDITY_TARGET]
+    CREATE_FAN = False
     AVAILABLE_BINARY_SENSORS = [PhilipsApi.ERROR_CODE]
 
     # only for experimental purposes
@@ -1224,6 +1225,7 @@ class PhilipsAC3420(PhilipsAC0950):
 
     AVAILABLE_SELECTS = [PhilipsApi.NEW2_LAMP_MODE]
     AVAILABLE_HUMIDIFIERS = [PhilipsApi.NEW2_HUMIDITY_TARGET]
+    CREATE_FAN = False
 
 
 class PhilipsAC3421(PhilipsAC3420):
@@ -1279,6 +1281,7 @@ class PhilipsAC3737(PhilipsNew2GenericFan):
     UNAVAILABLE_SENSORS = [PhilipsApi.NEW2_FAN_SPEED]
     AVAILABLE_BINARY_SENSORS = [PhilipsApi.NEW2_ERROR_CODE, PhilipsApi.NEW2_MODE_A]
     AVAILABLE_HUMIDIFIERS = [PhilipsApi.NEW2_HUMIDITY_TARGET]
+    CREATE_FAN = False
 
 
 class PhilipsAC3829(PhilipsGenericFan):
@@ -1345,6 +1348,7 @@ class PhilipsAC3829(PhilipsGenericFan):
     AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
     AVAILABLE_BINARY_SENSORS = [PhilipsApi.ERROR_CODE]
     AVAILABLE_HUMIDIFIERS = [PhilipsApi.HUMIDITY_TARGET]
+    CREATE_FAN = False
 
 
 class PhilipsAC3836(PhilipsGenericFan):

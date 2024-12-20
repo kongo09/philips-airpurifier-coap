@@ -1220,10 +1220,42 @@ class PhilipsAC3259(PhilipsGenericFan):
     AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
 
 
-class PhilipsAC3420(PhilipsAC0950):
+class PhilipsAC3420(PhilipsNew2GenericFan):
     """AC3420."""
 
-    AVAILABLE_SELECTS = [PhilipsApi.NEW2_LAMP_MODE]
+    AVAILABLE_PRESET_MODES = {
+        PresetMode.AUTO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 0,
+        },
+        PresetMode.TURBO: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 18},
+        PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
+        PresetMode.SLEEP_ALLERGY: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 17,
+        },
+    }
+    AVAILABLE_SPEEDS = {
+        PresetMode.SPEED_1: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 1},
+        PresetMode.SPEED_2: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 2},
+        PresetMode.SPEED_3: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 3},
+        PresetMode.SPEED_4: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 4},
+        PresetMode.SPEED_5: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 5},
+    }
+    # the prefilter data is present but doesn't change for this device, so let's take it out
+    UNAVAILABLE_FILTERS = [PhilipsApi.FILTER_NANOPROTECT_PREFILTER]
+
+    AVAILABLE_SWITCHES = [
+        PhilipsApi.NEW2_CHILD_LOCK,
+        PhilipsApi.NEW2_BEEP,
+        PhilipsApi.NEW2_AUTO_PLUS_AI,
+    ]
+    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
+    AVAILABLE_SELECTS = [
+        PhilipsApi.NEW2_GAS_PREFERRED_INDEX,
+        PhilipsApi.NEW2_TIMER2,
+        PhilipsApi.NEW2_LAMP_MODE,
+    ]
     AVAILABLE_HUMIDIFIERS = [PhilipsApi.NEW2_HUMIDITY_TARGET]
     CREATE_FAN = False
 

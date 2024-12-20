@@ -489,7 +489,7 @@ class PhilipsNew2GenericFan(PhilipsGenericFanBase):
         (
             FanAttributes.PREFERRED_INDEX,
             PhilipsApi.NEW2_GAS_PREFERRED_INDEX,
-            PhilipsApi.GAS_PREFERRED_INDEX_MAP,
+            PhilipsApi.NEW2_GAS_PREFERRED_INDEX_MAP,
         ),
         # device sensors
         (

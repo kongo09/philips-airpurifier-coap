@@ -189,7 +189,7 @@ class PresetMode:
     GENTLE = "gentle"
     NIGHT = "night"
     SLEEP = "sleep"
-    SLEEP_ALLERGY = "allergy_sleep"
+    SLEEP_ALLERGY = "sleep_allergy"
     TURBO = "turbo"
     MEDIUM = "medium"
     GAS = "gas"

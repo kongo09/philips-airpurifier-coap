@@ -1272,7 +1272,7 @@ class PhilipsAC3420(PhilipsNew2GenericFan):
         PhilipsApi.NEW2_LAMP_MODE,
     ]
     AVAILABLE_HUMIDIFIERS = [PhilipsApi.NEW2_HUMIDITY_TARGET]
-    CREATE_FAN = False
+    CREATE_FAN = True
 
 
 class PhilipsAC3421(PhilipsAC3420):

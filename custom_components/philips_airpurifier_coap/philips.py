@@ -1226,12 +1226,27 @@ class PhilipsAC3420(PhilipsNew2GenericFan):
     AVAILABLE_PRESET_MODES = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 2,
             PhilipsApi.NEW2_MODE_B: 0,
         },
-        PresetMode.TURBO: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 18},
-        PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
+        PresetMode.TURBO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 2,
+            PhilipsApi.NEW2_MODE_B: 18,
+        },
+        PresetMode.MEDIUM: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 2,
+            PhilipsApi.NEW2_MODE_B: 19,
+        },
+        PresetMode.SLEEP: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 2,
+            PhilipsApi.NEW2_MODE_B: 17,
+        },
         PresetMode.SLEEP_ALLERGY: {
             PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 16,
             PhilipsApi.NEW2_MODE_B: 17,
         },
     }

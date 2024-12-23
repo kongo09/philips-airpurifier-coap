@@ -812,6 +812,11 @@ SWITCH_TYPES: dict[str, SwitchDescription] = {
         SWITCH_ON: 1,
         SWITCH_OFF: 0,
     },
+    PhilipsApi.NEW2_MODE_A: {
+        FanAttributes.LABEL: PresetMode.SLEEP_ALLERGY,
+        SWITCH_ON: 16,
+        SWITCH_OFF: 2,
+    },
     PhilipsApi.NEW2_AUTO_QUICKDRY_MODE: {
         FanAttributes.LABEL: FanAttributes.AUTO_QUICKDRY_MODE,
         SWITCH_ON: 1,

@@ -1226,27 +1226,18 @@ class PhilipsAC3420(PhilipsNew2GenericFan):
     AVAILABLE_PRESET_MODES = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 2,
             PhilipsApi.NEW2_MODE_B: 0,
         },
         PresetMode.TURBO: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 2,
             PhilipsApi.NEW2_MODE_B: 18,
         },
         PresetMode.MEDIUM: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 2,
             PhilipsApi.NEW2_MODE_B: 19,
         },
         PresetMode.SLEEP: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 2,
-            PhilipsApi.NEW2_MODE_B: 17,
-        },
-        PresetMode.SLEEP_ALLERGY: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 16,
             PhilipsApi.NEW2_MODE_B: 17,
         },
     }
@@ -1264,6 +1255,7 @@ class PhilipsAC3420(PhilipsNew2GenericFan):
         PhilipsApi.NEW2_CHILD_LOCK,
         PhilipsApi.NEW2_BEEP,
         PhilipsApi.NEW2_AUTO_PLUS_AI,
+        PhilipsApi.NEW2_MODE_A,  # sleep_allergy mode
     ]
     AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
     AVAILABLE_SELECTS = [

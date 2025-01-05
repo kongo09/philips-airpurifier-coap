@@ -321,6 +321,7 @@ class FanAttributes(StrEnum):
     MAX_TEMPERATURE = "max_temperature"
     STANDBY_SENSORS = "standby_sensors"
     AUTO_PLUS = "auto_plus"
+    SLEEP_ALLERGY = "sleep_allergy"
     WATER_TANK = "water_tank"
     AUTO_QUICKDRY_MODE = "auto_quickdry_mode"
     QUICKDRY_MODE = "quickdry_mode"
@@ -813,7 +814,7 @@ SWITCH_TYPES: dict[str, SwitchDescription] = {
         SWITCH_OFF: 0,
     },
     PhilipsApi.NEW2_MODE_A: {
-        FanAttributes.LABEL: PresetMode.SLEEP_ALLERGY,
+        FanAttributes.LABEL: FanAttributes.SLEEP_ALLERGY,
         SWITCH_ON: 16,
         SWITCH_OFF: 2,
     },

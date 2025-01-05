@@ -847,7 +847,6 @@ class PhilipsAC2729(PhilipsGenericFan):
     AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
     AVAILABLE_SELECTS = [PhilipsApi.PREFERRED_INDEX]
     AVAILABLE_HUMIDIFIERS = [PhilipsApi.HUMIDITY_TARGET]
-    CREATE_FAN = False
     AVAILABLE_BINARY_SENSORS = [PhilipsApi.ERROR_CODE]
 
     # only for experimental purposes

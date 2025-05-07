@@ -9,7 +9,7 @@ from aioairctrl import CoAPClient
 import voluptuous as vol
 
 from homeassistant import config_entries, exceptions
-from homeassistant.components import dhcp
+from homeassistant.helpers.service_info import dhcp
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_validation as cv

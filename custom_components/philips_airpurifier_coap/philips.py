@@ -1508,6 +1508,8 @@ class PhilipsAC385451(PhilipsAC385x51):
 class PhilipsAC385851(PhilipsAC385x51):
     """AC3858/51."""
 
+    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
+
 
 class PhilipsAC385883(PhilipsAC385x51):
     """AC3858/83."""

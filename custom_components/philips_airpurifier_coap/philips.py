@@ -1442,6 +1442,8 @@ class PhilipsAC385450(PhilipsAC385x50):
 class PhilipsAC385850(PhilipsAC385x50):
     """AC3858/50."""
 
+    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
+
 
 class PhilipsAC385x51(PhilipsGenericFan):
     """AC385x/51 family."""

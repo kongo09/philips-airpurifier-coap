@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from typing import Any, TypedDict
 from xmlrpc.client import boolean
 
-from homeassistant.const import EntityCategory
+from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
+from homeassistant.const import EntityCategory, UnitOfTemperature, UnitOfTime
 from homeassistant.helpers.typing import StateType
 
 DeviceStatus = dict[str, Any]
@@ -33,13 +34,16 @@ class _SensorDescription(TypedDict):
 class SensorDescription(_SensorDescription, total=False):
     """Sensor description class."""
 
-    device_class: str
+    # Home Assistant standard attributes using string keys
+    device_class: SensorDeviceClass
+    state_class: SensorStateClass
+    native_unit_of_measurement: str | UnitOfTemperature | UnitOfTime
+    entity_category: EntityCategory
+
     icon: str
     unit: str
-    state_class: str
     value: Callable[[Any, DeviceStatus], StateType]
     icon_map: list[tuple[int, str]]
-    entity_category: EntityCategory
     # warn_value: int
     # warn_icon: str
 

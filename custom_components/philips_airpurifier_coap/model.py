@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any, TypedDict
 from xmlrpc.client import boolean
 
+from homeassistant.const import EntityCategory
 from homeassistant.helpers.typing import StateType
 
 DeviceStatus = dict[str, Any]
@@ -38,6 +39,7 @@ class SensorDescription(_SensorDescription, total=False):
     state_class: str
     value: Callable[[Any, DeviceStatus], StateType]
     icon_map: list[tuple[int, str]]
+    entity_category: EntityCategory
     # warn_value: int
     # warn_icon: str
 

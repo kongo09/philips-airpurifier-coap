@@ -1009,6 +1009,7 @@ class PhilipsAC303x(PhilipsGenericFan):
         },
     }
     AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
+    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
 
 
 class PhilipsAC3033(PhilipsAC303x):

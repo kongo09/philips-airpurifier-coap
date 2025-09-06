@@ -13,11 +13,12 @@ from homeassistant.const import (
     ATTR_DEVICE_CLASS,
     CONF_ENTITY_CATEGORY,
     PERCENTAGE,
+    EntityCategory,
     UnitOfTime,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import PlatformNotReady
-from homeassistant.helpers.entity import Entity, EntityCategory
+from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import StateType
 
 from .config_entry_data import ConfigEntryData

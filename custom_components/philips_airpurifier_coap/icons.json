@@ -112,7 +112,6 @@
         }
       },
       "humidification": {
-        "name": "Humidification",
         "state": {
           "on": "pap:two_in_one_mode",
           "off": "pap:purification_only_mode"

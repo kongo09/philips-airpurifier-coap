@@ -9,10 +9,10 @@ from aioairctrl import CoAPClient
 import voluptuous as vol
 
 from homeassistant import config_entries, exceptions
-from homeassistant.components import dhcp
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 from homeassistant.util.timeout import TimeoutManager
 
 from .const import CONF_DEVICE_ID, CONF_MODEL, CONF_STATUS, DOMAIN, PhilipsApi
@@ -53,7 +53,7 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             {vol.Required(CONF_HOST, default=user_input.get(CONF_HOST, "")): cv.string}
         )
 
-    async def async_step_dhcp(self, discovery_info: dhcp.DhcpServiceInfo) -> FlowResult:
+    async def async_step_dhcp(self, discovery_info: DhcpServiceInfo) -> FlowResult:
         """Handle initial step of auto discovery flow."""
         _LOGGER.debug("async_step_dhcp: called, found: %s", discovery_info)
 

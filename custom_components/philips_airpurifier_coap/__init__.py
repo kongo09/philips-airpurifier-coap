@@ -74,7 +74,9 @@ class ListingView(HomeAssistantView):
 
     async def get(self, request, *args):
         """Call executor to avoid blocking I/O call to get list of used icons."""
-        return await self.hass.async_add_executor_job(
+        # Support both new (HA 2025.x+) and old (<2025.x) versions
+        hass = request.app.get("hass", getattr(self, "hass", None))
+        return await hass.async_add_executor_job(
             self.get_icons_list, self.iconpath
         )
 

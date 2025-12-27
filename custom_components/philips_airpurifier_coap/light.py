@@ -165,9 +165,14 @@ class PhilipsLight(PhilipsEntity, LightEntity):
             self._attr_effect = kwargs[ATTR_EFFECT]
             if self._attr_effect == SWITCH_AUTO:
                 value = self._auto
+            else:
+                # Effect is not auto, continue to check brightness/default
+                value = None
+        else:
+            value = None
 
-        # no auto effect, so we test if the brightness is set
-        elif self._dimmable:
+        # if value not set by effect, check if brightness is set
+        if value is None and self._dimmable:
             if ATTR_BRIGHTNESS in kwargs:
                 if self._medium and kwargs[ATTR_BRIGHTNESS] < 255:
                     value = self._medium
@@ -176,8 +181,8 @@ class PhilipsLight(PhilipsEntity, LightEntity):
             else:
                 value = int(self._on)
 
-        # no brightness set, so we just turn the light on
-        else:
+        # still no value set, so we just turn the light on
+        if value is None:
             value = self._on
 
         await self.coordinator.client.set_control_value(self.kind, value)

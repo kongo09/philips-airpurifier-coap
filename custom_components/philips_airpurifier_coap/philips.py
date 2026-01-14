@@ -1910,7 +1910,7 @@ class PhilipsCX5120(PhilipsNew2GenericFan):
         },
     }
     KEY_OSCILLATION = {
-        PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP2,
+        PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP4,
     }
 
     AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT2]

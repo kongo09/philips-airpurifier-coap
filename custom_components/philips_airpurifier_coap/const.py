@@ -409,6 +409,11 @@ class PhilipsApi:
         SWITCH_ON: 45,
         SWITCH_OFF: 0,
     }
+    # Heater models (e.g., CX5120) use this map
+    OSCILLATION_MAP4 = {
+        SWITCH_ON: 17222,
+        SWITCH_OFF: 0,
+    }
 
     # the AC1715 seems to follow a new scheme, this should later be refactored
     NEW_NAME = "D01-03"

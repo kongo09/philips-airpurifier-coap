@@ -10,7 +10,7 @@
       "user": {
         "title": "Neuer Philips AirPurifier",
         "data": {
-          "host": "Hostname des Geräts oder IP-Adresse"
+          "host": "Hostname des Gerätes oder IP-Adresse"
         }
       },
       "confirm": {
@@ -18,7 +18,7 @@
       }
     },
     "error": {
-      "host": "Adresse des Geräts ist erforderlich",
+      "host": "Adresse des Gerätes ist erforderlich",
       "connect": "Verbindung zum Gerät nicht möglich"
     }
   },

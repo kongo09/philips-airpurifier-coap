@@ -1156,6 +1156,18 @@ class PhilipsAC3221(PhilipsAC3210):
     """AC3221."""
 
 
+class PhilipsAC2210(PhilipsAC3210):
+    """AC2210."""
+
+
+class PhilipsAC2220(PhilipsAC2210):
+    """AC2220."""
+
+
+class PhilipsAC2221(PhilipsAC2210):
+    """AC2221."""
+
+
 class PhilipsAC3259(PhilipsGenericFan):
     """AC3259."""
 
@@ -2090,6 +2102,9 @@ model_to_class = {
     FanModel.AC3039: PhilipsAC3039,
     FanModel.AC3055: PhilipsAC3055,
     FanModel.AC3059: PhilipsAC3059,
+    FanModel.AC2210: PhilipsAC2210,
+    FanModel.AC2220: PhilipsAC2220,
+    FanModel.AC2221: PhilipsAC2221,
     FanModel.AC3210: PhilipsAC3210,
     FanModel.AC3220: PhilipsAC3220,
     FanModel.AC3221: PhilipsAC3221,

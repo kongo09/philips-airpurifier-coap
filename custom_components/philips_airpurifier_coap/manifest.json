@@ -6,6 +6,9 @@
   "dependencies": ["frontend", "http"],
   "dhcp": [
     {
+      "macaddress": "6879C4*"
+    },
+    {
       "macaddress": "B0F893*"
     },
     {

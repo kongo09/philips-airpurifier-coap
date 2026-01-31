@@ -77,6 +77,9 @@ Note: Some of these models seem to have a newer firmware that does not allow loc
 - AC0951
 - AC1214
 - AC1715
+- AC2210
+- AC2220
+- AC2221
 - AC2729
 - AC2889
 - AC2936

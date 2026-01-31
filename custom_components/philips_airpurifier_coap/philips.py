@@ -784,6 +784,75 @@ class PhilipsAC1214(PhilipsGenericFan):
             return
 
 
+# this device seems similar to the AMF family
+class PhilipsAC22xx(PhilipsNew2GenericFan):
+    """AC22xx family."""
+
+    AVAILABLE_PRESET_MODES = {
+        PresetMode.AUTO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 0,
+        },
+        PresetMode.MEDIUM: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 19,
+        },
+        PresetMode.TURBO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 18,
+        },
+        PresetMode.SLEEP: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 17,
+        },
+    }
+    AVAILABLE_SPEEDS = {
+        PresetMode.SPEED_1: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 1,
+        },
+        PresetMode.SPEED_2: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 2,
+        },
+        PresetMode.SPEED_3: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 3,
+        },
+        PresetMode.SPEED_4: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 4,
+        },
+        PresetMode.SPEED_5: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 5,
+        },
+    }
+
+    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
+    AVAILABLE_SWITCHES = [
+        PhilipsApi.NEW2_CHILD_LOCK,
+        PhilipsApi.NEW2_BEEP,
+        PhilipsApi.NEW2_AUTO_PLUS_AI,
+    ]
+    AVAILABLE_SELECTS = [
+        PhilipsApi.NEW2_TIMER2,
+        PhilipsApi.NEW2_LAMP_MODE,
+        PhilipsApi.NEW2_PREFERRED_INDEX,
+    ]
+
+
+class PhilipsAC2210(PhilipsAC22xx):
+    """AC2210."""
+
+
+class PhilipsAC2220(PhilipsAC2210):
+    """AC2220."""
+
+
+class PhilipsAC2221(PhilipsAC2210):
+    """AC2221."""
+
 class PhilipsAC2729(PhilipsGenericFan):
     """AC2729."""
 
@@ -1084,65 +1153,7 @@ class PhilipsAC3059(PhilipsAC305x):
     """AC3059."""
 
 
-# this device seems similar to the AMF family
-class PhilipsAC32xx(PhilipsNew2GenericFan):
-    """AC32xx family."""
-
-    AVAILABLE_PRESET_MODES = {
-        PresetMode.AUTO: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_B: 0,
-        },
-        PresetMode.MEDIUM: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_B: 19,
-        },
-        PresetMode.TURBO: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_B: 18,
-        },
-        PresetMode.SLEEP: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_B: 17,
-        },
-    }
-    AVAILABLE_SPEEDS = {
-        PresetMode.SPEED_1: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_B: 1,
-        },
-        PresetMode.SPEED_2: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_B: 2,
-        },
-        PresetMode.SPEED_3: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_B: 3,
-        },
-        PresetMode.SPEED_4: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_B: 4,
-        },
-        PresetMode.SPEED_5: {
-            PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_B: 5,
-        },
-    }
-
-    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
-    AVAILABLE_SWITCHES = [
-        PhilipsApi.NEW2_CHILD_LOCK,
-        PhilipsApi.NEW2_BEEP,
-        PhilipsApi.NEW2_AUTO_PLUS_AI,
-    ]
-    AVAILABLE_SELECTS = [
-        PhilipsApi.NEW2_TIMER2,
-        PhilipsApi.NEW2_LAMP_MODE,
-        PhilipsApi.NEW2_PREFERRED_INDEX,
-    ]
-
-
-class PhilipsAC3210(PhilipsAC32xx):
+class PhilipsAC3210(PhilipsAC22xx):
     """AC3210."""
 
     AVAILABLE_SELECTS = [PhilipsApi.NEW_PREFERRED_INDEX]
@@ -1521,7 +1532,7 @@ class PhilipsAC385886(PhilipsAC385x51):
     """AC3858/86."""
 
 
-class PhilipsAC4220(PhilipsAC32xx):
+class PhilipsAC4220(PhilipsAC22xx):
     """AC4220."""
 
     AVAILABLE_SELECTS = [PhilipsApi.NEW2_GAS_PREFERRED_INDEX]
@@ -2079,6 +2090,9 @@ model_to_class = {
     FanModel.AC0951: PhilipsAC0951,
     FanModel.AC1214: PhilipsAC1214,
     FanModel.AC1715: PhilipsAC1715,
+    FanModel.AC2210: PhilipsAC2210,
+    FanModel.AC2220: PhilipsAC2220,
+    FanModel.AC2221: PhilipsAC2221,
     FanModel.AC2729: PhilipsAC2729,
     FanModel.AC2889: PhilipsAC2889,
     FanModel.AC2936: PhilipsAC2936,

@@ -10,7 +10,7 @@
       "user": {
         "title": "Neuer Philips AirPurifier",
         "data": {
-          "host": "Host Name des Geräts oder IP Addresse"
+          "host": "Hostname des Gerätes oder IP-Adresse"
         }
       },
       "confirm": {
@@ -18,7 +18,7 @@
       }
     },
     "error": {
-      "host": "Adress des Geräts ist erforderlich",
+      "host": "Adresse des Gerätes ist erforderlich",
       "connect": "Verbindung zum Gerät nicht möglich"
     }
   },
@@ -33,30 +33,30 @@
               "auto_general": "Auto/Allgemein",
               "auto_plus": "Auto+",
               "bacteria": "Bakterien",
-              "allergen": "Allergie",
+              "allergen": "Allergene (IAI)",
               "gentle": "Sanft",
               "night": "Nacht",
-              "sleep": "Schlaf",
-              "sleep_allergy": "Schlaf/Allergie",
+              "sleep": "Ruhemodus",
+              "sleep_allergy": "Allergie-Ruhemodus",
               "turbo": "Turbo",
               "medium": "Medium",
-              "gas": "Gas",
+              "gas": "Gaskonzentration",
               "pollution": "Verschmutzung",
               "low": "Niedrig",
               "high": "Hoch",
               "ventilation": "Durchlüftung",
               "natural": "Natürlich",
-              "speed_1": "Speed 1",
-              "gentle_speed_1": "Sanft/Speed 1",
-              "speed_2": "Speed 2",
-              "speed_3": "Speed 3",
-              "speed_4": "Speed 4",
-              "speed_5": "Speed 5",
-              "speed_6": "Speed 6",
-              "speed_7": "Speed 7",
-              "speed_8": "Speed 8",
-              "speed_9": "Speed 9",
-              "speed_10": "Speed 10"
+              "speed_1": "Geschwindigkeit 1",
+              "gentle_speed_1": "Sanft/Geschwindigkeit 1",
+              "speed_2": "Geschwindigkeit 2",
+              "speed_3": "Geschwindigkeit 3",
+              "speed_4": "Geschwindigkeit 4",
+              "speed_5": "Geschwindigkeit 5",
+              "speed_6": "Geschwindigkeit 6",
+              "speed_7": "Geschwindigkeit 7",
+              "speed_8": "Geschwindigkeit 8",
+              "speed_9": "Geschwindigkeit 9",
+              "speed_10": "Geschwindigkeit 10"
             }
           }
         }
@@ -74,15 +74,15 @@
               "purification": "Reinigung",
               "purification_humidification": "Reinigung und Befeuchtung",
               "auto": "Auto",
-              "allergen": "Allergie",
-              "sleep": "Schlaf",
+              "allergen": "Allergene (IAI)",
+              "sleep": "Ruhemodus",
               "night": "Nacht",
               "turbo": "Turbo",
               "high": "Hoch",
               "medium": "Medium",
-              "speed_1": "Speed 1",
-              "speed_2": "Speed 2",
-              "speed_3": "Speed 3"
+              "speed_1": "Geschwindigkeit 1",
+              "speed_2": "Geschwindigkeit 2",
+              "speed_3": "Geschwindigkeit 3"
             }
           },
           "action": {
@@ -149,13 +149,13 @@
     },
     "sensor": {
       "indoor_allergen_index": {
-        "name": "Innenraum Allergie Index"
+        "name": "Innenraum-Allergenindex"
       },
       "pm25": {
         "name": "PM2.5"
       },
       "gas": {
-        "name": "Gas"
+        "name": "Gaskonzentration"
       },
       "total_volatile_organic_compounds": {
         "name": "Flüchtige organische Verbindungen insgesamt"
@@ -179,16 +179,16 @@
         "name": "Vorfilter"
       },
       "hepa_filter": {
-        "name": "HEPA Filter"
+        "name": "HEPA-Filter"
       },
       "active_carbon_filter": {
-        "name": "Aktivkohle Filter"
+        "name": "Aktivkohle-Filter"
       },
       "wick": {
         "name": "Befeuchtungselement"
       },
       "nanoprotect_filter": {
-        "name": "NanoProtect Filter"
+        "name": "NanoProtect-Filter"
       }
     },
     "switch": {
@@ -199,16 +199,16 @@
         "name": "Piepton"
       },
       "standby_sensors": {
-        "name": "Standby Sensoren"
+        "name": "Standby-Sensoren"
       },
       "auto_plus": {
         "name": "Auto Plus"
       },
       "auto_quickdry_mode": {
-        "name": "Auto Schnelltrocknen Modus"
+        "name": "Automatischer QuickDry-Modus"
       },
       "quickdry_mode": {
-        "name": "Schnelltrocken Modus"
+        "name": "Manueller QuickDry-Modus"
       }
     },
     "light": {
@@ -231,16 +231,16 @@
         }
       },
       "lamp_mode": {
-        "name": "Lampen Modus",
+        "name": "Lampen-Modus",
         "state": {
           "off": "Aus",
           "air_quality": "Luftqualität",
-          "ambient_light_mode": "Ambiente",
+          "ambient_light_mode": "Umgebungslichtmodus",
           "humidity": "Lufteuchtigkeit"
         }
       },
       "ambient_light_mode": {
-        "name": "Ambiente Modus",
+        "name": "Umgebungslichtmodus",
         "state": {
           "off": "Aus",
           "warm": "Warm",
@@ -270,7 +270,7 @@
         "name": "Oszillation"
       },
       "target_temp": {
-        "name": "Ziel Temperature"
+        "name": "Zieltemperatur"
       }
     }
   }

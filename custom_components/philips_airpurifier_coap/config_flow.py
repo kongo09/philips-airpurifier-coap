@@ -5,6 +5,13 @@ import logging
 import re
 from typing import Any
 
+# Set AIOCOAP to use simple6 transport by default to support IPv4-only hosts
+# see https://github.com/kongo09/philips-airpurifier-coap/issues/256
+import os
+
+os.environ.setdefault("AIOCOAP_CLIENT_TRANSPORT", "simple6")
+os.environ.setdefault("AIOCOAP_SERVER_TRANSPORT", "simple6")
+
 from aioairctrl import CoAPClient
 import voluptuous as vol
 

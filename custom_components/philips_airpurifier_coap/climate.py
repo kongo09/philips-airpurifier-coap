@@ -12,6 +12,7 @@ from homeassistant.components.climate import (
     ClimateEntity,
     ClimateEntityFeature,
     HVACMode,
+    HVACAction,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
@@ -48,6 +49,7 @@ async def async_setup_entry(
         available_heaters = []
         available_preset_modes = {}
         available_oscillation = {}
+        available_heating_actions = {}
 
         for cls in reversed(model_class.__mro__):
             # Get the available heaters from the base classes
@@ -64,6 +66,11 @@ async def async_setup_entry(
             if cls_available_oscillation:
                 available_oscillation.update(cls_available_oscillation)
 
+            # Get the available heating actions from the base classes
+            cls_available_heating_actions = getattr(cls, "KEY_HEATING_ACTION", {})
+            if cls_available_heating_actions:
+                available_heating_actions.update(cls_available_heating_actions)
+
         heaters = [
             PhilipsHeater(
                 hass,
@@ -72,6 +79,7 @@ async def async_setup_entry(
                 heater,
                 available_preset_modes,
                 available_oscillation,
+                available_heating_actions,
             )
             for heater in HEATER_TYPES
             if heater in available_heaters
@@ -104,6 +112,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         heater: str,
         available_preset_modes: list[str],
         available_oscillation: dict[str, dict[str, Any]],
+        available_heating_actions: dict[str, dict[str, Any]],
     ) -> None:
         """Initialize the select."""
 
@@ -145,10 +154,28 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
             self._attr_supported_features |= ClimateEntityFeature.SWING_MODE
             self._attr_swing_modes = [SWING_ON, SWING_OFF]
 
+        # some devices report heating action
+        if available_heating_actions:
+            self._heating_action_key = list(available_heating_actions.keys())[0]
+            self._heating_action_map = available_heating_actions[
+                self._heating_action_key
+            ]
+
     @property
     def target_temperature(self) -> int | None:
         """Return the target temperature."""
         return self._device_status.get(self._temperature_target_key)
+
+    @property
+    def hvac_action(self) -> HVACAction | None:
+        """Return the current HVAC action."""
+        if not self.is_on:
+            return HVACAction.OFF
+
+        value = self._device_status.get(self._heating_action_key)
+        if value in self._heating_action_map:
+            return self._heating_action_map[value]
+        return HVACAction.HEATING
 
     @property
     def hvac_mode(self) -> HVACMode | None:

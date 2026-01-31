@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 
+from homeassistant.components.climate import HVACAction
 from homeassistant.components.number import NumberDeviceClass
 from homeassistant.components.sensor import (
     ATTR_STATE_CLASS,
@@ -247,6 +248,17 @@ class FanFunction(StrEnum):
     CIRCULATION = "circulation"
 
 
+class HeatingAction(StrEnum):
+    """The heating action of the heater."""
+
+    STRONG = "strong"
+    MEDIUM = "medium"
+    LOW = "low"
+    IDLE = "idle"
+    FAN = "fan"
+    OFF = "off"
+
+
 class FanAttributes(StrEnum):
     """The attributes of a fan."""
 
@@ -312,6 +324,7 @@ class FanAttributes(StrEnum):
     SWING = "swing"
     TURBO = "turbo"
     OSCILLATION = "oscillation"
+    HEATING_ACTION = "heating_action"
     VALUE_LIST = "value_list"
     ON = "on"
     OFF = "off"
@@ -474,6 +487,7 @@ class PhilipsApi:
     NEW2_QUICKDRY_MODE = "D03139"
     NEW2_REMAINING_TIME = "D03211"
     NEW2_TARGET_TEMP = "D0310E"
+    NEW2_HEATING_ACTION = "D0313F"
     NEW2_STANDBY_SENSORS = "D03134"
     NEW2_AUTO_PLUS_AI = "D03180"
     NEW2_PREFERRED_INDEX = "D0312A#1"
@@ -529,6 +543,20 @@ class PhilipsApi:
         1: FanFunction.FAN,
         2: FanFunction.CIRCULATION,
         3: FanFunction.HEATING,
+    }
+    HEATING_ACTION_MAP = {
+        65: HVACAction.HEATING,
+        67: HVACAction.HEATING,
+        68: HVACAction.HEATING,
+        -16: HVACAction.IDLE,
+        0: HVACAction.FAN,
+    }
+    HEATING_ACTION_MAP2 = {
+        65: HeatingAction.STRONG,
+        67: HeatingAction.MEDIUM,
+        68: HeatingAction.LOW,
+        -16: HeatingAction.IDLE,
+        0: HeatingAction.FAN,
     }
     TIMER_MAP = {
         0: "Off",

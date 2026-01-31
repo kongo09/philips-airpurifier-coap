@@ -853,6 +853,7 @@ class PhilipsAC2220(PhilipsAC2210):
 class PhilipsAC2221(PhilipsAC2210):
     """AC2221."""
 
+
 class PhilipsAC2729(PhilipsGenericFan):
     """AC2729."""
 
@@ -1023,8 +1024,8 @@ class PhilipsAC2959(PhilipsAC29xx):
     """AC2959."""
 
 
-class PhilipsAC303x(PhilipsGenericFan):
-    """AC30xx family."""
+class PhilipsAC3021(PhilipsGenericFan):
+    """AC3021."""
 
     AVAILABLE_PRESET_MODES = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "AG"},
@@ -1078,6 +1079,11 @@ class PhilipsAC303x(PhilipsGenericFan):
         },
     }
     AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
+
+
+class PhilipsAC303x(PhilipsAC3021):
+    """AC30xx family."""
+
     AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
 
 
@@ -2099,6 +2105,7 @@ model_to_class = {
     FanModel.AC2939: PhilipsAC2939,
     FanModel.AC2958: PhilipsAC2958,
     FanModel.AC2959: PhilipsAC2959,
+    FanModel.AC3021: PhilipsAC3021,
     FanModel.AC3033: PhilipsAC3033,
     FanModel.AC3036: PhilipsAC3036,
     FanModel.AC3039: PhilipsAC3039,

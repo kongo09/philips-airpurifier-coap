@@ -38,6 +38,7 @@
               "night": "Night",
               "sleep": "Sleep",
               "sleep_allergy": "Sleep/Allergy",
+              "allergy_sleep": "Allergy/Sleep",
               "turbo": "Turbo",
               "medium": "Medium",
               "gas": "Gas",

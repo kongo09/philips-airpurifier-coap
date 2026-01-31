@@ -192,7 +192,8 @@ class PresetMode:
     GENTLE = "gentle"
     NIGHT = "night"
     SLEEP = "sleep"
-    SLEEP_ALLERGY = "allergy_sleep"
+    SLEEP_ALLERGY = "sleep_allergy"
+    ALLERGY_SLEEP = "allergy_sleep"
     TURBO = "turbo"
     MEDIUM = "medium"
     GAS = "gas"
@@ -223,6 +224,7 @@ class PresetMode:
         NIGHT: "pap:sleep_mode",
         SLEEP: "pap:sleep_mode",
         SLEEP_ALLERGY: "pap:sleep_mode",
+        ALLERGY_SLEEP: "pap:sleep_mode",
         TURBO: "pap:speed_3",
         MEDIUM: "pap:speed_2",
         GAS: "pap:gas",

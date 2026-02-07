@@ -307,6 +307,9 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
         """Set the preset mode of the fan."""
         # the fan uses the preset modes as collected from the classes
 
+        # Resolve alias if exists
+        preset_mode = PresetMode.ALIASES.get(preset_mode, preset_mode)
+
         status_pattern = self._available_preset_modes.get(preset_mode)
         if status_pattern:
             await self.coordinator.client.set_control_values(data=status_pattern)
@@ -717,6 +720,9 @@ class PhilipsAC1214(PhilipsGenericFan):
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set the preset mode of the fan."""
         _LOGGER.debug("AC1214 async_set_preset_mode is called with: %s", preset_mode)
+
+        # Resolve alias if exists
+        preset_mode = PresetMode.ALIASES.get(preset_mode, preset_mode)
 
         # the AC1214 doesn't like it if we set a preset mode to switch on the device,
         # so it needs to be done in sequence

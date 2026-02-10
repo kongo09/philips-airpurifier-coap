@@ -150,7 +150,7 @@
     },
     "sensor": {
       "indoor_allergen_index": {
-        "name": "Innenraum-Allergenindex"
+        "name": "Allergene (IAI)"
       },
       "pm25": {
         "name": "PM2.5"
@@ -251,11 +251,11 @@
         }
       },
       "preferred_index": {
-        "name": "Vorzugsindex",
+        "name": "Bevorzugter Index",
         "state": {
-          "indoor_allergen_index": "Innenraum Allergie Index",
+          "indoor_allergen_index": "Allergene (IAI)",
           "pm25": "PM2.5",
-          "gas": "Gas"
+          "gas": "Gaskonzentration"
         }
       },
       "timer": {

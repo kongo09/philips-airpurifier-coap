@@ -2,12 +2,12 @@
 
 import ipaddress
 import logging
-import re
-from typing import Any
 
 # Set AIOCOAP to use simple6 transport by default to support IPv4-only hosts
 # see https://github.com/kongo09/philips-airpurifier-coap/issues/256
 import os
+import re
+from typing import Any
 
 os.environ.setdefault("AIOCOAP_CLIENT_TRANSPORT", "simple6")
 os.environ.setdefault("AIOCOAP_SERVER_TRANSPORT", "simple6")
@@ -16,8 +16,8 @@ from aioairctrl import CoAPClient
 import voluptuous as vol
 
 from homeassistant import config_entries, exceptions
+from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.const import CONF_HOST, CONF_NAME
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 from homeassistant.util.timeout import TimeoutManager
@@ -47,10 +47,10 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     def __init__(self) -> None:
         """Initialize."""
-        self._host: str = None
+        self._host: str | None
         self._model: Any = None
         self._name: Any = None
-        self._device_id: str = None
+        self._device_id: str | None
         self._wifi_version: Any = None
         self._status: Any = None
 
@@ -60,7 +60,9 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             {vol.Required(CONF_HOST, default=user_input.get(CONF_HOST, "")): cv.string}
         )
 
-    async def async_step_dhcp(self, discovery_info: DhcpServiceInfo) -> FlowResult:
+    async def async_step_dhcp(
+        self, discovery_info: DhcpServiceInfo
+    ) -> ConfigFlowResult:
         """Handle initial step of auto discovery flow."""
         _LOGGER.debug("async_step_dhcp: called, found: %s", discovery_info)
 
@@ -161,8 +163,8 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return await self.async_step_confirm()
 
     async def async_step_confirm(
-        self, user_input: dict[str, str] | None = None
-    ) -> FlowResult:
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         """Confirm the dhcp discovered data."""
         _LOGGER.debug("async_step_confirm called with user_input: %s", user_input)
 
@@ -193,8 +195,8 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_user(
-        self, user_input: dict[str, str] | None = None
-    ) -> FlowResult:
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         """Handle initial step of user config flow."""
 
         errors = {}

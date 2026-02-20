@@ -380,9 +380,8 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
             status_pattern = self._available_speeds.get(speed)
             if status_pattern:
                 await self.coordinator.client.set_control_values(data=status_pattern)
-
-            self._device_status.update(status_pattern)
-            self._handle_coordinator_update()
+                self._device_status.update(status_pattern)
+                self._handle_coordinator_update()
 
     @property
     def icon(self) -> str:
@@ -711,7 +710,8 @@ class PhilipsAC1214(PhilipsGenericFan):
         """Set the preset mode to Allergen."""
         _LOGGER.debug("AC1214 switches to mode 'A' first")
         a_status_pattern = self._available_preset_modes.get(PresetMode.ALLERGEN)
-        await self.coordinator.client.set_control_values(data=a_status_pattern)
+        if a_status_pattern is not None:
+            await self.coordinator.client.set_control_values(data=a_status_pattern)
         await asyncio.sleep(1)
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
@@ -735,8 +735,9 @@ class PhilipsAC1214(PhilipsGenericFan):
             status_pattern = self._available_preset_modes.get(preset_mode)
             _LOGGER.debug("this corresponds to status pattern: %s", status_pattern)
             if (
-                status_pattern
+                status_pattern is not None
                 and status_pattern.get(PhilipsApi.MODE) != "A"
+                and current_pattern is not None
                 and current_pattern.get(PhilipsApi.MODE) != "M"
             ):
                 await self.async_set_a()
@@ -760,7 +761,7 @@ class PhilipsAC1214(PhilipsGenericFan):
         current_pattern = self._available_preset_modes.get(self.preset_mode)
         _LOGGER.debug("AC1214 is currently on mode: %s", current_pattern)
         if percentage == 0:
-            _LOGGER.debug("AC1214 uses 0% to switch off")
+            _LOGGER.debug("AC1214 uses 0%% to switch off")
             await self.async_turn_off()
         else:
             # the AC1214 also doesn't seem to like switching to mode 'M' without cycling through mode 'A'
@@ -769,8 +770,9 @@ class PhilipsAC1214(PhilipsGenericFan):
             status_pattern = self._available_speeds.get(speed)
             _LOGGER.debug("this corresponds to status pattern: %s", status_pattern)
             if (
-                status_pattern
+                status_pattern is not None
                 and status_pattern.get(PhilipsApi.MODE) != "A"
+                and current_pattern is not None
                 and current_pattern.get(PhilipsApi.MODE) != "M"
             ):
                 await self.async_set_a()

@@ -70,7 +70,7 @@ class PhilipsEntity(Entity):
                 (CONNECTION_NETWORK_MAC, self.config_entry_data.device_information.mac)
             }
             if self.config_entry_data.device_information.mac is not None
-            else None,
+            else set(),
         )
 
     @property

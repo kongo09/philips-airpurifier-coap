@@ -216,6 +216,9 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set the fan mode of the heater."""
+        # Resolve alias if exists
+        preset_mode = PresetMode.ALIASES.get(preset_mode, preset_mode)
+
         if preset_mode not in self._attr_preset_modes:
             return
 

@@ -205,6 +205,11 @@ class PresetMode:
     VENTILATION = "ventilation"
     NATURAL = "natural"
 
+    # Aliases for backwards compatibility
+    ALIASES = {
+        "allergy_sleep": "sleep_allergy",
+    }
+
     ICON_MAP = {
         SPEED_1: "pap:speed_1",
         SPEED_GENTLE_1: "pap:speed_1",

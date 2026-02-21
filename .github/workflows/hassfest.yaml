@@ -13,4 +13,4 @@ jobs:
       contents: read
     steps:
       - uses: "actions/checkout@v4"
-      - uses: home-assistant/actions/hassfest@master
+      - uses: kongo09/actions/hassfest@master

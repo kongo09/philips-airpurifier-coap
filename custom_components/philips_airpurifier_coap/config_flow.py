@@ -18,6 +18,7 @@ import voluptuous as vol
 from homeassistant import config_entries, exceptions
 from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.const import CONF_HOST, CONF_NAME
+from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 from homeassistant.util.timeout import TimeoutManager
@@ -44,6 +45,14 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle config flow for Philips AirPurifier."""
 
     VERSION = 1
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> config_entries.OptionsFlow:
+        """Create the options flow."""
+        return OptionsFlowHandler()
 
     def __init__(self) -> None:
         """Initialize."""
@@ -310,6 +319,78 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         # show the form to the user
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
+
+
+class OptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle options flow for Philips AirPurifier."""
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle options flow to change the device host address."""
+        errors = {}
+        current_host = self.config_entry.options.get(
+            CONF_HOST, self.config_entry.data[CONF_HOST]
+        )
+
+        if user_input is not None:
+            new_host = user_input[CONF_HOST]
+            if not host_valid(new_host):
+                errors[CONF_HOST] = "host"
+            else:
+                _LOGGER.debug("options flow: trying to connect to new host %s", new_host)
+                try:
+                    client = None
+                    timeout = TimeoutManager()
+
+                    async with timeout.async_timeout(30):
+                        client = await CoAPClient.create(new_host)
+                        _LOGGER.debug("options flow: got a valid client for host %s", new_host)
+
+                    async with timeout.async_timeout(30):
+                        status, _ = await client.get_status()
+                        _LOGGER.debug("options flow: got status from host %s", new_host)
+
+                    if client is not None:
+                        await client.shutdown()
+
+                    device_id = status[PhilipsApi.DEVICE_ID]
+                    _LOGGER.debug(
+                        "options flow: found device_id %s at %s, expected %s",
+                        device_id,
+                        new_host,
+                        self.config_entry.data[CONF_DEVICE_ID],
+                    )
+                    if device_id != self.config_entry.data[CONF_DEVICE_ID]:
+                        _LOGGER.warning(
+                            "options flow: device at %s has id %s, does not match configured device %s",
+                            new_host,
+                            device_id,
+                            self.config_entry.data[CONF_DEVICE_ID],
+                        )
+                        errors[CONF_HOST] = "different_device"
+                    else:
+                        _LOGGER.debug(
+                            "options flow: device confirmed, updating host to %s", new_host
+                        )
+                        return self.async_create_entry(
+                            title="", data={CONF_HOST: new_host}
+                        )
+
+                except TimeoutError:
+                    _LOGGER.warning("options flow: timeout connecting to host %s", new_host)
+                    errors[CONF_HOST] = "timeout"
+                except Exception as ex:
+                    _LOGGER.warning("options flow: failed to connect to host %s: %s", new_host, ex)
+                    errors[CONF_HOST] = "connect"
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {vol.Required(CONF_HOST, default=current_host): cv.string}
+            ),
+            errors=errors,
+        )
 
 
 class InvalidHost(exceptions.HomeAssistantError):

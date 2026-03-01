@@ -22,6 +22,22 @@
       "connect": "Cannot connect to device"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Reconfigure Philips AirPurifier",
+        "data": {
+          "host": "Device hostname or IP address"
+        }
+      }
+    },
+    "error": {
+      "host": "Device address is required",
+      "connect": "Cannot connect to device",
+      "timeout": "Timeout, cannot connect to device",
+      "different_device": "The device at this address is not the same as the configured device"
+    }
+  },
   "entity": {
     "fan": {
       "pap": {

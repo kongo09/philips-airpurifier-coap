@@ -7,7 +7,7 @@ from datetime import timedelta
 import logging
 from typing import Any, cast
 
-from homeassistant.components.sensor import ATTR_STATE_CLASS, SensorEntity
+from homeassistant.components.sensor import ATTR_STATE_CLASS, SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     ATTR_DEVICE_CLASS,
@@ -175,6 +175,7 @@ class PhilipsFilterSensor(PhilipsEntity, SensorEntity):
             else None
         )
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
+        self._attr_state_class = SensorStateClass.MEASUREMENT
 
         self._value_key = kind
         self._total_key = self._description[FanAttributes.TOTAL]

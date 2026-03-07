@@ -10,7 +10,8 @@
       "extensions": [
         "charliermarsh.ruff",
         "ms-python.python",
-        "ms-python.mypy-type-checker"
+        "ms-python.mypy-type-checker",
+        "anthropic.claude-code"
       ]
     }
   }

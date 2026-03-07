@@ -2,15 +2,12 @@ name: Validate with hassfest
 
 on:
   push:
+    branches: [master]
   pull_request:
-  schedule:
-    - cron: "0 0 * * *"
 
 jobs:
   validate:
-    runs-on: "ubuntu-latest"
-    permissions:
-      contents: read
+    runs-on: ubuntu-latest
     steps:
-      - uses: "actions/checkout@v4"
-      - uses: kongo09/actions/hassfest@master
+      - uses: actions/checkout@v4
+      - uses: home-assistant/actions/hassfest@master

@@ -1,0 +1,22 @@
+* text=auto
+
+# Python files
+*.py text eol=lf
+*.pyi text eol=lf
+
+# JSON and YAML
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# Shell scripts
+*.sh text eol=lf
+
+# SVG files
+*.svg text eol=lf
+
+# Markdown
+*.md text eol=lf
+
+# Documentation
+*.txt text eol=lf

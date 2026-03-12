@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import logging
+from collections.abc import Callable
 from typing import Any
 
 from homeassistant.components.climate import (
@@ -11,8 +11,8 @@ from homeassistant.components.climate import (
     SWING_ON,
     ClimateEntity,
     ClimateEntityFeature,
-    HVACMode,
     HVACAction,
+    HVACMode,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
@@ -157,9 +157,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         # some devices report heating action
         if available_heating_actions:
             self._heating_action_key = list(available_heating_actions.keys())[0]
-            self._heating_action_map = available_heating_actions[
-                self._heating_action_key
-            ]
+            self._heating_action_map = available_heating_actions[self._heating_action_key]
 
     @property
     def target_temperature(self) -> int | None:
@@ -253,10 +251,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
     @property
     def is_on(self) -> bool | None:
         """Return the device state."""
-        if (
-            self._device_status.get(self._power_key)
-            == self._description[FanAttributes.OFF]
-        ):
+        if self._device_status.get(self._power_key) == self._description[FanAttributes.OFF]:
             return False
 
         return True
@@ -286,8 +281,6 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         temperature = int(kwargs.get(ATTR_TEMPERATURE))
 
         target = max(self._attr_min_temp, min(temperature, self._attr_max_temp))
-        await self.coordinator.client.set_control_value(
-            self._temperature_target_key, target
-        )
+        await self.coordinator.client.set_control_value(self._temperature_target_key, target)
         self._device_status[self._temperature_target_key] = temperature
         self._handle_coordinator_update()

@@ -1,14 +1,13 @@
 """Module containing the Coordinator class to manage data requests from the Philips API."""
 
 import asyncio
-from asyncio.tasks import Task
-from collections.abc import Callable
 import contextlib
 import logging
+from asyncio.tasks import Task
+from collections.abc import Callable
 from typing import Any
 
 from aioairctrl import CoAPClient
-
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 
@@ -104,9 +103,7 @@ class Coordinator:
             _LOGGER.debug("finished first refresh for host %s", self.host)
 
         except Exception as ex:
-            _LOGGER.error(
-                "Config not ready, first refresh failed for host %s", self.host
-            )
+            _LOGGER.error("Config not ready, first refresh failed for host %s", self.host)
             raise ConfigEntryNotReady from ex
 
     @callback

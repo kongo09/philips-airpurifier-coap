@@ -3,16 +3,15 @@
 from __future__ import annotations
 
 import asyncio
-from functools import partial
-from ipaddress import IPv6Address, ip_address
 import json
 import logging
+from functools import partial
+from ipaddress import IPv6Address, ip_address
 from os import walk
 from pathlib import Path
 
 from aioairctrl import CoAPClient
 from getmac import get_mac_address
-
 from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.components.http.view import HomeAssistantView
@@ -75,9 +74,7 @@ class ListingView(HomeAssistantView):
 
     async def get(self, request, *args):
         """Call executor to avoid blocking I/O call to get list of used icons."""
-        return await self.hass.async_add_executor_job(
-            self.get_icons_list, self.iconpath
-        )
+        return await self.hass.async_add_executor_job(self.get_icons_list, self.iconpath)
 
     def get_icons_list(self, iconpath):
         """Handle GET request to provide a JSON list of the used icons."""
@@ -121,15 +118,11 @@ async def async_get_mac_address_from_host(hass: HomeAssistant, host: str) -> str
         ip_addr = ip_address(host)
     except ValueError:
         # that didn't work, so try a hostname
-        mac_address = await hass.async_add_executor_job(
-            partial(get_mac_address, hostname=host)
-        )
+        mac_address = await hass.async_add_executor_job(partial(get_mac_address, hostname=host))
     else:
         # it is an ip address, but it could be IPv4 or IPv6
         if ip_addr.version == 4:
-            mac_address = await hass.async_add_executor_job(
-                partial(get_mac_address, ip=host)
-            )
+            mac_address = await hass.async_add_executor_job(partial(get_mac_address, ip=host))
         else:
             ip_addr = IPv6Address(int(ip_addr))
             mac_address = await hass.async_add_executor_job(

@@ -1,15 +1,20 @@
-name: HACS validation
+name: HACS Action
+permissions:
+  contents: read
 
 on:
   push:
-    branches: [master]
   pull_request:
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
+  hacs:
+    name: HACS Action
+    runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/checkout@v4
-      - uses: hacs/action@main
+      - uses: "actions/checkout@v4"
+      - name: HACS Action
+        uses: "hacs/action@main"
         with:
-          category: integration
+          category: "integration"

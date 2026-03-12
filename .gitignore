@@ -3,3 +3,7 @@ logging.conf
 Philips-Airpurifier.code-workspace
 __pycache__
 .venv
+*.egg-info/
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/

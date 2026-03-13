@@ -237,10 +237,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         if swing_mode not in self._attr_swing_modes:
             return
 
-        if swing_mode == SWING_ON:
-            value = self._oscillation_modes[SWITCH_ON]
-        else:
-            value = self._oscillation_modes[SWITCH_OFF]
+        value = self._oscillation_modes[SWITCH_ON] if swing_mode == SWING_ON else self._oscillation_modes[SWITCH_OFF]
 
         await self.coordinator.client.set_control_value(self._oscillation_key, value)
         self._device_status[self._oscillation_key] = value
@@ -249,10 +246,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
     @property
     def is_on(self) -> bool | None:
         """Return the device state."""
-        if self._device_status.get(self._power_key) == self._description[FanAttributes.OFF]:
-            return False
-
-        return True
+        return self._device_status.get(self._power_key) != self._description[FanAttributes.OFF]
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the device."""

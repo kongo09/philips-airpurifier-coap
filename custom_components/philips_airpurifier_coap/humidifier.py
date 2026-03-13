@@ -188,10 +188,7 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
     @property
     def is_on(self) -> bool | None:
         """Return the device state independent of the humidifier function."""
-        if self._device_status.get(self._power_key) == self._description[FanAttributes.OFF]:
-            return False
-
-        return True
+        return self._device_status.get(self._power_key) != self._description[FanAttributes.OFF]
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the device."""

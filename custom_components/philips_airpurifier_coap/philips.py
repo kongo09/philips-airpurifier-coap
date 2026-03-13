@@ -6,7 +6,7 @@ import asyncio
 import logging
 from collections.abc import Callable, Mapping
 from datetime import timedelta
-from typing import Any
+from typing import Any, ClassVar
 
 from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
@@ -103,8 +103,8 @@ class PhilipsEntity(Entity):
 class PhilipsGenericControlBase(PhilipsEntity):
     """Class as basis for control entities of a Philips device."""
 
-    AVAILABLE_ATTRIBUTES = []
-    AVAILABLE_PRESET_MODES = {}
+    AVAILABLE_ATTRIBUTES: ClassVar = []
+    AVAILABLE_PRESET_MODES: ClassVar = {}
     REPLACE_PRESET = None
 
     _attr_name = None
@@ -183,12 +183,12 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
 
     CREATE_FAN = True
 
-    AVAILABLE_SPEEDS = {}
+    AVAILABLE_SPEEDS: ClassVar = {}
     REPLACE_SPEED = None
-    AVAILABLE_SWITCHES = []
-    AVAILABLE_LIGHTS = []
-    AVAILABLE_NUMBERS = []
-    AVAILABLE_BINARY_SENSORS = []
+    AVAILABLE_SWITCHES: ClassVar = []
+    AVAILABLE_LIGHTS: ClassVar = []
+    AVAILABLE_NUMBERS: ClassVar = []
+    AVAILABLE_BINARY_SENSORS: ClassVar = []
 
     KEY_PHILIPS_POWER = PhilipsApi.POWER
     STATE_POWER_ON = "1"
@@ -395,7 +395,7 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
 class PhilipsGenericFan(PhilipsGenericFanBase):
     """Class to manage a generic Philips fan."""
 
-    AVAILABLE_ATTRIBUTES = [
+    AVAILABLE_ATTRIBUTES: ClassVar = [
         # device information
         (FanAttributes.NAME, PhilipsApi.NAME),
         (FanAttributes.TYPE, PhilipsApi.TYPE),
@@ -421,16 +421,16 @@ class PhilipsGenericFan(PhilipsGenericFanBase):
         ),
     ]
 
-    AVAILABLE_LIGHTS = [PhilipsApi.DISPLAY_BACKLIGHT, PhilipsApi.LIGHT_BRIGHTNESS]
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.DISPLAY_BACKLIGHT, PhilipsApi.LIGHT_BRIGHTNESS]
 
-    AVAILABLE_SWITCHES = []
-    AVAILABLE_SELECTS = []
+    AVAILABLE_SWITCHES: ClassVar = []
+    AVAILABLE_SELECTS: ClassVar = []
 
 
 class PhilipsNewGenericFan(PhilipsGenericFanBase):
     """Class to manage a new generic fan."""
 
-    AVAILABLE_ATTRIBUTES = [
+    AVAILABLE_ATTRIBUTES: ClassVar = [
         # device information
         (FanAttributes.NAME, PhilipsApi.NEW_NAME),
         (FanAttributes.MODEL_ID, PhilipsApi.NEW_MODEL_ID),
@@ -453,9 +453,9 @@ class PhilipsNewGenericFan(PhilipsGenericFanBase):
         ),
     ]
 
-    AVAILABLE_LIGHTS = []
-    AVAILABLE_SWITCHES = []
-    AVAILABLE_SELECTS = [PhilipsApi.NEW_PREFERRED_INDEX]
+    AVAILABLE_LIGHTS: ClassVar = []
+    AVAILABLE_SWITCHES: ClassVar = []
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW_PREFERRED_INDEX]
 
     KEY_PHILIPS_POWER = PhilipsApi.NEW_POWER
     STATE_POWER_ON = "ON"
@@ -465,7 +465,7 @@ class PhilipsNewGenericFan(PhilipsGenericFanBase):
 class PhilipsNew2GenericFan(PhilipsGenericFanBase):
     """Class to manage another new generic fan."""
 
-    AVAILABLE_ATTRIBUTES = [
+    AVAILABLE_ATTRIBUTES: ClassVar = [
         # device information
         (FanAttributes.NAME, PhilipsApi.NEW2_NAME),
         (FanAttributes.MODEL_ID, PhilipsApi.NEW2_MODEL_ID),
@@ -488,9 +488,9 @@ class PhilipsNew2GenericFan(PhilipsGenericFanBase):
         ),
     ]
 
-    AVAILABLE_LIGHTS = []
-    AVAILABLE_SWITCHES = []
-    AVAILABLE_SELECTS = []
+    AVAILABLE_LIGHTS: ClassVar = []
+    AVAILABLE_SWITCHES: ClassVar = []
+    AVAILABLE_SELECTS: ClassVar = []
 
     KEY_PHILIPS_POWER = PhilipsApi.NEW2_POWER
     STATE_POWER_ON = 1
@@ -507,7 +507,7 @@ class PhilipsNew2GenericFan(PhilipsGenericFanBase):
 class PhilipsAC085011(PhilipsNewGenericFan):
     """AC0850/11 with firmware AWS_Philips_AIR."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW_POWER: "ON",
             PhilipsApi.NEW_MODE: "Auto General",
@@ -515,18 +515,18 @@ class PhilipsAC085011(PhilipsNewGenericFan):
         PresetMode.TURBO: {PhilipsApi.NEW_POWER: "ON", PhilipsApi.NEW_MODE: "Turbo"},
         PresetMode.SLEEP: {PhilipsApi.NEW_POWER: "ON", PhilipsApi.NEW_MODE: "Sleep"},
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {PhilipsApi.NEW_POWER: "ON", PhilipsApi.NEW_MODE: "Sleep"},
         PresetMode.TURBO: {PhilipsApi.NEW_POWER: "ON", PhilipsApi.NEW_MODE: "Turbo"},
     }
     # the prefilter data is present but doesn't change for this device, so let's take it out
-    UNAVAILABLE_FILTERS = [PhilipsApi.FILTER_NANOPROTECT_PREFILTER]
+    UNAVAILABLE_FILTERS: ClassVar = [PhilipsApi.FILTER_NANOPROTECT_PREFILTER]
 
 
 class PhilipsAC085011C(PhilipsNew2GenericFan):
     """AC0850/11 with firmware AWS_Philips_AIR_Combo."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
@@ -534,12 +534,12 @@ class PhilipsAC085011C(PhilipsNew2GenericFan):
         PresetMode.TURBO: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 18},
         PresetMode.SLEEP: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 17},
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 17},
         PresetMode.TURBO: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 18},
     }
     # the prefilter data is present but doesn't change for this device, so let's take it out
-    UNAVAILABLE_FILTERS = [PhilipsApi.FILTER_NANOPROTECT_PREFILTER]
+    UNAVAILABLE_FILTERS: ClassVar = [PhilipsApi.FILTER_NANOPROTECT_PREFILTER]
 
 
 class PhilipsAC085020(PhilipsAC085011):
@@ -585,7 +585,7 @@ class PhilipsAC085085(PhilipsAC085011):
 class PhilipsAC0950(PhilipsNew2GenericFan):
     """AC0950."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
@@ -607,7 +607,7 @@ class PhilipsAC0950(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_C: 1,
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 17,
@@ -625,11 +625,11 @@ class PhilipsAC0950(PhilipsNew2GenericFan):
         },
     }
     # the prefilter data is present but doesn't change for this device, so let's take it out
-    UNAVAILABLE_FILTERS = [PhilipsApi.FILTER_NANOPROTECT_PREFILTER]
+    UNAVAILABLE_FILTERS: ClassVar = [PhilipsApi.FILTER_NANOPROTECT_PREFILTER]
 
-    AVAILABLE_SWITCHES = [PhilipsApi.NEW2_CHILD_LOCK, PhilipsApi.NEW2_BEEP]
-    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
-    AVAILABLE_SELECTS = [PhilipsApi.NEW2_GAS_PREFERRED_INDEX, PhilipsApi.NEW2_TIMER2]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.NEW2_CHILD_LOCK, PhilipsApi.NEW2_BEEP]
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_GAS_PREFERRED_INDEX, PhilipsApi.NEW2_TIMER2]
 
 
 class PhilipsAC0951(PhilipsAC0950):
@@ -640,7 +640,7 @@ class PhilipsAC0951(PhilipsAC0950):
 class PhilipsAC1715(PhilipsNewGenericFan):
     """AC1715."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW_POWER: "ON",
             PhilipsApi.NEW_MODE: "Auto General",
@@ -656,7 +656,7 @@ class PhilipsAC1715(PhilipsNewGenericFan):
         PresetMode.TURBO: {PhilipsApi.NEW_POWER: "ON", PhilipsApi.NEW_MODE: "Turbo"},
         PresetMode.SLEEP: {PhilipsApi.NEW_POWER: "ON", PhilipsApi.NEW_MODE: "Sleep"},
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {PhilipsApi.NEW_POWER: "ON", PhilipsApi.NEW_MODE: "Sleep"},
         PresetMode.SPEED_1: {
             PhilipsApi.NEW_POWER: "ON",
@@ -668,7 +668,7 @@ class PhilipsAC1715(PhilipsNewGenericFan):
         },
         PresetMode.TURBO: {PhilipsApi.NEW_POWER: "ON", PhilipsApi.NEW_MODE: "Turbo"},
     }
-    AVAILABLE_LIGHTS = [PhilipsApi.NEW_DISPLAY_BACKLIGHT]
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW_DISPLAY_BACKLIGHT]
 
 
 class PhilipsAC1214(PhilipsGenericFan):
@@ -676,7 +676,7 @@ class PhilipsAC1214(PhilipsGenericFan):
 
     # the AC1214 doesn't seem to like a power on call when the mode or speed is set,
     # so this needs to be handled separately
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.MODE: "P"},
         PresetMode.ALLERGEN: {PhilipsApi.MODE: "A"},
         # make speeds available as preset
@@ -686,15 +686,15 @@ class PhilipsAC1214(PhilipsGenericFan):
         PresetMode.SPEED_3: {PhilipsApi.MODE: "M", PhilipsApi.SPEED: "3"},
         PresetMode.TURBO: {PhilipsApi.MODE: "M", PhilipsApi.SPEED: "t"},
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.NIGHT: {PhilipsApi.MODE: "N"},
         PresetMode.SPEED_1: {PhilipsApi.MODE: "M", PhilipsApi.SPEED: "1"},
         PresetMode.SPEED_2: {PhilipsApi.MODE: "M", PhilipsApi.SPEED: "2"},
         PresetMode.SPEED_3: {PhilipsApi.MODE: "M", PhilipsApi.SPEED: "3"},
         PresetMode.TURBO: {PhilipsApi.MODE: "M", PhilipsApi.SPEED: "t"},
     }
-    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
-    AVAILABLE_SELECTS = [PhilipsApi.PREFERRED_INDEX]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.CHILD_LOCK]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.PREFERRED_INDEX]
 
     async def async_set_a(self) -> None:
         """Set the preset mode to Allergen."""
@@ -799,7 +799,7 @@ class PhilipsAC1214(PhilipsGenericFan):
 class PhilipsAC22xx(PhilipsNew2GenericFan):
     """AC22xx family."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
@@ -817,7 +817,7 @@ class PhilipsAC22xx(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_B: 17,
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SPEED_1: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 1,
@@ -840,13 +840,13 @@ class PhilipsAC22xx(PhilipsNew2GenericFan):
         },
     }
 
-    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
-    AVAILABLE_SWITCHES = [
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
+    AVAILABLE_SWITCHES: ClassVar = [
         PhilipsApi.NEW2_CHILD_LOCK,
         PhilipsApi.NEW2_BEEP,
         PhilipsApi.NEW2_AUTO_PLUS_AI,
     ]
-    AVAILABLE_SELECTS = [
+    AVAILABLE_SELECTS: ClassVar = [
         PhilipsApi.NEW2_TIMER2,
         PhilipsApi.NEW2_LAMP_MODE,
         PhilipsApi.NEW2_PREFERRED_INDEX,
@@ -868,7 +868,7 @@ class PhilipsAC2221(PhilipsAC2210):
 class PhilipsAC2729(PhilipsGenericFan):
     """AC2729."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "P"},
         PresetMode.ALLERGEN: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "A"},
         # make speeds available as preset
@@ -898,7 +898,7 @@ class PhilipsAC2729(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.NIGHT: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "S",
@@ -925,10 +925,10 @@ class PhilipsAC2729(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
-    AVAILABLE_SELECTS = [PhilipsApi.PREFERRED_INDEX]
-    AVAILABLE_HUMIDIFIERS = [PhilipsApi.HUMIDITY_TARGET]
-    AVAILABLE_BINARY_SENSORS = [PhilipsApi.ERROR_CODE]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.CHILD_LOCK]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.PREFERRED_INDEX]
+    AVAILABLE_HUMIDIFIERS: ClassVar = [PhilipsApi.HUMIDITY_TARGET]
+    AVAILABLE_BINARY_SENSORS: ClassVar = [PhilipsApi.ERROR_CODE]
 
     # only for experimental purposes
     # AVAILABLE_HEATERS = [PhilipsApi.NEW2_TARGET_TEMP]
@@ -940,7 +940,7 @@ class PhilipsAC2729(PhilipsGenericFan):
 class PhilipsAC2889(PhilipsGenericFan):
     """AC2889."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "P"},
         PresetMode.ALLERGEN: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "A"},
         PresetMode.BACTERIA: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "B"},
@@ -971,7 +971,7 @@ class PhilipsAC2889(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "M",
@@ -998,25 +998,25 @@ class PhilipsAC2889(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SELECTS = [PhilipsApi.PREFERRED_INDEX]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.PREFERRED_INDEX]
 
 
 class PhilipsAC29xx(PhilipsGenericFan):
     """AC29xx family."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "AG"},
         PresetMode.SLEEP: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "S"},
         PresetMode.GENTLE: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "GT"},
         PresetMode.TURBO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "T"},
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "S"},
         PresetMode.GENTLE: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "GT"},
         PresetMode.TURBO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "T"},
     }
-    AVAILABLE_SELECTS = [PhilipsApi.PREFERRED_INDEX]
-    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.PREFERRED_INDEX]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.CHILD_LOCK]
 
 
 class PhilipsAC2936(PhilipsAC29xx):
@@ -1038,7 +1038,7 @@ class PhilipsAC2959(PhilipsAC29xx):
 class PhilipsAC3021(PhilipsGenericFan):
     """AC3021."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "AG"},
         # make speeds available as preset
         PresetMode.SLEEP: {
@@ -1067,7 +1067,7 @@ class PhilipsAC3021(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "S",
@@ -1089,13 +1089,13 @@ class PhilipsAC3021(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.GAS_PREFERRED_INDEX]
 
 
 class PhilipsAC303x(PhilipsAC3021):
     """AC30xx family."""
 
-    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.CHILD_LOCK]
 
 
 class PhilipsAC3033(PhilipsAC303x):
@@ -1113,7 +1113,7 @@ class PhilipsAC3039(PhilipsAC303x):
 class PhilipsAC305x(PhilipsGenericFan):
     """AC305x family."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "AG"},
         # make speeds available as preset
         PresetMode.SLEEP: {
@@ -1137,7 +1137,7 @@ class PhilipsAC305x(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "S",
@@ -1159,7 +1159,7 @@ class PhilipsAC305x(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.GAS_PREFERRED_INDEX]
 
 
 class PhilipsAC3055(PhilipsAC305x):
@@ -1173,7 +1173,7 @@ class PhilipsAC3059(PhilipsAC305x):
 class PhilipsAC3210(PhilipsAC22xx):
     """AC3210."""
 
-    AVAILABLE_SELECTS = [PhilipsApi.NEW_PREFERRED_INDEX]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW_PREFERRED_INDEX]
 
 
 class PhilipsAC3220(PhilipsAC3210):
@@ -1187,7 +1187,7 @@ class PhilipsAC3221(PhilipsAC3210):
 class PhilipsAC3259(PhilipsGenericFan):
     """AC3259."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "P"},
         PresetMode.ALLERGEN: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "A"},
         PresetMode.BACTERIA: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "B"},
@@ -1218,7 +1218,7 @@ class PhilipsAC3259(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "M",
@@ -1245,13 +1245,13 @@ class PhilipsAC3259(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.GAS_PREFERRED_INDEX]
 
 
 class PhilipsAC3420(PhilipsNew2GenericFan):
     """AC3420."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
@@ -1273,7 +1273,7 @@ class PhilipsAC3420(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_C: 1,
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SPEED_1: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 1,
@@ -1302,18 +1302,18 @@ class PhilipsAC3420(PhilipsNew2GenericFan):
     }
 
     # the prefilter data is present but doesn't change for this device, so let's take it out
-    UNAVAILABLE_FILTERS = [PhilipsApi.FILTER_NANOPROTECT_PREFILTER]
+    UNAVAILABLE_FILTERS: ClassVar = [PhilipsApi.FILTER_NANOPROTECT_PREFILTER]
 
-    AVAILABLE_SWITCHES = [PhilipsApi.NEW2_CHILD_LOCK, PhilipsApi.NEW2_BEEP]
-    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
-    AVAILABLE_SELECTS = [
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.NEW2_CHILD_LOCK, PhilipsApi.NEW2_BEEP]
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
+    AVAILABLE_SELECTS: ClassVar = [
         PhilipsApi.NEW2_GAS_PREFERRED_INDEX,
         PhilipsApi.NEW2_TIMER2,
         PhilipsApi.NEW2_LAMP_MODE,
     ]
 
-    AVAILABLE_HUMIDIFIERS = [PhilipsApi.NEW2_HUMIDITY_TARGET]
-    AVAILABLE_BINARY_SENSORS = [PhilipsApi.NEW2_ERROR_CODE]
+    AVAILABLE_HUMIDIFIERS: ClassVar = [PhilipsApi.NEW2_HUMIDITY_TARGET]
+    AVAILABLE_BINARY_SENSORS: ClassVar = [PhilipsApi.NEW2_ERROR_CODE]
 
 
 class PhilipsAC3421(PhilipsAC3420):
@@ -1323,7 +1323,7 @@ class PhilipsAC3421(PhilipsAC3420):
 class PhilipsAC3737(PhilipsNew2GenericFan):
     """AC3737."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 2,
@@ -1340,7 +1340,7 @@ class PhilipsAC3737(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_B: 18,
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 2,
@@ -1364,17 +1364,17 @@ class PhilipsAC3737(PhilipsNew2GenericFan):
     }
 
     # AVAILABLE_SELECTS = [PhilipsApi.NEW2_HUMIDITY_TARGET]
-    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT2]
-    AVAILABLE_SWITCHES = [PhilipsApi.NEW2_CHILD_LOCK]
-    UNAVAILABLE_SENSORS = [PhilipsApi.NEW2_FAN_SPEED]
-    AVAILABLE_BINARY_SENSORS = [PhilipsApi.NEW2_ERROR_CODE, PhilipsApi.NEW2_MODE_A]
-    AVAILABLE_HUMIDIFIERS = [PhilipsApi.NEW2_HUMIDITY_TARGET]
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT2]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.NEW2_CHILD_LOCK]
+    UNAVAILABLE_SENSORS: ClassVar = [PhilipsApi.NEW2_FAN_SPEED]
+    AVAILABLE_BINARY_SENSORS: ClassVar = [PhilipsApi.NEW2_ERROR_CODE, PhilipsApi.NEW2_MODE_A]
+    AVAILABLE_HUMIDIFIERS: ClassVar = [PhilipsApi.NEW2_HUMIDITY_TARGET]
 
 
 class PhilipsAC3829(PhilipsGenericFan):
     """AC3829."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "P"},
         PresetMode.ALLERGEN: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "A"},
         # make speeds available as preset
@@ -1404,7 +1404,7 @@ class PhilipsAC3829(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "S",
@@ -1431,16 +1431,16 @@ class PhilipsAC3829(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
-    AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
-    AVAILABLE_BINARY_SENSORS = [PhilipsApi.ERROR_CODE]
-    AVAILABLE_HUMIDIFIERS = [PhilipsApi.HUMIDITY_TARGET]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.CHILD_LOCK]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.GAS_PREFERRED_INDEX]
+    AVAILABLE_BINARY_SENSORS: ClassVar = [PhilipsApi.ERROR_CODE]
+    AVAILABLE_HUMIDIFIERS: ClassVar = [PhilipsApi.HUMIDITY_TARGET]
 
 
 class PhilipsAC3836(PhilipsGenericFan):
     """AC3836."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "AG",
@@ -1458,7 +1458,7 @@ class PhilipsAC3836(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "S",
@@ -1470,13 +1470,13 @@ class PhilipsAC3836(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.GAS_PREFERRED_INDEX]
 
 
 class PhilipsAC385x50(PhilipsGenericFan):
     """AC385x/50 family."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "AG"},
         # make speeds available as preset
         PresetMode.SLEEP: {
@@ -1500,7 +1500,7 @@ class PhilipsAC385x50(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "S",
@@ -1522,7 +1522,7 @@ class PhilipsAC385x50(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.GAS_PREFERRED_INDEX]
 
 
 class PhilipsAC385450(PhilipsAC385x50):
@@ -1532,13 +1532,13 @@ class PhilipsAC385450(PhilipsAC385x50):
 class PhilipsAC385850(PhilipsAC385x50):
     """AC3858/50."""
 
-    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.CHILD_LOCK]
 
 
 class PhilipsAC385x51(PhilipsGenericFan):
     """AC385x/51 family."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "AG"},
         # make speeds available as preset
         PresetMode.SLEEP: {
@@ -1567,7 +1567,7 @@ class PhilipsAC385x51(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "S",
@@ -1589,8 +1589,8 @@ class PhilipsAC385x51(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
-    AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.CHILD_LOCK]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.GAS_PREFERRED_INDEX]
 
 
 class PhilipsAC385451(PhilipsAC385x51):
@@ -1612,7 +1612,7 @@ class PhilipsAC385886(PhilipsAC385x51):
 class PhilipsAC4220(PhilipsAC22xx):
     """AC4220."""
 
-    AVAILABLE_SELECTS = [PhilipsApi.NEW2_GAS_PREFERRED_INDEX]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_GAS_PREFERRED_INDEX]
 
 
 class PhilipsAC4221(PhilipsAC4220):
@@ -1622,7 +1622,7 @@ class PhilipsAC4221(PhilipsAC4220):
 class PhilipsAC4236(PhilipsGenericFan):
     """AC4236."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "AG"},
         # make speeds available as preset
         PresetMode.SLEEP: {
@@ -1651,7 +1651,7 @@ class PhilipsAC4236(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "S",
@@ -1673,14 +1673,14 @@ class PhilipsAC4236(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
-    AVAILABLE_SELECTS = [PhilipsApi.PREFERRED_INDEX]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.CHILD_LOCK]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.PREFERRED_INDEX]
 
 
 class PhilipsAC4558(PhilipsGenericFan):
     """AC4558."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         # there doesn't seem to be a manual mode, so no speed setting as part of preset
         PresetMode.AUTO: {
             PhilipsApi.POWER: "1",
@@ -1704,14 +1704,14 @@ class PhilipsAC4558(PhilipsGenericFan):
             PhilipsApi.SPEED: "a",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {PhilipsApi.POWER: "1", PhilipsApi.SPEED: "s"},
         PresetMode.SPEED_1: {PhilipsApi.POWER: "1", PhilipsApi.SPEED: "1"},
         PresetMode.SPEED_2: {PhilipsApi.POWER: "1", PhilipsApi.SPEED: "2"},
         PresetMode.TURBO: {PhilipsApi.POWER: "1", PhilipsApi.SPEED: "t"},
     }
-    AVAILABLE_SELECTS = [PhilipsApi.PREFERRED_INDEX]
-    AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.PREFERRED_INDEX]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.CHILD_LOCK]
 
 
 class PhilipsAC4550(PhilipsAC4558):
@@ -1721,7 +1721,7 @@ class PhilipsAC4550(PhilipsAC4558):
 class PhilipsAC5659(PhilipsGenericFan):
     """AC5659."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.POLLUTION: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "P"},
         PresetMode.ALLERGEN: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "A"},
         PresetMode.BACTERIA: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "B"},
@@ -1752,7 +1752,7 @@ class PhilipsAC5659(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.POWER: "1",
             PhilipsApi.MODE: "M",
@@ -1779,7 +1779,7 @@ class PhilipsAC5659(PhilipsGenericFan):
             PhilipsApi.SPEED: "t",
         },
     }
-    AVAILABLE_SELECTS = [PhilipsApi.PREFERRED_INDEX]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.PREFERRED_INDEX]
 
 
 class PhilipsAC5660(PhilipsAC5659):
@@ -1790,7 +1790,7 @@ class PhilipsAMFxxx(PhilipsNew2GenericFan):
     """AMF family."""
 
     # REPLACE_PRESET = [PhilipsApi.NEW2_MODE_B, PhilipsApi.NEW2_FAN_SPEED]
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         # PresetMode.AUTO_PLUS: {
         #     PhilipsApi.NEW2_POWER: 1,
         #     PhilipsApi.NEW2_MODE_B: 0,
@@ -1815,7 +1815,7 @@ class PhilipsAMFxxx(PhilipsNew2GenericFan):
         },
     }
     # REPLACE_SPEED = [PhilipsApi.NEW2_MODE_B, PhilipsApi.NEW2_FAN_SPEED]
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SPEED_1: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 1,
@@ -1872,38 +1872,38 @@ class PhilipsAMFxxx(PhilipsNew2GenericFan):
         # },
     }
 
-    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT]
-    AVAILABLE_SWITCHES = [
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT]
+    AVAILABLE_SWITCHES: ClassVar = [
         PhilipsApi.NEW2_CHILD_LOCK,
         PhilipsApi.NEW2_BEEP,
         PhilipsApi.NEW2_STANDBY_SENSORS,
         PhilipsApi.NEW2_AUTO_PLUS_AI,
     ]
-    AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER]
-    AVAILABLE_NUMBERS = [PhilipsApi.NEW2_OSCILLATION]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_TIMER]
+    AVAILABLE_NUMBERS: ClassVar = [PhilipsApi.NEW2_OSCILLATION]
 
 
 class PhilipsAMF765(PhilipsAMFxxx):
     """AMF765."""
 
-    AVAILABLE_SELECTS = [PhilipsApi.NEW2_CIRCULATION]
-    UNAVAILABLE_SENSORS = [PhilipsApi.NEW2_GAS]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_CIRCULATION]
+    UNAVAILABLE_SENSORS: ClassVar = [PhilipsApi.NEW2_GAS]
 
 
 class PhilipsAMF870(PhilipsAMFxxx):
     """AMF870."""
 
-    AVAILABLE_SELECTS = [
+    AVAILABLE_SELECTS: ClassVar = [
         PhilipsApi.NEW2_GAS_PREFERRED_INDEX,
         PhilipsApi.NEW2_HEATING,
     ]
-    AVAILABLE_NUMBERS = [PhilipsApi.NEW2_TARGET_TEMP]
+    AVAILABLE_NUMBERS: ClassVar = [PhilipsApi.NEW2_TARGET_TEMP]
 
 
 class PhilipsCX3120(PhilipsNew2GenericFan):
     """CX3120."""
 
-    AVAILABLE_ATTRIBUTES = [
+    AVAILABLE_ATTRIBUTES: ClassVar = [
         # add heating state as extra state attribute
         (
             FanAttributes.HEATING_ACTION,
@@ -1912,7 +1912,7 @@ class PhilipsCX3120(PhilipsNew2GenericFan):
         ),
     ]
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO_PLUS: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 3,
@@ -1939,7 +1939,7 @@ class PhilipsCX3120(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_B: 65,
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.LOW: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 3,
@@ -1956,26 +1956,26 @@ class PhilipsCX3120(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_B: 65,
         },
     }
-    KEY_OSCILLATION = {
+    KEY_OSCILLATION: ClassVar = {
         PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP3,
     }
-    KEY_HEATING_ACTION = {
+    KEY_HEATING_ACTION: ClassVar = {
         PhilipsApi.NEW2_HEATING_ACTION: PhilipsApi.HEATING_ACTION_MAP,
     }
 
-    UNAVAILABLE_SENSORS = [PhilipsApi.NEW2_FAN_SPEED, PhilipsApi.NEW2_GAS]
-    AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2]
-    AVAILABLE_NUMBERS = [PhilipsApi.NEW2_TARGET_TEMP]
-    AVAILABLE_SWITCHES = [PhilipsApi.NEW2_CHILD_LOCK]
+    UNAVAILABLE_SENSORS: ClassVar = [PhilipsApi.NEW2_FAN_SPEED, PhilipsApi.NEW2_GAS]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_TIMER2]
+    AVAILABLE_NUMBERS: ClassVar = [PhilipsApi.NEW2_TARGET_TEMP]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.NEW2_CHILD_LOCK]
 
     CREATE_FAN = True  # later set to false once everything is working
-    AVAILABLE_HEATERS = [PhilipsApi.NEW2_TARGET_TEMP]
+    AVAILABLE_HEATERS: ClassVar = [PhilipsApi.NEW2_TARGET_TEMP]
 
 
 class PhilipsCX5120(PhilipsNew2GenericFan):
     """CX5120."""
 
-    AVAILABLE_ATTRIBUTES = [
+    AVAILABLE_ATTRIBUTES: ClassVar = [
         # add heating state as extra state attribute
         (
             FanAttributes.HEATING_ACTION,
@@ -1984,7 +1984,7 @@ class PhilipsCX5120(PhilipsNew2GenericFan):
         ),
     ]
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 3,
@@ -2006,7 +2006,7 @@ class PhilipsCX5120(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_B: 65,
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.LOW: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 3,
@@ -2018,27 +2018,27 @@ class PhilipsCX5120(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_B: 65,
         },
     }
-    KEY_OSCILLATION = {
+    KEY_OSCILLATION: ClassVar = {
         PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP4,
     }
-    KEY_HEATING_ACTION = {
+    KEY_HEATING_ACTION: ClassVar = {
         PhilipsApi.NEW2_HEATING_ACTION: PhilipsApi.HEATING_ACTION_MAP,
     }
 
-    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT2]
-    AVAILABLE_SWITCHES = [PhilipsApi.NEW2_BEEP]
-    UNAVAILABLE_SENSORS = [PhilipsApi.NEW2_FAN_SPEED, PhilipsApi.NEW2_GAS]
-    AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2]
-    AVAILABLE_NUMBERS = [PhilipsApi.NEW2_TARGET_TEMP]
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT2]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.NEW2_BEEP]
+    UNAVAILABLE_SENSORS: ClassVar = [PhilipsApi.NEW2_FAN_SPEED, PhilipsApi.NEW2_GAS]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_TIMER2]
+    AVAILABLE_NUMBERS: ClassVar = [PhilipsApi.NEW2_TARGET_TEMP]
 
     CREATE_FAN = True  # later set to false once everything is working
-    AVAILABLE_HEATERS = [PhilipsApi.NEW2_TARGET_TEMP]
+    AVAILABLE_HEATERS: ClassVar = [PhilipsApi.NEW2_TARGET_TEMP]
 
 
 class PhilipsCX3550(PhilipsNew2GenericFan):
     """CX3550."""
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.SPEED_1: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
@@ -2070,7 +2070,7 @@ class PhilipsCX3550(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_C: 2,
         },
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SPEED_1: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
@@ -2090,12 +2090,12 @@ class PhilipsCX3550(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_MODE_C: 3,
         },
     }
-    KEY_OSCILLATION = {
+    KEY_OSCILLATION: ClassVar = {
         PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP2,
     }
 
-    AVAILABLE_SWITCHES = [PhilipsApi.NEW2_BEEP]
-    AVAILABLE_SELECTS = [PhilipsApi.NEW2_TIMER2]
+    AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.NEW2_BEEP]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_TIMER2]
 
 
 class PhilipsHU1509(PhilipsNew2GenericFan):
@@ -2103,7 +2103,7 @@ class PhilipsHU1509(PhilipsNew2GenericFan):
 
     CREATE_FAN = False
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
@@ -2112,24 +2112,24 @@ class PhilipsHU1509(PhilipsNew2GenericFan):
         PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
         PresetMode.HIGH: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 65},
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 17},
         PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
         PresetMode.HIGH: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 65},
     }
 
-    AVAILABLE_SWITCHES = [
+    AVAILABLE_SWITCHES: ClassVar = [
         PhilipsApi.NEW2_BEEP,
         PhilipsApi.NEW2_STANDBY_SENSORS,
     ]
-    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT4]
-    AVAILABLE_SELECTS = [
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT4]
+    AVAILABLE_SELECTS: ClassVar = [
         PhilipsApi.NEW2_TIMER2,
         PhilipsApi.NEW2_LAMP_MODE2,
         PhilipsApi.NEW2_AMBIENT_LIGHT_MODE,
     ]
-    AVAILABLE_BINARY_SENSORS = [PhilipsApi.NEW2_ERROR_CODE]
-    AVAILABLE_HUMIDIFIERS = [PhilipsApi.NEW2_HUMIDITY_TARGET2]
+    AVAILABLE_BINARY_SENSORS: ClassVar = [PhilipsApi.NEW2_ERROR_CODE]
+    AVAILABLE_HUMIDIFIERS: ClassVar = [PhilipsApi.NEW2_HUMIDITY_TARGET2]
 
 
 class PhilipsHU1510(PhilipsHU1509):
@@ -2141,7 +2141,7 @@ class PhilipsHU5710(PhilipsNew2GenericFan):
 
     CREATE_FAN = False
 
-    AVAILABLE_PRESET_MODES = {
+    AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
@@ -2150,28 +2150,28 @@ class PhilipsHU5710(PhilipsNew2GenericFan):
         PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
         PresetMode.HIGH: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 65},
     }
-    AVAILABLE_SPEEDS = {
+    AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 17},
         PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
         PresetMode.HIGH: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 65},
     }
 
-    AVAILABLE_SWITCHES = [
+    AVAILABLE_SWITCHES: ClassVar = [
         PhilipsApi.NEW2_CHILD_LOCK,
         PhilipsApi.NEW2_BEEP,
         PhilipsApi.NEW2_QUICKDRY_MODE,
         PhilipsApi.NEW2_AUTO_QUICKDRY_MODE,
         PhilipsApi.NEW2_STANDBY_SENSORS,
     ]
-    AVAILABLE_LIGHTS = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT4]
-    AVAILABLE_SELECTS = [
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT4]
+    AVAILABLE_SELECTS: ClassVar = [
         PhilipsApi.NEW2_TIMER2,
         PhilipsApi.NEW2_LAMP_MODE2,
         PhilipsApi.NEW2_AMBIENT_LIGHT_MODE,
     ]
     # AVAILABLE_NUMBERS = [PhilipsApi.NEW2_HUMIDITY_TARGET2]
-    AVAILABLE_BINARY_SENSORS = [PhilipsApi.NEW2_ERROR_CODE]
-    AVAILABLE_HUMIDIFIERS = [PhilipsApi.NEW2_HUMIDITY_TARGET2]
+    AVAILABLE_BINARY_SENSORS: ClassVar = [PhilipsApi.NEW2_ERROR_CODE]
+    AVAILABLE_HUMIDIFIERS: ClassVar = [PhilipsApi.NEW2_HUMIDITY_TARGET2]
 
 
 model_to_class = {

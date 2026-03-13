@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, cast
+from typing import Any, ClassVar, cast
 
 from homeassistant.components.climate import (
     ClimateEntity,
@@ -102,7 +102,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
 
     _attr_is_on: bool | None = False
     _attr_temperature_unit: str = UnitOfTemperature.CELSIUS
-    _attr_hvac_modes: list[HVACMode] = [
+    _attr_hvac_modes: ClassVar[list[HVACMode]] = [
         HVACMode.OFF,
         HVACMode.HEAT,
         HVACMode.AUTO,

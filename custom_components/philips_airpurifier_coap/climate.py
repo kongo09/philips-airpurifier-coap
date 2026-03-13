@@ -154,14 +154,14 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
 
         # some devices can oscillate
         if available_oscillation:
-            self._oscillation_key = list(available_oscillation.keys())[0]
+            self._oscillation_key = next(iter(available_oscillation.keys()))
             self._oscillation_modes = available_oscillation[self._oscillation_key]
             self._attr_supported_features |= ClimateEntityFeature.SWING_MODE
             self._attr_swing_modes = [SWING_ON, SWING_OFF]
 
         # some devices report heating action
         if available_heating_actions:
-            self._heating_action_key = list(available_heating_actions.keys())[0]
+            self._heating_action_key = next(iter(available_heating_actions.keys()))
             self._heating_action_map = available_heating_actions[self._heating_action_key]
 
     @property

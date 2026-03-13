@@ -70,7 +70,7 @@ class Coordinator:
 
             self._reconnect_task = asyncio.create_task(self._reconnect())
 
-        except:  # noqa: E722
+        except Exception:
             _LOGGER.exception("Exception on starting reconnect!")
 
     async def _reconnect(self):
@@ -87,7 +87,7 @@ class Coordinator:
             # Reconnect took to long
             pass
 
-        except:  # noqa: E722
+        except Exception:
             _LOGGER.exception("_reconnect error")
 
     async def async_first_refresh(self) -> None:

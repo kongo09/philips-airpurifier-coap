@@ -17,7 +17,7 @@ class Timer:
     _in_callback: bool = False
     _auto_restart: bool = False
 
-    def __init__(self, timeout, callback, autostart=True) -> None:  # noqa: D107
+    def __init__(self, timeout, callback, autostart=True) -> None:
         self._timeout = timeout
         self._callback = callback
         self._task = None
@@ -48,7 +48,7 @@ class Timer:
                     self._auto_restart = False
                     self._task = None
                     return
-            except:  # noqa: E722
+            except Exception:
                 _LOGGER.exception("Timer callback failure")
             self._in_callback = False
             if not self._auto_restart:

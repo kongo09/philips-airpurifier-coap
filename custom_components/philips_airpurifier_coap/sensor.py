@@ -181,10 +181,10 @@ class PhilipsFilterSensor(PhilipsEntity, SensorEntity):
             device_id = self._device_status[PhilipsApi.DEVICE_ID]
             self._attr_unique_id = f"{self._model}-{device_id}-{self._description[FanAttributes.LABEL]}"
         except KeyError as e:
-            _LOGGER.error("Failed retrieving unique_id due to missing key: %s", e)
+            _LOGGER.exception("Failed retrieving unique_id due to missing key")
             raise PlatformNotReady from e
         except TypeError as e:
-            _LOGGER.error("Failed retrieving unique_id due to type error: %s", e)
+            _LOGGER.exception("Failed retrieving unique_id due to type error")
             raise PlatformNotReady from e
 
         self._attrs: dict[str, Any] = {}

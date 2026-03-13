@@ -197,10 +197,11 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         # user input was provided, so check and save it
         if config_entry_data is not None:
+            # first some sanitycheck on the host input
+            if not host_valid(config_entry_data[CONF_HOST]):
+                raise InvalidHost
+
             try:
-                # first some sanitycheck on the host input
-                if not host_valid(config_entry_data[CONF_HOST]):
-                    raise InvalidHost
                 self._host = config_entry_data[CONF_HOST]
                 _LOGGER.debug("trying to configure host: %s", self._host)
 

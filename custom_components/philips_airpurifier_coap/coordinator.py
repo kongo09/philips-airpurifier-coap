@@ -101,7 +101,7 @@ class Coordinator:
             _LOGGER.debug("finished first refresh for host %s", self.host)
 
         except Exception as ex:
-            _LOGGER.error("Config not ready, first refresh failed for host %s", self.host)
+            _LOGGER.exception("Config not ready, first refresh failed for host %s", self.host)
             raise ConfigEntryNotReady from ex
 
     @callback

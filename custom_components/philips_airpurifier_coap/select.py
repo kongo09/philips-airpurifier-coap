@@ -111,7 +111,7 @@ class PhilipsSelect(PhilipsEntity, SelectEntity):
             self._device_status[self.kind] = option_key
             self._handle_coordinator_update()
 
-        except KeyError as e:
-            _LOGGER.error("Invalid option key: '%s' with error: %s", option, e)
-        except ValueError as e:
-            _LOGGER.error("Invalid value for option: '%s' with error: %s", option, e)
+        except KeyError:
+            _LOGGER.exception("Invalid option key: '%s'", option)
+        except ValueError:
+            _LOGGER.exception("Invalid value for option: '%s'", option)

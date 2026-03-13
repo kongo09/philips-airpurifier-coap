@@ -10,6 +10,10 @@ _LOGGER = logging.getLogger(__name__)
 class CallbackRunningException(Exception):
     """Exception indicating that a callback is still running."""
 
+    def __init__(self) -> None:
+        """Initialize with a stable default message."""
+        super().__init__("Timed out too late to cancel")
+
 
 class Timer:
     """Class to represent a timer when communicating async with the API."""
@@ -63,7 +67,7 @@ class Timer:
     def cancel(self, msg="STOP"):
         """Cancel the task."""
         if self._in_callback:
-            raise CallbackRunningException("Timedout too late to cancel!")
+            raise CallbackRunningException
         if self._task is not None:
             self._task.cancel(msg=msg)
             self._task = None

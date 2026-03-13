@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import logging
+from collections.abc import Callable
 from typing import Any
 
 from homeassistant.components.select import SelectEntity
@@ -91,9 +91,7 @@ class PhilipsSelect(PhilipsEntity, SelectEntity):
         """Return the currently selected option."""
         option = self._device_status.get(self.kind)
         current_option = str(self._options.get(option))
-        _LOGGER.debug(
-            "option: %s, returning as current_option: %s", option, current_option
-        )
+        _LOGGER.debug("option: %s, returning as current_option: %s", option, current_option)
         return current_option
 
     async def async_select_option(self, option: str) -> None:
@@ -102,9 +100,7 @@ class PhilipsSelect(PhilipsEntity, SelectEntity):
             _LOGGER.error("Cannot set empty option '%s'", option)
             return
         try:
-            option_key = next(
-                key for key, value in self._options.items() if value == option
-            )
+            option_key = next(key for key, value in self._options.items() if value == option)
             _LOGGER.debug(
                 "async_selection_option, kind: %s - option: %s - value: %s",
                 self.kind,
@@ -115,7 +111,7 @@ class PhilipsSelect(PhilipsEntity, SelectEntity):
             self._device_status[self.kind] = option_key
             self._handle_coordinator_update()
 
-        except KeyError as e:
-            _LOGGER.error("Invalid option key: '%s' with error: %s", option, e)
-        except ValueError as e:
-            _LOGGER.error("Invalid value for option: '%s' with error: %s", option, e)
+        except KeyError:
+            _LOGGER.exception("Invalid option key: '%s'", option)
+        except ValueError:
+            _LOGGER.exception("Invalid value for option: '%s'", option)

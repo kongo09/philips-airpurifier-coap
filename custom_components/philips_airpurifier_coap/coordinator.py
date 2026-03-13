@@ -1,14 +1,13 @@
 """Module containing the Coordinator class to manage data requests from the Philips API."""
 
 import asyncio
-from asyncio.tasks import Task
-from collections.abc import Callable
 import contextlib
 import logging
+from asyncio.tasks import Task
+from collections.abc import Callable
 from typing import Any
 
 from aioairctrl import CoAPClient
-
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 
@@ -22,9 +21,7 @@ MISSED_PACKAGE_COUNT = 3
 class Coordinator:
     """Class to coordinate the data requests from the Philips API."""
 
-    def __init__(
-        self, hass: HomeAssistant, client: CoAPClient, host: str, status: dict[str, Any]
-    ) -> None:
+    def __init__(self, hass: HomeAssistant, client: CoAPClient, host: str, status: dict[str, Any]) -> None:
         """Initialize the Coordinator.
 
         :param hass: HomeAssistant instance.
@@ -73,7 +70,7 @@ class Coordinator:
 
             self._reconnect_task = asyncio.create_task(self._reconnect())
 
-        except:  # noqa: E722
+        except Exception:
             _LOGGER.exception("Exception on starting reconnect!")
 
     async def _reconnect(self):
@@ -90,7 +87,7 @@ class Coordinator:
             # Reconnect took to long
             pass
 
-        except:  # noqa: E722
+        except Exception:
             _LOGGER.exception("_reconnect error")
 
     async def async_first_refresh(self) -> None:
@@ -104,9 +101,7 @@ class Coordinator:
             _LOGGER.debug("finished first refresh for host %s", self.host)
 
         except Exception as ex:
-            _LOGGER.error(
-                "Config not ready, first refresh failed for host %s", self.host
-            )
+            _LOGGER.exception("Config not ready, first refresh failed for host %s", self.host)
             raise ConfigEntryNotReady from ex
 
     @callback

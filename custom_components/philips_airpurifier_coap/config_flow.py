@@ -5,9 +5,8 @@ import logging
 import re
 from typing import Any
 
-from aioairctrl import CoAPClient
 import voluptuous as vol
-
+from aioairctrl import CoAPClient
 from homeassistant import config_entries, exceptions
 from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.const import CONF_HOST, CONF_NAME
@@ -58,13 +57,9 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     def _get_schema(self, user_input):
         """Provide schema for user input."""
-        return vol.Schema(
-            {vol.Required(CONF_HOST, default=user_input.get(CONF_HOST, "")): cv.string}
-        )
+        return vol.Schema({vol.Required(CONF_HOST, default=user_input.get(CONF_HOST, "")): cv.string})
 
-    async def async_step_dhcp(
-        self, discovery_info: DhcpServiceInfo
-    ) -> ConfigFlowResult:
+    async def async_step_dhcp(self, discovery_info: DhcpServiceInfo) -> ConfigFlowResult:
         """Handle initial step of auto discovery flow."""
         _LOGGER.debug("async_step_dhcp: called, found: %s", discovery_info)
 
@@ -164,9 +159,7 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         _LOGGER.debug("waiting for async_step_confirm")
         return await self.async_step_confirm()
 
-    async def async_step_confirm(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_confirm(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Confirm the dhcp discovered data."""
         _LOGGER.debug("async_step_confirm called with user_input: %s", user_input)
 
@@ -196,9 +189,7 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             description_placeholders={"model": self._model, "name": self._name},
         )
 
-    async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Handle initial step of user config flow."""
 
         errors = {}
@@ -206,10 +197,11 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         # user input was provided, so check and save it
         if config_entry_data is not None:
+            # first some sanitycheck on the host input
+            if not host_valid(config_entry_data[CONF_HOST]):
+                raise InvalidHost
+
             try:
-                # first some sanitycheck on the host input
-                if not host_valid(config_entry_data[CONF_HOST]):
-                    raise InvalidHost  # noqa: TRY301
                 self._host = config_entry_data[CONF_HOST]
                 _LOGGER.debug("trying to configure host: %s", self._host)
 
@@ -233,9 +225,7 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         await client.shutdown()
 
                 except TimeoutError:
-                    _LOGGER.warning(
-                        r"Timeout, host %s doesn't answer, aborting", self._host
-                    )
+                    _LOGGER.warning(r"Timeout, host %s doesn't answer, aborting", self._host)
                     return self.async_abort(reason="timeout")
 
                 except Exception as ex:
@@ -295,9 +285,7 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self._abort_if_unique_id_configured(updates={CONF_HOST: self._host})
 
                 # compile a name and return the config entry
-                return self.async_create_entry(
-                    title=config_entry_name, data=config_entry_data
-                )
+                return self.async_create_entry(title=config_entry_name, data=config_entry_data)
 
             except InvalidHost:
                 errors[CONF_HOST] = "host"
@@ -317,14 +305,10 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 class OptionsFlowHandler(config_entries.OptionsFlow):
     """Handle options flow for Philips AirPurifier."""
 
-    async def async_step_init(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Handle options flow to change the device host address."""
         errors = {}
-        current_host = self.config_entry.options.get(
-            CONF_HOST, self.config_entry.data[CONF_HOST]
-        )
+        current_host = self.config_entry.options.get(CONF_HOST, self.config_entry.data[CONF_HOST])
 
         if user_input is not None:
             new_host = user_input[CONF_HOST]
@@ -363,12 +347,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         )
                         errors[CONF_HOST] = "different_device"
                     else:
-                        _LOGGER.debug(
-                            "options flow: device confirmed, updating host to %s", new_host
-                        )
-                        return self.async_create_entry(
-                            title="", data={CONF_HOST: new_host}
-                        )
+                        _LOGGER.debug("options flow: device confirmed, updating host to %s", new_host)
+                        return self.async_create_entry(title="", data={CONF_HOST: new_host})
 
                 except TimeoutError:
                     _LOGGER.warning("options flow: timeout connecting to host %s", new_host)
@@ -379,9 +359,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
-                {vol.Required(CONF_HOST, default=current_host): cv.string}
-            ),
+            data_schema=vol.Schema({vol.Required(CONF_HOST, default=current_host): cv.string}),
             errors=errors,
         )
 

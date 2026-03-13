@@ -7,10 +7,10 @@ requires-python = ">=3.13"
 
 [tool.ruff]
 target-version = "py313"
-line-length = 100
+line-length = 120
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "C4", "TRY", "PERF"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

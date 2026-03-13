@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import logging
+from collections.abc import Callable
 from typing import Any
 
 from homeassistant.components.humidifier import (
@@ -49,9 +49,7 @@ async def async_setup_entry(
             available_preset_modes.update(cls_available_preset_modes)
 
         humidifiers = [
-            PhilipsHumidifier(
-                hass, entry, config_entry_data, humidifier, available_preset_modes
-            )
+            PhilipsHumidifier(hass, entry, config_entry_data, humidifier, available_preset_modes)
             for humidifier in HUMIDIFIER_TYPES
             if humidifier in available_humidifiers
         ]
@@ -99,9 +97,7 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
         self._attr_min_humidity = self._description[FanAttributes.MIN_HUMIDITY]
         self._attr_max_humidity = self._description[FanAttributes.MAX_HUMIDITY]
         self._attr_target_humidity = latest_status.get(self._humidity_target_key)
-        self._attr_current_humidity = latest_status.get(
-            self._description[FanAttributes.HUMIDITY]
-        )
+        self._attr_current_humidity = latest_status.get(self._description[FanAttributes.HUMIDITY])
 
         # 2-in-1 devices have a switch to select humidification vs purification
         if self._switch:
@@ -192,13 +188,7 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
     @property
     def is_on(self) -> bool | None:
         """Return the device state independent of the humidifier function."""
-        if (
-            self._device_status.get(self._power_key)
-            == self._description[FanAttributes.OFF]
-        ):
-            return False
-
-        return True
+        return self._device_status.get(self._power_key) != self._description[FanAttributes.OFF]
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the device."""
@@ -236,8 +226,6 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
         # now let's make sure we're on the steps and inside the boundaries
         target = round(humidity / step) * step
         target = max(self._attr_min_humidity, min(target, self._attr_max_humidity))
-        await self.coordinator.client.set_control_value(
-            self._humidity_target_key, target
-        )
+        await self.coordinator.client.set_control_value(self._humidity_target_key, target)
         self._device_status[self._humidity_target_key] = humidity
         self._handle_coordinator_update()

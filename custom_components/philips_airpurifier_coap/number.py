@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import logging
+from collections.abc import Callable
 from typing import Any
 
 from homeassistant.components.number import NumberEntity
@@ -75,9 +75,7 @@ class PhilipsNumber(PhilipsEntity, NumberEntity):
         self._attr_entity_category = self._description.get(CONF_ENTITY_CATEGORY)
         self._attr_icon = self._description.get(ATTR_ICON)
         self._attr_mode = "slider"  # hardwired for now
-        self._attr_native_unit_of_measurement = self._description.get(
-            FanAttributes.UNIT
-        )
+        self._attr_native_unit_of_measurement = self._description.get(FanAttributes.UNIT)
 
         self._attr_native_min_value = self._description.get(FanAttributes.OFF)
         self._min = self._description.get(FanAttributes.MIN)

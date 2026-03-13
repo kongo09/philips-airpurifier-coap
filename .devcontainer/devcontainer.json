@@ -1,12 +1,16 @@
 {
   "name": "Philips AirPurifier CoAP Dev",
   "image": "mcr.microsoft.com/devcontainers/python:3.13",
-  "postCreateCommand": "pip install -r requirements_test.txt && pip install -e .",
+  "postCreateCommand": "python -m venv .venv && .venv/bin/python -m pip install --upgrade pip && .venv/bin/python -m pip install -r requirements_test.txt",
+  "postStartCommand": "test -x .venv/bin/python || python -m venv .venv; .venv/bin/python -m pip install -r requirements_test.txt",
   "mounts": [
     "source=${localEnv:USERPROFILE}${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
   ],
   "customizations": {
     "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python"
+      },
       "extensions": [
         "charliermarsh.ruff",
         "ms-python.python",

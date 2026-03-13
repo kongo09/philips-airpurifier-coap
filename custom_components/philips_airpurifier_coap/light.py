@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import logging
+from collections.abc import Callable
 from typing import Any
 
 from homeassistant.components.light import (
@@ -55,9 +55,7 @@ async def async_setup_entry(
             available_lights.extend(cls_available_lights)
 
         lights = [
-            PhilipsLight(hass, entry, config_entry_data, light)
-            for light in LIGHT_TYPES
-            if light in available_lights
+            PhilipsLight(hass, entry, config_entry_data, light) for light in LIGHT_TYPES if light in available_lights
         ]
 
         async_add_entities(lights, update_before_add=False)

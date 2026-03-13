@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import ClassVar
 
 from homeassistant.components.climate import HVACAction
 from homeassistant.components.number import NumberDeviceClass
@@ -205,7 +206,7 @@ class PresetMode:
     VENTILATION = "ventilation"
     NATURAL = "natural"
 
-    ICON_MAP = {
+    ICON_MAP: ClassVar = {
         SPEED_1: "pap:speed_1",
         SPEED_GENTLE_1: "pap:speed_1",
         SPEED_2: "pap:speed_2",
@@ -411,25 +412,25 @@ class PhilipsApi:
     WIFI_VERSION = "WifiVersion"
     RSSI = "rssi"
 
-    POWER_MAP = {
+    POWER_MAP: ClassVar = {
         SWITCH_ON: "1",
         SWITCH_OFF: "0",
     }
 
-    OSCILLATION_MAP = {
+    OSCILLATION_MAP: ClassVar = {
         SWITCH_ON: 17920,
         SWITCH_OFF: 0,
     }
-    OSCILLATION_MAP2 = {
+    OSCILLATION_MAP2: ClassVar = {
         SWITCH_ON: 17242,
         SWITCH_OFF: 0,
     }
-    OSCILLATION_MAP3 = {
+    OSCILLATION_MAP3: ClassVar = {
         SWITCH_ON: 45,
         SWITCH_OFF: 0,
     }
     # Heater models (e.g., CX5120) use this map
-    OSCILLATION_MAP4 = {
+    OSCILLATION_MAP4: ClassVar = {
         SWITCH_ON: 17222,
         SWITCH_OFF: 0,
     }
@@ -493,72 +494,72 @@ class PhilipsApi:
     NEW2_PREFERRED_INDEX = "D0312A#1"
     NEW2_GAS_PREFERRED_INDEX = "D0312A#2"
 
-    LAMP_MODE_MAP = {
+    LAMP_MODE_MAP: ClassVar = {
         0: FanAttributes.OFF,
         1: FanAttributes.AIR_QUALITY,
         2: FanAttributes.AMBIENT_LIGHT_MODE,
     }
-    LAMP_MODE_MAP2 = {
+    LAMP_MODE_MAP2: ClassVar = {
         0: FanAttributes.OFF,
         1: FanAttributes.HUMIDITY,
         2: FanAttributes.AMBIENT_LIGHT_MODE,
     }
-    AMBIENT_LIGHT_MODE_MAP = {
+    AMBIENT_LIGHT_MODE_MAP: ClassVar = {
         1: "warm",
         2: "dawn",
         3: "calm",
         4: "breath",
     }
-    PREFERRED_INDEX_MAP = {
+    PREFERRED_INDEX_MAP: ClassVar = {
         "0": FanAttributes.INDOOR_ALLERGEN_INDEX,
         "1": FanAttributes.PM25,
     }
-    NEW2_PREFERRED_INDEX_MAP = {
+    NEW2_PREFERRED_INDEX_MAP: ClassVar = {
         0: FanAttributes.INDOOR_ALLERGEN_INDEX,
         1: FanAttributes.PM25,
     }
-    GAS_PREFERRED_INDEX_MAP = {
+    GAS_PREFERRED_INDEX_MAP: ClassVar = {
         "0": FanAttributes.INDOOR_ALLERGEN_INDEX,
         "1": FanAttributes.PM25,
         "2": FanAttributes.GAS,
     }
-    NEW2_GAS_PREFERRED_INDEX_MAP = {
+    NEW2_GAS_PREFERRED_INDEX_MAP: ClassVar = {
         0: FanAttributes.INDOOR_ALLERGEN_INDEX,
         1: FanAttributes.PM25,
         2: FanAttributes.GAS,
     }
-    NEW_PREFERRED_INDEX_MAP = {
+    NEW_PREFERRED_INDEX_MAP: ClassVar = {
         "IAI": FanAttributes.INDOOR_ALLERGEN_INDEX,
         "PM2.5": FanAttributes.PM25,
     }
-    FUNCTION_MAP = {
+    FUNCTION_MAP: ClassVar = {
         "P": FanFunction.PURIFICATION,
         "PH": FanFunction.PURIFICATION_HUMIDIFICATION,
     }
-    CIRCULATION_MAP = {
+    CIRCULATION_MAP: ClassVar = {
         1: FanFunction.FAN,
         2: FanFunction.CIRCULATION,
     }
-    HEATING_MAP = {
+    HEATING_MAP: ClassVar = {
         1: FanFunction.FAN,
         2: FanFunction.CIRCULATION,
         3: FanFunction.HEATING,
     }
-    HEATING_ACTION_MAP = {
+    HEATING_ACTION_MAP: ClassVar = {
         65: HVACAction.HEATING,
         67: HVACAction.HEATING,
         68: HVACAction.HEATING,
         -16: HVACAction.IDLE,
         0: HVACAction.FAN,
     }
-    HEATING_ACTION_MAP2 = {
+    HEATING_ACTION_MAP2: ClassVar = {
         65: HeatingAction.STRONG,
         67: HeatingAction.MEDIUM,
         68: HeatingAction.LOW,
         -16: HeatingAction.IDLE,
         0: HeatingAction.FAN,
     }
-    TIMER_MAP = {
+    TIMER_MAP: ClassVar = {
         0: "Off",
         1: "30min",
         2: "1h",
@@ -574,7 +575,7 @@ class PhilipsApi:
         12: "11h",
         13: "12h",
     }
-    TIMER2_MAP = {
+    TIMER2_MAP: ClassVar = {
         0: "Off",
         2: "1h",
         3: "2h",
@@ -705,9 +706,7 @@ SENSOR_TYPES: dict[str, SensorDescription] = {
     PhilipsApi.WATER_LEVEL: {
         FanAttributes.ICON_MAP: {0: ICON.WATER_REFILL, 10: "mdi:water"},
         FanAttributes.LABEL: FanAttributes.WATER_LEVEL,
-        FanAttributes.VALUE: lambda value, status: 0
-        if status.get("err") in [32768, 49408]
-        else value,
+        FanAttributes.VALUE: lambda value, status: 0 if status.get("err") in [32768, 49408] else value,
         ATTR_STATE_CLASS: SensorStateClass.MEASUREMENT,
         FanAttributes.UNIT: PERCENTAGE,
         CONF_ENTITY_CATEGORY: EntityCategory.DIAGNOSTIC,

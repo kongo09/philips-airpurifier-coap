@@ -10,7 +10,7 @@ target-version = "py313"
 line-length = 120
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "C4", "TRY"]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "C4", "TRY", "PERF"]
 ignore = ["RUF012"]
 
 [tool.pytest.ini_options]

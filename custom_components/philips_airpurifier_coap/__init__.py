@@ -94,16 +94,12 @@ async def async_setup(hass: HomeAssistant, config) -> bool:
     """Set up the icons for the Philips AirPurifier integration."""
     _LOGGER.debug("async_setup called")
 
-    await hass.http.async_register_static_paths(
-        [StaticPathConfig(LOADER_URL, hass.config.path(LOADER_PATH), True)]
-    )
+    await hass.http.async_register_static_paths([StaticPathConfig(LOADER_URL, hass.config.path(LOADER_PATH), True)])
     add_extra_js_url(hass, LOADER_URL)
 
     iset = PAP
     iconpath = hass.config.path(ICONS_PATH + "/" + iset)
-    await hass.http.async_register_static_paths(
-        [StaticPathConfig(ICONS_URL + "/" + iset, iconpath, True)]
-    )
+    await hass.http.async_register_static_paths([StaticPathConfig(ICONS_URL + "/" + iset, iconpath, True)])
     hass.http.register_view(ListingView(ICONLIST_URL + "/" + iset, iconpath, hass))
 
     return True
@@ -125,9 +121,7 @@ async def async_get_mac_address_from_host(hass: HomeAssistant, host: str) -> str
             mac_address = await hass.async_add_executor_job(partial(get_mac_address, ip=host))
         else:
             ip_addr = IPv6Address(int(ip_addr))
-            mac_address = await hass.async_add_executor_job(
-                partial(get_mac_address, ip6=str(ip_addr))
-            )
+            mac_address = await hass.async_add_executor_job(partial(get_mac_address, ip6=str(ip_addr)))
     if not mac_address:
         return None
 
@@ -153,9 +147,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.warning(r"Failed to connect to host %s: %s", host, ex)
         raise ConfigEntryNotReady from ex
 
-    device_information = DeviceInformation(
-        host=host, mac=mac, model=model, name=name, device_id=device_id
-    )
+    device_information = DeviceInformation(host=host, mac=mac, model=model, name=name, device_id=device_id)
 
     # check if we have status data, it will be missing in old entries
     if CONF_STATUS not in entry.data:

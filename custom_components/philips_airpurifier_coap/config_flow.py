@@ -57,9 +57,7 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     def _get_schema(self, user_input):
         """Provide schema for user input."""
-        return vol.Schema(
-            {vol.Required(CONF_HOST, default=user_input.get(CONF_HOST, "")): cv.string}
-        )
+        return vol.Schema({vol.Required(CONF_HOST, default=user_input.get(CONF_HOST, "")): cv.string})
 
     async def async_step_dhcp(self, discovery_info: DhcpServiceInfo) -> ConfigFlowResult:
         """Handle initial step of auto discovery flow."""
@@ -161,9 +159,7 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         _LOGGER.debug("waiting for async_step_confirm")
         return await self.async_step_confirm()
 
-    async def async_step_confirm(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_confirm(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Confirm the dhcp discovered data."""
         _LOGGER.debug("async_step_confirm called with user_input: %s", user_input)
 
@@ -350,9 +346,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         )
                         errors[CONF_HOST] = "different_device"
                     else:
-                        _LOGGER.debug(
-                            "options flow: device confirmed, updating host to %s", new_host
-                        )
+                        _LOGGER.debug("options flow: device confirmed, updating host to %s", new_host)
                         return self.async_create_entry(title="", data={CONF_HOST: new_host})
 
                 except TimeoutError:

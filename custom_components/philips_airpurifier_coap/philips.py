@@ -264,9 +264,7 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the fan off."""
-        await self.coordinator.client.set_control_value(
-            self.KEY_PHILIPS_POWER, self.STATE_POWER_OFF
-        )
+        await self.coordinator.client.set_control_value(self.KEY_PHILIPS_POWER, self.STATE_POWER_OFF)
 
         self._device_status[self.KEY_PHILIPS_POWER] = self.STATE_POWER_OFF
         self._handle_coordinator_update()
@@ -714,9 +712,7 @@ class PhilipsAC1214(PhilipsGenericFan):
         # so it needs to be done in sequence
         if not self.is_on:
             _LOGGER.debug("AC1214 is switched on without setting a mode")
-            await self.coordinator.client.set_control_value(
-                PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON]
-            )
+            await self.coordinator.client.set_control_value(PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON])
             await asyncio.sleep(1)
 
         # the AC1214 also doesn't seem to like switching to mode 'M' without cycling through mode 'A'
@@ -745,9 +741,7 @@ class PhilipsAC1214(PhilipsGenericFan):
         # so it needs to be done in sequence
         if not self.is_on:
             _LOGGER.debug("AC1214 is switched on without setting a mode")
-            await self.coordinator.client.set_control_value(
-                PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON]
-            )
+            await self.coordinator.client.set_control_value(PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON])
             await asyncio.sleep(1)
 
         current_pattern = self._available_preset_modes.get(self.preset_mode)
@@ -788,9 +782,7 @@ class PhilipsAC1214(PhilipsGenericFan):
         # so it needs to be done in sequence
         if not self.is_on:
             _LOGGER.debug("AC1214 is switched on without setting a mode")
-            await self.coordinator.client.set_control_value(
-                PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON]
-            )
+            await self.coordinator.client.set_control_value(PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON])
             await asyncio.sleep(1)
 
         if preset_mode:

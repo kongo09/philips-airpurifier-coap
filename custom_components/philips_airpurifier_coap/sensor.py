@@ -105,9 +105,7 @@ class PhilipsSensor(PhilipsEntity, SensorEntity):
             self._description = EXTRA_SENSOR_TYPES[kind]
 
         self._icon_map = self._description.get(FanAttributes.ICON_MAP)
-        self._norm_icon = (
-            next(iter(self._icon_map.items()))[1] if self._icon_map is not None else None
-        )
+        self._norm_icon = next(iter(self._icon_map.items()))[1] if self._icon_map is not None else None
         self._attr_state_class = self._description.get(ATTR_STATE_CLASS)
         self._attr_device_class = self._description.get(ATTR_DEVICE_CLASS)
         self._attr_entity_category = self._description.get(CONF_ENTITY_CATEGORY)
@@ -165,9 +163,7 @@ class PhilipsFilterSensor(PhilipsEntity, SensorEntity):
 
         self._description = FILTER_TYPES[kind]
         self._icon_map = self._description.get(FanAttributes.ICON_MAP)
-        self._norm_icon = (
-            next(iter(self._icon_map.items()))[1] if self._icon_map is not None else None
-        )
+        self._norm_icon = next(iter(self._icon_map.items()))[1] if self._icon_map is not None else None
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_state_class = SensorStateClass.MEASUREMENT
 
@@ -183,9 +179,7 @@ class PhilipsFilterSensor(PhilipsEntity, SensorEntity):
 
         try:
             device_id = self._device_status[PhilipsApi.DEVICE_ID]
-            self._attr_unique_id = (
-                f"{self._model}-{device_id}-{self._description[FanAttributes.LABEL]}"
-            )
+            self._attr_unique_id = f"{self._model}-{device_id}-{self._description[FanAttributes.LABEL]}"
         except KeyError as e:
             _LOGGER.error("Failed retrieving unique_id due to missing key: %s", e)
             raise PlatformNotReady from e

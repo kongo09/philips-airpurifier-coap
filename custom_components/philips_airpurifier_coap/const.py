@@ -705,9 +705,7 @@ SENSOR_TYPES: dict[str, SensorDescription] = {
     PhilipsApi.WATER_LEVEL: {
         FanAttributes.ICON_MAP: {0: ICON.WATER_REFILL, 10: "mdi:water"},
         FanAttributes.LABEL: FanAttributes.WATER_LEVEL,
-        FanAttributes.VALUE: lambda value, status: (
-            0 if status.get("err") in [32768, 49408] else value
-        ),
+        FanAttributes.VALUE: lambda value, status: 0 if status.get("err") in [32768, 49408] else value,
         ATTR_STATE_CLASS: SensorStateClass.MEASUREMENT,
         FanAttributes.UNIT: PERCENTAGE,
         CONF_ENTITY_CATEGORY: EntityCategory.DIAGNOSTIC,

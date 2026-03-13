@@ -21,9 +21,7 @@ MISSED_PACKAGE_COUNT = 3
 class Coordinator:
     """Class to coordinate the data requests from the Philips API."""
 
-    def __init__(
-        self, hass: HomeAssistant, client: CoAPClient, host: str, status: dict[str, Any]
-    ) -> None:
+    def __init__(self, hass: HomeAssistant, client: CoAPClient, host: str, status: dict[str, Any]) -> None:
         """Initialize the Coordinator.
 
         :param hass: HomeAssistant instance.

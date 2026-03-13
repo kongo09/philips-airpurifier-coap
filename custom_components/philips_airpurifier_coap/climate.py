@@ -136,9 +136,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         self._attr_min_temp = self._description[FanAttributes.MIN_TEMPERATURE]
         self._attr_max_temp = self._description[FanAttributes.MAX_TEMPERATURE]
         self._attr_target_temperature = latest_status.get(self._temperature_target_key)
-        self._attr_current_temperature = latest_status.get(
-            self._description[FanAttributes.TEMPERATURE]
-        )
+        self._attr_current_temperature = latest_status.get(self._description[FanAttributes.TEMPERATURE])
 
         self._attr_supported_features = (
             ClimateEntityFeature.TARGET_TEMPERATURE

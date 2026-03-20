@@ -33,15 +33,18 @@ async def async_setup_entry(
     model_class = model_to_class.get(model)
     if model_class:
         available_selects = []
+        unavailable_selects = []
 
         for cls in reversed(model_class.__mro__):
             cls_available_selects = getattr(cls, "AVAILABLE_SELECTS", [])
             available_selects.extend(cls_available_selects)
+            cls_unavailable_selects = getattr(cls, "UNAVAILABLE_SELECTS", [])
+            unavailable_selects.extend(cls_unavailable_selects)
 
         selects = [
             PhilipsSelect(hass, entry, config_entry_data, select)
             for select in SELECT_TYPES
-            if select in available_selects
+            if select in available_selects and select not in unavailable_selects
         ]
 
         async_add_entities(selects, update_before_add=False)

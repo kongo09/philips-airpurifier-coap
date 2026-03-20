@@ -1613,6 +1613,7 @@ class PhilipsAC4220(PhilipsAC22xx):
     """AC4220."""
 
     AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_GAS_PREFERRED_INDEX]
+    UNAVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_PREFERRED_INDEX]
 
 
 class PhilipsAC4221(PhilipsAC4220):

@@ -1677,6 +1677,10 @@ class PhilipsAC4236(PhilipsGenericFan):
     AVAILABLE_SELECTS: ClassVar = [PhilipsApi.PREFERRED_INDEX]
 
 
+class PhilipsAC4231(PhilipsAC4236):
+    """AC4231."""
+
+
 class PhilipsAC4558(PhilipsGenericFan):
     """AC4558."""
 
@@ -2223,6 +2227,7 @@ model_to_class = {
     FanModel.AC3858_86: PhilipsAC385886,
     FanModel.AC4220: PhilipsAC4220,
     FanModel.AC4221: PhilipsAC4221,
+    FanModel.AC4231: PhilipsAC4231,
     FanModel.AC4236: PhilipsAC4236,
     FanModel.AC4550: PhilipsAC4550,
     FanModel.AC4558: PhilipsAC4558,

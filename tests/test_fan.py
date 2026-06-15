@@ -49,6 +49,16 @@ async def test_fan_turn_on_raises_on_client_error(hass: HomeAssistant, make_runt
         await entities[0].async_turn_on()
 
 
+@pytest.mark.parametrize("model", ["AC2210", "AC2220", "AC2221", "AC3021"])
+async def test_newly_supported_models(hass: HomeAssistant, make_runtime, model: str) -> None:
+    """Models ported from upstream create a fan with the expected unique_id."""
+    status = {PhilipsApi.DEVICE_ID: "ABCD1234567890", PhilipsApi.WIFI_VERSION: "v"}
+    entities, _ = await _setup(hass, make_runtime, model, status)
+    assert len(entities) == 1
+    assert entities[0].unique_id == f"{model}-ABCD1234567890"
+    assert entities[0].preset_modes  # the ported preset map is wired up
+
+
 async def test_fan_unsupported_model_creates_nothing(hass: HomeAssistant, make_runtime) -> None:
     """An unknown model logs an error and creates no fan entity."""
     entry, runtime = make_runtime(model="AC3033")

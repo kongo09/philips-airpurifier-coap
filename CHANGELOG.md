@@ -22,6 +22,8 @@ automations and history are preserved.
 
 ### Added
 - Options flow to configure the filter-alert threshold per config entry.
+- Support for AC2210, AC2220, AC2221 and AC3021, plus a new DHCP discovery
+  address (ported from upstream).
 - `loggers` declared in `manifest.json`.
 - Exhaustive pytest suite (~91% coverage).
 
@@ -36,6 +38,8 @@ automations and history are preserved.
 - `helpers.ping_sweep` always returned an empty set; `fan.async_set_percentage` could crash
   on an unknown speed.
 - Device actions now raise `HomeAssistantError` on client failure.
+- AC0950/AC0951 and AC3420/AC3421 fan presets, and the icon listing view
+  (ported from upstream).
 
 ### Removed
 - Dead code: `timer.py`, unused constants (`TEST_ON`, `DATA_KEY_*`, `FanUnits`, …) and

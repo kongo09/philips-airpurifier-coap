@@ -317,8 +317,8 @@ class PhilipsAC2959(PhilipsAC29xx):
     """AC2959."""
 
 
-class PhilipsAC303x(PhilipsGenericFan):
-    """AC30xx family."""
+class PhilipsAC3021(PhilipsGenericFan):
+    """AC3021."""
 
     AVAILABLE_PRESET_MODES = {
         PresetMode.AUTO: {PhilipsApi.POWER: "1", PhilipsApi.MODE: "AG"},
@@ -372,6 +372,11 @@ class PhilipsAC303x(PhilipsGenericFan):
         },
     }
     AVAILABLE_SELECTS = [PhilipsApi.GAS_PREFERRED_INDEX]
+
+
+class PhilipsAC303x(PhilipsAC3021):
+    """AC30xx family."""
+
     AVAILABLE_SWITCHES = [PhilipsApi.CHILD_LOCK]
 
 

@@ -69,11 +69,12 @@ class ListingView(HomeAssistantView):
 
     requires_auth = False
 
-    def __init__(self, url, iconpath) -> None:
+    def __init__(self, url, iconpath, hass: HomeAssistant) -> None:
         """Initialize the ListingView with a URL and icon path."""
         self.url = url
         self.iconpath = iconpath
         self.name = "Icon Listing"
+        self.hass = hass
 
     async def get(self, request, *args):
         """Call executor to avoid blocking I/O call to get list of used icons."""
@@ -107,7 +108,7 @@ async def async_setup(hass: HomeAssistant, config) -> bool:
     await hass.http.async_register_static_paths(
         [StaticPathConfig(ICONS_URL + "/" + iset, iconpath, True)]
     )
-    hass.http.register_view(ListingView(ICONLIST_URL + "/" + iset, iconpath))
+    hass.http.register_view(ListingView(ICONLIST_URL + "/" + iset, iconpath, hass))
 
     return True
 

@@ -243,6 +243,6 @@ def test_listing_view_lists_icons() -> None:
     from custom_components.philips_airpurifier_coap import ListingView, __file__ as init_file
 
     iconpath = os.path.join(os.path.dirname(init_file), "icons", "pap")
-    view = ListingView("/url", iconpath)
+    view = ListingView("/url", iconpath, None)
     icons = json.loads(view.get_icons_list(iconpath))
     assert any("allergen_mode" in icon["name"] for icon in icons)

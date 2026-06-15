@@ -82,7 +82,7 @@ jobs:
           pytest tests/ -v --tb=short \
             --cov=custom_components/philips_airpurifier_coap \
             --cov-report=xml --cov-report=term-missing \
-            --cov-fail-under=88
+            --cov-fail-under=98
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4

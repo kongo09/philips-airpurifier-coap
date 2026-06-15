@@ -1,198 +1,360 @@
-"""Philips Air Purifier & Humidifier Sensors."""
+"""Philips Air Purifier & Humidifier sensors."""
 
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import timedelta
 import logging
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.sensor import ATTR_STATE_CLASS, SensorEntity
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+    SensorStateClass,
+)
 from homeassistant.const import (
-    ATTR_DEVICE_CLASS,
-    CONF_ENTITY_CATEGORY,
+    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
     PERCENTAGE,
+    SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
     EntityCategory,
+    UnitOfTemperature,
     UnitOfTime,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import PlatformNotReady
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
-from .config_entry_data import ConfigEntryData
-from .const import (
-    DOMAIN,
-    EXTRA_SENSOR_TYPES,
-    FILTER_TYPES,
-    SENSOR_TYPES,
-    FanAttributes,
-    PhilipsApi,
-)
-from .devices import PhilipsEntity, model_to_class
+from .const import ICON, FanAttributes, PhilipsApi
+from .devices import PhilipsEntity, collect_class_attribute, model_to_class
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+
+    from .config_entry_data import ConfigEntryData
+    from .const import PhilipsConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
+
+PARALLEL_UPDATES = 0
+
+IconMap = tuple[tuple[float, str], ...]
+
+
+def _icon_from_map(value: Any, icon_map: IconMap | None) -> str | None:
+    """Pick the icon for ``value`` from an ascending (level, icon) map."""
+    if not icon_map:
+        return None
+    icon = icon_map[0][1]
+    try:
+        numeric = int(value)
+    except (TypeError, ValueError):
+        return icon
+    for level, level_icon in icon_map:
+        if numeric >= level:
+            icon = level_icon
+    return icon
+
+
+@dataclass(frozen=True, kw_only=True)
+class PhilipsSensorEntityDescription(SensorEntityDescription):
+    """Describe a Philips sensor entity."""
+
+    value_fn: Callable[[Any, dict], StateType] | None = None
+    icon_map: IconMap | None = None
+
+
+@dataclass(frozen=True, kw_only=True)
+class PhilipsFilterEntityDescription(SensorEntityDescription):
+    """Describe a Philips filter sensor entity."""
+
+    icon_map: IconMap | None = None
+    total_key: str = ""
+    type_key: str = ""
+
+
+SENSOR_TYPES: tuple[PhilipsSensorEntityDescription, ...] = (
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.INDOOR_ALLERGEN_INDEX,
+        translation_key=FanAttributes.INDOOR_ALLERGEN_INDEX,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.NEW_INDOOR_ALLERGEN_INDEX,
+        translation_key=FanAttributes.INDOOR_ALLERGEN_INDEX,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.NEW2_INDOOR_ALLERGEN_INDEX,
+        translation_key=FanAttributes.INDOOR_ALLERGEN_INDEX,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.PM25,
+        device_class=SensorDeviceClass.PM25,
+        translation_key=FanAttributes.PM25,
+        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.NEW_PM25,
+        device_class=SensorDeviceClass.PM25,
+        translation_key=FanAttributes.PM25,
+        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.NEW2_PM25,
+        device_class=SensorDeviceClass.PM25,
+        translation_key=FanAttributes.PM25,
+        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.NEW2_GAS,
+        translation_key=FanAttributes.GAS,
+        native_unit_of_measurement="L",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.TOTAL_VOLATILE_ORGANIC_COMPOUNDS,
+        translation_key=FanAttributes.TOTAL_VOLATILE_ORGANIC_COMPOUNDS,
+        native_unit_of_measurement="L",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.HUMIDITY,
+        device_class=SensorDeviceClass.HUMIDITY,
+        translation_key=FanAttributes.HUMIDITY,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.NEW2_HUMIDITY,
+        device_class=SensorDeviceClass.HUMIDITY,
+        translation_key=FanAttributes.HUMIDITY,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.NEW2_REMAINING_TIME,
+        device_class=SensorDeviceClass.DURATION,
+        translation_key=FanAttributes.TIME_REMAINING,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfTime.MINUTES,
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.TEMPERATURE,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        translation_key=FanAttributes.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        icon_map=(
+            (0, "mdi:thermometer-low"),
+            (17, "mdi:thermometer"),
+            (23, "mdi:thermometer-high"),
+        ),
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.NEW2_TEMPERATURE,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        translation_key=FanAttributes.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        value_fn=lambda value, _: value / 10,
+        icon_map=(
+            (0, "mdi:thermometer-low"),
+            (17, "mdi:thermometer"),
+            (23, "mdi:thermometer-high"),
+        ),
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.WATER_LEVEL,
+        translation_key=FanAttributes.WATER_LEVEL,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda value, status: (
+            0 if status.get(PhilipsApi.ERROR_CODE) in (32768, 49408) else value
+        ),
+        icon_map=((0, ICON.WATER_REFILL), (10, "mdi:water")),
+    ),
+    PhilipsSensorEntityDescription(
+        key=PhilipsApi.RSSI,
+        device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+        translation_key=FanAttributes.RSSI,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        icon_map=(
+            (-150, "mdi:wifi-strength-off-outline"),
+            (-90, "mdi:wifi-strength-outline"),
+            (-80, "mdi:wifi-strength-1"),
+            (-70, "mdi:wifi-strength-2"),
+            (-67, "mdi:wifi-strength-3"),
+            (-30, "mdi:wifi-strength-4"),
+        ),
+    ),
+)
+
+
+FILTER_TYPES: tuple[PhilipsFilterEntityDescription, ...] = (
+    PhilipsFilterEntityDescription(
+        key=PhilipsApi.FILTER_PRE,
+        translation_key=FanAttributes.FILTER_PRE,
+        icon_map=((0, ICON.FILTER_REPLACEMENT), (72, "mdi:dots-grid")),
+        total_key=PhilipsApi.FILTER_PRE_TOTAL,
+        type_key=PhilipsApi.FILTER_PRE_TYPE,
+    ),
+    PhilipsFilterEntityDescription(
+        key=PhilipsApi.FILTER_HEPA,
+        translation_key=FanAttributes.FILTER_HEPA,
+        icon_map=((0, ICON.FILTER_REPLACEMENT), (72, "mdi:dots-grid")),
+        total_key=PhilipsApi.FILTER_HEPA_TOTAL,
+        type_key=PhilipsApi.FILTER_HEPA_TYPE,
+    ),
+    PhilipsFilterEntityDescription(
+        key=PhilipsApi.FILTER_ACTIVE_CARBON,
+        translation_key=FanAttributes.FILTER_ACTIVE_CARBON,
+        icon_map=((0, ICON.FILTER_REPLACEMENT), (72, "mdi:dots-grid")),
+        total_key=PhilipsApi.FILTER_ACTIVE_CARBON_TOTAL,
+        type_key=PhilipsApi.FILTER_ACTIVE_CARBON_TYPE,
+    ),
+    PhilipsFilterEntityDescription(
+        key=PhilipsApi.FILTER_WICK,
+        translation_key=FanAttributes.FILTER_WICK,
+        icon_map=((0, ICON.PREFILTER_WICK_CLEANING), (72, "mdi:dots-grid")),
+        total_key=PhilipsApi.FILTER_WICK_TOTAL,
+        type_key=PhilipsApi.FILTER_WICK_TYPE,
+    ),
+    PhilipsFilterEntityDescription(
+        key=PhilipsApi.FILTER_NANOPROTECT,
+        translation_key=FanAttributes.FILTER_NANOPROTECT,
+        icon_map=((0, ICON.FILTER_REPLACEMENT), (10, ICON.NANOPROTECT_FILTER)),
+        total_key=PhilipsApi.FILTER_NANOPROTECT_TOTAL,
+        type_key=PhilipsApi.FILTER_NANOPROTECT_TYPE,
+    ),
+    PhilipsFilterEntityDescription(
+        key=PhilipsApi.FILTER_NANOPROTECT_PREFILTER,
+        translation_key=FanAttributes.FILTER_NANOPROTECT_CLEAN,
+        icon_map=((0, ICON.PREFILTER_CLEANING), (10, ICON.NANOPROTECT_FILTER)),
+        total_key=PhilipsApi.FILTER_NANOPROTECT_CLEAN_TOTAL,
+        type_key="",
+    ),
+    PhilipsFilterEntityDescription(
+        key=PhilipsApi.NEW2_FILTER_NANOPROTECT,
+        translation_key=FanAttributes.FILTER_NANOPROTECT,
+        icon_map=((0, ICON.FILTER_REPLACEMENT), (10, ICON.NANOPROTECT_FILTER)),
+        total_key=PhilipsApi.NEW2_FILTER_NANOPROTECT_TOTAL,
+        type_key="",
+    ),
+    PhilipsFilterEntityDescription(
+        key=PhilipsApi.NEW2_FILTER_NANOPROTECT_PREFILTER,
+        translation_key=FanAttributes.FILTER_NANOPROTECT_CLEAN,
+        icon_map=((0, ICON.PREFILTER_CLEANING), (10, ICON.NANOPROTECT_FILTER)),
+        total_key=PhilipsApi.NEW2_FILTER_NANOPROTECT_PREFILTER_TOTAL,
+        type_key="",
+    ),
+)
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: Callable[[list[Entity], bool], None],
+    entry: PhilipsConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up platform for sensor."""
-
-    config_entry_data: ConfigEntryData = hass.data[DOMAIN][entry.entry_id]
-
+    """Set up the sensor platform."""
+    config_entry_data = entry.runtime_data
     model = config_entry_data.device_information.model
-    status = config_entry_data.latest_status
+    status = config_entry_data.latest_status or {}
 
     model_class = model_to_class.get(model)
-    unavailable_filters = []
     unavailable_sensors = []
-    extra_sensors = []
-
+    unavailable_filters = []
     if model_class:
-        for cls in reversed(model_class.__mro__):
-            cls_unavailable_filters = getattr(cls, "UNAVAILABLE_FILTERS", [])
-            unavailable_filters.extend(cls_unavailable_filters)
-            cls_unavailable_sensors = getattr(cls, "UNAVAILABLE_SENSORS", [])
-            unavailable_sensors.extend(cls_unavailable_sensors)
-            cls_extra_sensors = getattr(cls, "EXTRA_SENSORS", [])
-            extra_sensors.extend(cls_extra_sensors)
+        unavailable_sensors = collect_class_attribute(model_class, "UNAVAILABLE_SENSORS")
+        unavailable_filters = collect_class_attribute(model_class, "UNAVAILABLE_FILTERS")
 
-    sensors = (
-        [
-            PhilipsSensor(hass, entry, config_entry_data, sensor)
-            for sensor in SENSOR_TYPES
-            if sensor in status and sensor not in unavailable_sensors
-        ]
-        + [
-            PhilipsSensor(hass, entry, config_entry_data, sensor)
-            for sensor in EXTRA_SENSOR_TYPES
-            if sensor in status and sensor in extra_sensors
-        ]
-        + [
-            PhilipsFilterSensor(hass, entry, config_entry_data, _filter)
-            for _filter in FILTER_TYPES
-            if _filter in status and _filter not in unavailable_filters
-        ]
+    entities: list[SensorEntity] = [
+        PhilipsSensor(hass, entry, config_entry_data, description)
+        for description in SENSOR_TYPES
+        if description.key in status and description.key not in unavailable_sensors
+    ]
+    entities.extend(
+        PhilipsFilterSensor(hass, entry, config_entry_data, description)
+        for description in FILTER_TYPES
+        if description.key in status and description.key not in unavailable_filters
     )
 
-    async_add_entities(sensors, update_before_add=False)
+    async_add_entities(entities)
 
 
 class PhilipsSensor(PhilipsEntity, SensorEntity):
     """Define a Philips AirPurifier sensor."""
 
+    entity_description: PhilipsSensorEntityDescription
+
     def __init__(
         self,
         hass: HomeAssistant,
         config: ConfigEntry,
         config_entry_data: ConfigEntryData,
-        kind: str,
+        description: PhilipsSensorEntityDescription,
     ) -> None:
         """Initialize the sensor."""
-
         super().__init__(hass, config, config_entry_data)
-
-        self._model = config_entry_data.device_information.model
-
-        # the sensor could be a normal sensor or an extra sensor
-        if kind in SENSOR_TYPES:
-            self._description = SENSOR_TYPES[kind]
-        else:
-            self._description = EXTRA_SENSOR_TYPES[kind]
-
-        self._icon_map = self._description.get(FanAttributes.ICON_MAP)
-        self._norm_icon = (
-            next(iter(self._icon_map.items()))[1] if self._icon_map is not None else None
-        )
-        self._attr_state_class = self._description.get(ATTR_STATE_CLASS)
-        self._attr_device_class = self._description.get(ATTR_DEVICE_CLASS)
-        self._attr_entity_category = self._description.get(CONF_ENTITY_CATEGORY)
-        self._attr_translation_key = self._description.get(FanAttributes.LABEL)
-        self._attr_native_unit_of_measurement = self._description.get(FanAttributes.UNIT)
+        self.entity_description = description
 
         model = config_entry_data.device_information.model
         device_id = config_entry_data.device_information.device_id
-        self._attr_unique_id = f"{model}-{device_id}-{kind.lower()}"
-
-        self._attrs: dict[str, Any] = {}
-        self.kind = kind
+        self._attr_unique_id = f"{model}-{device_id}-{description.key.lower()}"
 
     @property
     def native_value(self) -> StateType:
         """Return the native value of the sensor."""
-        value = self._device_status[self.kind]
-        convert = self._description.get(FanAttributes.VALUE)
-        if convert:
-            value = convert(value, self._device_status)
-        return cast(StateType, value)
+        value = self._device_status.get(self.entity_description.key)
+        if value is None:
+            return None
+        if self.entity_description.value_fn is not None:
+            return self.entity_description.value_fn(value, self._device_status)
+        return value
 
     @property
-    def icon(self) -> str:
+    def icon(self) -> str | None:
         """Return the icon of the sensor."""
-
-        # if the sensor has an icon map, use it to determine the icon
-        # otherwise, we return the default icon, which might be None and then uses icon translation
-        icon = self._norm_icon
-        if not self._icon_map:
-            return icon
-
-        value = int(self.native_value)
-        for level_value, level_icon in self._icon_map.items():
-            if value >= level_value:
-                icon = level_icon
-        return icon
+        return _icon_from_map(self.native_value, self.entity_description.icon_map)
 
 
 class PhilipsFilterSensor(PhilipsEntity, SensorEntity):
     """Define a Philips AirPurifier filter sensor."""
 
+    entity_description: PhilipsFilterEntityDescription
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
     def __init__(
         self,
         hass: HomeAssistant,
         config: ConfigEntry,
         config_entry_data: ConfigEntryData,
-        kind: str,
+        description: PhilipsFilterEntityDescription,
     ) -> None:
         """Initialize the filter sensor."""
-
         super().__init__(hass, config, config_entry_data)
+        self.entity_description = description
 
-        self._model = config_entry_data.device_information.model
-
-        self._description = FILTER_TYPES[kind]
-        self._icon_map = self._description.get(FanAttributes.ICON_MAP)
-        self._norm_icon = (
-            next(iter(self._icon_map.items()))[1] if self._icon_map is not None else None
-        )
-        self._attr_entity_category = EntityCategory.DIAGNOSTIC
-
-        self._value_key = kind
-        self._total_key = self._description[FanAttributes.TOTAL]
-        self._type_key = self._description[FanAttributes.TYPE]
-        self._attr_translation_key = self._description.get(FanAttributes.LABEL)
+        self._value_key = description.key
+        self._total_key = description.total_key
+        self._type_key = description.type_key
 
         if self._has_total:
             self._attr_native_unit_of_measurement = PERCENTAGE
         else:
             self._attr_native_unit_of_measurement = UnitOfTime.HOURS
 
-        try:
-            device_id = self._device_status[PhilipsApi.DEVICE_ID]
-            self._attr_unique_id = (
-                f"{self._model}-{device_id}-{self._description[FanAttributes.LABEL]}"
-            )
-        except KeyError as e:
-            _LOGGER.error("Failed retrieving unique_id due to missing key: %s", e)
-            raise PlatformNotReady from e
-        except TypeError as e:
-            _LOGGER.error("Failed retrieving unique_id due to type error: %s", e)
-            raise PlatformNotReady from e
-
-        self._attrs: dict[str, Any] = {}
+        model = config_entry_data.device_information.model
+        device_id = config_entry_data.device_information.device_id
+        self._attr_unique_id = f"{model}-{device_id}-{description.translation_key}"
 
     @property
     def native_value(self) -> StateType:
@@ -204,13 +366,13 @@ class PhilipsFilterSensor(PhilipsEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return the extra state attributes of the filter sensor."""
-        if self._type_key in self._device_status:
-            self._attrs[FanAttributes.TYPE] = self._device_status[self._type_key]
-        # self._attrs[ATTR_RAW] = self._value
+        attrs: dict[str, Any] = {}
+        if self._type_key and self._type_key in self._device_status:
+            attrs[FanAttributes.TYPE] = self._device_status[self._type_key]
         if self._has_total:
-            self._attrs[FanAttributes.TOTAL] = self._total
-            self._attrs[FanAttributes.TIME_REMAINING] = self._time_remaining
-        return self._attrs
+            attrs[FanAttributes.TOTAL] = self._total
+            attrs[FanAttributes.TIME_REMAINING] = self._time_remaining
+        return attrs
 
     @property
     def _has_total(self) -> bool:
@@ -233,17 +395,6 @@ class PhilipsFilterSensor(PhilipsEntity, SensorEntity):
         return self._device_status[self._total_key]
 
     @property
-    def icon(self) -> str:
-        """Return the icon of the sensor."""
-
-        # if the sensor has an icon map, use it to determine the icon
-        # otherwise, we return the default icon, which might be None and then uses icon translation
-        icon = self._norm_icon
-        if not self._icon_map:
-            return icon
-
-        value = int(self.native_value)
-        for level_value, level_icon in self._icon_map.items():
-            if value >= level_value:
-                icon = level_icon
-        return icon
+    def icon(self) -> str | None:
+        """Return the icon of the filter sensor."""
+        return _icon_from_map(self.native_value, self.entity_description.icon_map)

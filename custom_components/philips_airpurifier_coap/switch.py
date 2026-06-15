@@ -1,101 +1,144 @@
-"""Philips Air Purifier & Humidifier Switches."""
+"""Philips Air Purifier & Humidifier switches."""
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from dataclasses import dataclass
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.switch import SwitchEntity
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_DEVICE_CLASS, CONF_ENTITY_CATEGORY
+from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .config_entry_data import ConfigEntryData
-from .const import DOMAIN, SWITCH_OFF, SWITCH_ON, SWITCH_TYPES, FanAttributes
-from .devices import PhilipsEntity, model_to_class
+from .const import FanAttributes, PhilipsApi
+from .devices import PhilipsEntity, collect_class_attribute, model_to_class
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+
+    from .config_entry_data import ConfigEntryData
+    from .const import PhilipsConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
+
+PARALLEL_UPDATES = 0
+
+
+@dataclass(frozen=True, kw_only=True)
+class PhilipsSwitchEntityDescription(SwitchEntityDescription):
+    """Describe a Philips switch entity."""
+
+    on_value: Any = None
+    off_value: Any = None
+
+
+SWITCH_TYPES: tuple[PhilipsSwitchEntityDescription, ...] = (
+    PhilipsSwitchEntityDescription(
+        key=PhilipsApi.CHILD_LOCK,
+        translation_key=FanAttributes.CHILD_LOCK,
+        entity_category=EntityCategory.CONFIG,
+        on_value=True,
+        off_value=False,
+    ),
+    PhilipsSwitchEntityDescription(
+        key=PhilipsApi.NEW2_CHILD_LOCK,
+        translation_key=FanAttributes.CHILD_LOCK,
+        entity_category=EntityCategory.CONFIG,
+        on_value=1,
+        off_value=0,
+    ),
+    PhilipsSwitchEntityDescription(
+        key=PhilipsApi.NEW2_BEEP,
+        translation_key=FanAttributes.BEEP,
+        entity_category=EntityCategory.CONFIG,
+        on_value=100,
+        off_value=0,
+    ),
+    PhilipsSwitchEntityDescription(
+        key=PhilipsApi.NEW2_STANDBY_SENSORS,
+        translation_key=FanAttributes.STANDBY_SENSORS,
+        on_value=1,
+        off_value=0,
+    ),
+    PhilipsSwitchEntityDescription(
+        key=PhilipsApi.NEW2_AUTO_PLUS_AI,
+        translation_key=FanAttributes.AUTO_PLUS,
+        on_value=1,
+        off_value=0,
+    ),
+    PhilipsSwitchEntityDescription(
+        key=PhilipsApi.NEW2_AUTO_QUICKDRY_MODE,
+        translation_key=FanAttributes.AUTO_QUICKDRY_MODE,
+        on_value=1,
+        off_value=0,
+    ),
+    PhilipsSwitchEntityDescription(
+        key=PhilipsApi.NEW2_QUICKDRY_MODE,
+        translation_key=FanAttributes.QUICKDRY_MODE,
+        on_value=1,
+        off_value=0,
+    ),
+)
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: Callable[[list[Entity], bool], None],
+    entry: PhilipsConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up platform for switch."""
-
-    config_entry_data: ConfigEntryData = hass.data[DOMAIN][entry.entry_id]
-
+    """Set up the switch platform."""
+    config_entry_data = entry.runtime_data
     model = config_entry_data.device_information.model
 
     model_class = model_to_class.get(model)
-    if model_class:
-        available_switches = []
-
-        for cls in reversed(model_class.__mro__):
-            cls_available_switches = getattr(cls, "AVAILABLE_SWITCHES", [])
-            available_switches.extend(cls_available_switches)
-
-        switches = [
-            PhilipsSwitch(hass, entry, config_entry_data, switch)
-            for switch in SWITCH_TYPES
-            if switch in available_switches
-        ]
-
-        async_add_entities(switches, update_before_add=False)
-
-    else:
+    if model_class is None:
         _LOGGER.error("Unsupported model: %s", model)
         return
+
+    available_switches = collect_class_attribute(model_class, "AVAILABLE_SWITCHES")
+    async_add_entities(
+        PhilipsSwitch(hass, entry, config_entry_data, description)
+        for description in SWITCH_TYPES
+        if description.key in available_switches
+    )
 
 
 class PhilipsSwitch(PhilipsEntity, SwitchEntity):
     """Define a Philips AirPurifier switch."""
 
-    _attr_is_on: bool | None = False
+    entity_description: PhilipsSwitchEntityDescription
 
     def __init__(
         self,
         hass: HomeAssistant,
         config: ConfigEntry,
         config_entry_data: ConfigEntryData,
-        switch: str,
+        description: PhilipsSwitchEntityDescription,
     ) -> None:
         """Initialize the switch."""
-
         super().__init__(hass, config, config_entry_data)
-
-        self._model = config_entry_data.device_information.model
-
-        self._description = SWITCH_TYPES[switch]
-        self._on = self._description.get(SWITCH_ON)
-        self._off = self._description.get(SWITCH_OFF)
-        self._attr_device_class = self._description.get(ATTR_DEVICE_CLASS)
-        self._attr_translation_key = self._description.get(FanAttributes.LABEL)
-        self._attr_entity_category = self._description.get(CONF_ENTITY_CATEGORY)
+        self.entity_description = description
 
         model = config_entry_data.device_information.model
         device_id = config_entry_data.device_information.device_id
-        self._attr_unique_id = f"{model}-{device_id}-{switch.lower()}"
-
-        self._attrs: dict[str, Any] = {}
-        self.kind = switch
+        self._attr_unique_id = f"{model}-{device_id}-{description.key.lower()}"
 
     @property
-    def is_on(self) -> bool:
-        """Return if switch is on."""
-        return self._device_status.get(self.kind) != self._off
+    def is_on(self) -> bool | None:
+        """Return True if the switch is on."""
+        if self.entity_description.key not in self._device_status:
+            return None
+        return self._device_status[self.entity_description.key] != self.entity_description.off_value
 
-    async def async_turn_on(self, **kwargs) -> None:
-        """Switch the switch on."""
-        await self.coordinator.client.set_control_value(self.kind, self._on)
-        self._device_status[self.kind] = self._on
-        self._handle_coordinator_update()
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        """Turn the switch on."""
+        await self._async_set_control_value(
+            self.entity_description.key, self.entity_description.on_value
+        )
 
-    async def async_turn_off(self, **kwargs) -> None:
-        """Switch the switch off."""
-        await self.coordinator.client.set_control_value(self.kind, self._off)
-        self._device_status[self.kind] = self._off
-        self._handle_coordinator_update()
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        """Turn the switch off."""
+        await self._async_set_control_value(
+            self.entity_description.key, self.entity_description.off_value
+        )

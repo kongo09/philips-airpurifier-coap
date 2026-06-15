@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.fan import FanEntity, FanEntityFeature
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, DeviceInfo
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util.percentage import (
     ordered_list_item_to_percentage,
     percentage_to_ordered_list_item,
@@ -26,10 +26,14 @@ from ..const import (
     PhilipsApi,
     PresetMode,
 )
+from ..coordinator import Coordinator
 from ..helpers import extract_model
 
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
 
-class PhilipsEntity(Entity):
+
+class PhilipsEntity(CoordinatorEntity[Coordinator]):
     """Class to represent a generic Philips entity."""
 
     _attr_has_entity_name = True
@@ -42,12 +46,11 @@ class PhilipsEntity(Entity):
     ) -> None:
         """Initialize the PhilipsEntity."""
 
-        super().__init__()
+        super().__init__(config_entry_data.coordinator)
 
         self.hass = hass
         self.config_entry = entry
         self.config_entry_data = config_entry_data
-        self.coordinator = self.config_entry_data.coordinator
 
         name = self.config_entry_data.device_information.name
         model = extract_model(self._device_status)
@@ -61,30 +64,18 @@ class PhilipsEntity(Entity):
             identifiers={(DOMAIN, self._device_status[PhilipsApi.DEVICE_ID])},
             connections={(CONNECTION_NETWORK_MAC, self.config_entry_data.device_information.mac)}
             if self.config_entry_data.device_information.mac is not None
-            else None,
+            else set(),
         )
 
     @property
-    def should_poll(self) -> bool:
-        """No need to poll. Coordinator notifies entity of updates."""
-        return False
-
-    @property
-    def available(self):
+    def available(self) -> bool:
         """Return if the device is available."""
-        return self.coordinator.status is not None
+        return self.coordinator.last_update_success and self.coordinator.data is not None
 
     @property
     def _device_status(self) -> dict[str, Any]:
         """Return the status of the device."""
-        return self.coordinator.status
-
-    async def async_added_to_hass(self) -> None:
-        """Register with hass that routine got added."""
-
-        remove_callback = self.coordinator.async_add_listener(self._handle_coordinator_update)
-
-        self.async_on_remove(remove_callback)
+        return self.coordinator.data or {}
 
     @callback
     def _handle_coordinator_update(self) -> None:
@@ -92,13 +83,35 @@ class PhilipsEntity(Entity):
         self.config_entry_data.latest_status = self._device_status
         self.async_write_ha_state()
 
+    async def _async_set_control_value(self, key: str, value: Any) -> None:
+        """Send a single control value and optimistically update local state."""
+        try:
+            await self.coordinator.client.set_control_value(key, value)
+        except Exception as ex:  # noqa: BLE001 - surface any client error to the user
+            raise HomeAssistantError(
+                f"Failed to send command to {self.config_entry_data.device_information.name}"
+            ) from ex
+        self._device_status[key] = value
+        self._handle_coordinator_update()
+
+    async def _async_set_control_values(self, data: dict[str, Any]) -> None:
+        """Send several control values and optimistically update local state."""
+        try:
+            await self.coordinator.client.set_control_values(data=data)
+        except Exception as ex:  # noqa: BLE001 - surface any client error to the user
+            raise HomeAssistantError(
+                f"Failed to send command to {self.config_entry_data.device_information.name}"
+            ) from ex
+        self._device_status.update(data)
+        self._handle_coordinator_update()
+
 
 class PhilipsGenericControlBase(PhilipsEntity):
     """Class as basis for control entities of a Philips device."""
 
-    AVAILABLE_ATTRIBUTES = []
-    AVAILABLE_PRESET_MODES = {}
-    REPLACE_PRESET = None
+    AVAILABLE_ATTRIBUTES: list[tuple[Any, ...]] = []
+    AVAILABLE_PRESET_MODES: dict[str, dict[str, Any]] = {}
+    REPLACE_PRESET: tuple[str, str] | None = None
 
     _attr_name = None
     _attr_translation_key = PAP
@@ -113,11 +126,11 @@ class PhilipsGenericControlBase(PhilipsEntity):
 
         super().__init__(hass, entry, config_entry_data)
 
-        self._available_attributes = []
+        self._available_attributes: list[tuple[Any, ...]] = []
         self._collect_available_attributes()
 
-        self._preset_modes = []
-        self._available_preset_modes = {}
+        self._preset_modes: list[str] = []
+        self._available_preset_modes: dict[str, dict[str, Any]] = {}
         self._collect_available_preset_modes()
 
     def _collect_available_attributes(self):
@@ -162,7 +175,7 @@ class PhilipsGenericControlBase(PhilipsEntity):
                     value = value_map(value, self._device_status)
                 attributes.update({key: value})
 
-        device_attributes = {}
+        device_attributes: dict[str, Any] = {}
 
         for key, philips_key, *rest in self._available_attributes:
             value_map = rest[0] if len(rest) else None
@@ -174,20 +187,26 @@ class PhilipsGenericControlBase(PhilipsEntity):
 class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
     """Class as basis to manage a generic Philips fan."""
 
-    CREATE_FAN = True
+    CREATE_FAN: bool = True
 
-    AVAILABLE_SPEEDS = {}
-    REPLACE_SPEED = None
-    AVAILABLE_SWITCHES = []
-    AVAILABLE_LIGHTS = []
-    AVAILABLE_NUMBERS = []
-    AVAILABLE_BINARY_SENSORS = []
+    AVAILABLE_SPEEDS: dict[str, dict[str, Any]] = {}
+    REPLACE_SPEED: tuple[str, str] | None = None
+    AVAILABLE_SWITCHES: list[str] = []
+    AVAILABLE_LIGHTS: list[str] = []
+    AVAILABLE_NUMBERS: list[str] = []
+    AVAILABLE_BINARY_SENSORS: list[str] = []
+    AVAILABLE_SELECTS: list[str] = []
+    AVAILABLE_HEATERS: list[str] = []
+    AVAILABLE_HUMIDIFIERS: list[str] = []
+    UNAVAILABLE_FILTERS: list[str] = []
+    UNAVAILABLE_SENSORS: list[str] = []
+    EXTRA_SENSORS: list[str] = []
 
-    KEY_PHILIPS_POWER = PhilipsApi.POWER
-    STATE_POWER_ON = "1"
-    STATE_POWER_OFF = "0"
+    KEY_PHILIPS_POWER: str = PhilipsApi.POWER
+    STATE_POWER_ON: Any = "1"
+    STATE_POWER_OFF: Any = "0"
 
-    KEY_OSCILLATION = None
+    KEY_OSCILLATION: dict[str, Any] | None = None
 
     def __init__(
         self,
@@ -203,8 +222,8 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
         device_id = config_entry_data.device_information.device_id
         self._attr_unique_id = f"{model}-{device_id}"
 
-        self._speeds = []
-        self._available_speeds = {}
+        self._speeds: list[str] = []
+        self._available_speeds: dict[str, dict[str, Any]] = {}
         self._collect_available_speeds()
 
         # set the supported features of the fan
@@ -250,19 +269,11 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
             await self.async_set_percentage(percentage)
             return
 
-        await self.coordinator.client.set_control_value(self.KEY_PHILIPS_POWER, self.STATE_POWER_ON)
-
-        self._device_status[self.KEY_PHILIPS_POWER] = self.STATE_POWER_ON
-        self._handle_coordinator_update()
+        await self._async_set_control_value(self.KEY_PHILIPS_POWER, self.STATE_POWER_ON)
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the fan off."""
-        await self.coordinator.client.set_control_value(
-            self.KEY_PHILIPS_POWER, self.STATE_POWER_OFF
-        )
-
-        self._device_status[self.KEY_PHILIPS_POWER] = self.STATE_POWER_OFF
-        self._handle_coordinator_update()
+        await self._async_set_control_value(self.KEY_PHILIPS_POWER, self.STATE_POWER_OFF)
 
     @property
     def preset_modes(self) -> list[str] | None:
@@ -294,9 +305,7 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
 
         status_pattern = self._available_preset_modes.get(preset_mode)
         if status_pattern:
-            await self.coordinator.client.set_control_values(data=status_pattern)
-            self._device_status.update(status_pattern)
-            self._handle_coordinator_update()
+            await self._async_set_control_values(status_pattern)
 
     @property
     def speed_count(self) -> int:
@@ -331,13 +340,7 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
         on = values.get(SWITCH_ON)
         off = values.get(SWITCH_OFF)
 
-        if oscillating:
-            await self.coordinator.client.set_control_value(key, on)
-        else:
-            await self.coordinator.client.set_control_value(key, off)
-
-        self._device_status[key] = on if oscillating else off
-        self._handle_coordinator_update()
+        await self._async_set_control_value(key, on if oscillating else off)
 
     @property
     def percentage(self) -> int | None:
@@ -360,14 +363,12 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
 
         if percentage == 0:
             await self.async_turn_off()
-        else:
-            speed = percentage_to_ordered_list_item(self._speeds, percentage)
-            status_pattern = self._available_speeds.get(speed)
-            if status_pattern:
-                await self.coordinator.client.set_control_values(data=status_pattern)
+            return
 
-            self._device_status.update(status_pattern)
-            self._handle_coordinator_update()
+        speed = percentage_to_ordered_list_item(self._speeds, percentage)
+        status_pattern = self._available_speeds.get(speed)
+        if status_pattern:
+            await self._async_set_control_values(status_pattern)
 
     @property
     def icon(self) -> str:

@@ -1,5 +1,7 @@
 """Philips AirPurifier device classes."""
 
+from __future__ import annotations
+
 from ..const import FanModel
 from .base import (
     PhilipsEntity,
@@ -80,7 +82,7 @@ from .new_gen import (
     PhilipsNewGenericFan,
 )
 
-model_to_class = {
+model_to_class: dict[str, type[PhilipsGenericFanBase]] = {
     FanModel.AC0850_11: PhilipsAC085011,
     FanModel.AC0850_11C: PhilipsAC085011C,
     FanModel.AC0850_20: PhilipsAC085020,
@@ -140,6 +142,15 @@ model_to_class = {
     FanModel.HU5710: PhilipsHU5710,
 }
 
+
+def collect_class_attribute(model_class: type, attribute: str) -> list:
+    """Collect a list-valued class attribute across the MRO (base to leaf)."""
+    collected: list = []
+    for cls in reversed(model_class.__mro__):
+        collected.extend(getattr(cls, attribute, []))
+    return collected
+
+
 __all__ = [
     "PhilipsEntity",
     "PhilipsGenericControlBase",
@@ -147,5 +158,6 @@ __all__ = [
     "PhilipsGenericFan",
     "PhilipsNewGenericFan",
     "PhilipsNew2GenericFan",
+    "collect_class_attribute",
     "model_to_class",
 ]

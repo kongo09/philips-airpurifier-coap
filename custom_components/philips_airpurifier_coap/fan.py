@@ -2,28 +2,28 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import logging
+from typing import TYPE_CHECKING
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .config_entry_data import ConfigEntryData
-from .const import DOMAIN
 from .devices import model_to_class
+
+if TYPE_CHECKING:
+    from .const import PhilipsConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: Callable[[list[Entity], bool], None],
-):
+    entry: PhilipsConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
+) -> None:
     """Set up the fan platform."""
 
-    config_entry_data: ConfigEntryData = hass.data[DOMAIN][entry.entry_id]
+    config_entry_data = entry.runtime_data
 
     model = config_entry_data.device_information.model
 

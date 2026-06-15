@@ -1,10 +1,10 @@
-"""Philips Air Purifier & Humidifier Switches."""
+"""Philips Air Purifier & Humidifier lights."""
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from dataclasses import dataclass
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
@@ -12,93 +12,142 @@ from homeassistant.components.light import (
     EFFECT_OFF,
     ColorMode,
     LightEntity,
+    LightEntityDescription,
     LightEntityFeature,
 )
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_DEVICE_CLASS, CONF_ENTITY_CATEGORY
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .config_entry_data import ConfigEntryData
-from .const import (
-    DIMMABLE,
-    DOMAIN,
-    LIGHT_TYPES,
-    SWITCH_AUTO,
-    SWITCH_MEDIUM,
-    SWITCH_OFF,
-    SWITCH_ON,
-    FanAttributes,
-)
-from .devices import PhilipsEntity, model_to_class
+from .const import SWITCH_AUTO, FanAttributes, PhilipsApi
+from .devices import PhilipsEntity, collect_class_attribute, model_to_class
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+
+    from .config_entry_data import ConfigEntryData
+    from .const import PhilipsConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
+
+PARALLEL_UPDATES = 0
+
+
+@dataclass(frozen=True, kw_only=True)
+class PhilipsLightEntityDescription(LightEntityDescription):
+    """Describe a Philips light entity."""
+
+    on_value: Any = None
+    off_value: Any = None
+    medium_value: Any = None
+    auto_value: Any = None
+    dimmable: bool = False
+
+
+LIGHT_TYPES: tuple[PhilipsLightEntityDescription, ...] = (
+    PhilipsLightEntityDescription(
+        key=PhilipsApi.DISPLAY_BACKLIGHT,
+        translation_key=FanAttributes.DISPLAY_BACKLIGHT,
+        entity_category=EntityCategory.CONFIG,
+        on_value="1",
+        off_value="0",
+    ),
+    PhilipsLightEntityDescription(
+        key=PhilipsApi.LIGHT_BRIGHTNESS,
+        translation_key=FanAttributes.LIGHT_BRIGHTNESS,
+        entity_category=EntityCategory.CONFIG,
+        on_value=100,
+        off_value=0,
+        dimmable=True,
+    ),
+    PhilipsLightEntityDescription(
+        key=PhilipsApi.NEW_DISPLAY_BACKLIGHT,
+        translation_key=FanAttributes.DISPLAY_BACKLIGHT,
+        entity_category=EntityCategory.CONFIG,
+        on_value=100,
+        off_value=0,
+    ),
+    PhilipsLightEntityDescription(
+        key=PhilipsApi.NEW2_DISPLAY_BACKLIGHT,
+        translation_key=FanAttributes.DISPLAY_BACKLIGHT,
+        entity_category=EntityCategory.CONFIG,
+        on_value=100,
+        off_value=0,
+        dimmable=True,
+    ),
+    PhilipsLightEntityDescription(
+        key=PhilipsApi.NEW2_DISPLAY_BACKLIGHT2,
+        translation_key=FanAttributes.DISPLAY_BACKLIGHT,
+        entity_category=EntityCategory.CONFIG,
+        on_value=100,
+        off_value=0,
+        dimmable=True,
+    ),
+    PhilipsLightEntityDescription(
+        key=PhilipsApi.NEW2_DISPLAY_BACKLIGHT3,
+        translation_key=FanAttributes.DISPLAY_BACKLIGHT,
+        entity_category=EntityCategory.CONFIG,
+        on_value=123,
+        off_value=0,
+        medium_value=115,
+        auto_value=101,
+        dimmable=True,
+    ),
+    PhilipsLightEntityDescription(
+        key=PhilipsApi.NEW2_DISPLAY_BACKLIGHT4,
+        translation_key=FanAttributes.DISPLAY_BACKLIGHT,
+        entity_category=EntityCategory.CONFIG,
+        on_value=123,
+        off_value=0,
+        medium_value=115,
+        dimmable=True,
+    ),
+)
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: Callable[[list[Entity], bool], None],
+    entry: PhilipsConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up the light platform."""
-
-    config_entry_data: ConfigEntryData = hass.data[DOMAIN][entry.entry_id]
-
+    config_entry_data = entry.runtime_data
     model = config_entry_data.device_information.model
 
     model_class = model_to_class.get(model)
-    if model_class:
-        available_lights = []
-
-        for cls in reversed(model_class.__mro__):
-            cls_available_lights = getattr(cls, "AVAILABLE_LIGHTS", [])
-            available_lights.extend(cls_available_lights)
-
-        lights = [
-            PhilipsLight(hass, entry, config_entry_data, light)
-            for light in LIGHT_TYPES
-            if light in available_lights
-        ]
-
-        async_add_entities(lights, update_before_add=False)
-
-    else:
+    if model_class is None:
         _LOGGER.error("Unsupported model: %s", model)
         return
+
+    available_lights = collect_class_attribute(model_class, "AVAILABLE_LIGHTS")
+    async_add_entities(
+        PhilipsLight(hass, entry, config_entry_data, description)
+        for description in LIGHT_TYPES
+        if description.key in available_lights
+    )
 
 
 class PhilipsLight(PhilipsEntity, LightEntity):
     """Define a Philips AirPurifier light."""
 
-    _attr_is_on: bool | None = False
+    entity_description: PhilipsLightEntityDescription
 
     def __init__(
         self,
         hass: HomeAssistant,
         config: ConfigEntry,
         config_entry_data: ConfigEntryData,
-        light: str,
+        description: PhilipsLightEntityDescription,
     ) -> None:
         """Initialize the light."""
-
         super().__init__(hass, config, config_entry_data)
+        self.entity_description = description
 
-        self._model = config_entry_data.device_information.model
-
-        self._description = LIGHT_TYPES[light]
-        self._on = self._description.get(SWITCH_ON)
-        self._off = self._description.get(SWITCH_OFF)
-        self._medium = self._description.get(SWITCH_MEDIUM)
-        self._auto = self._description.get(SWITCH_AUTO)
-        self._dimmable = self._description.get(DIMMABLE)
-        self._attr_device_class = self._description.get(ATTR_DEVICE_CLASS)
-        self._attr_translation_key = self._description.get(FanAttributes.LABEL)
-        self._attr_entity_category = self._description.get(CONF_ENTITY_CATEGORY)
-
-        if self._dimmable is None:
-            self._dimmable = False
-            self._medium = None
-            self._auto = None
+        self._on = description.on_value
+        self._off = description.off_value
+        self._medium = description.medium_value
+        self._auto = description.auto_value
+        self._dimmable = description.dimmable
 
         self._attr_effect_list = None
         self._attr_effect = None
@@ -116,57 +165,55 @@ class PhilipsLight(PhilipsEntity, LightEntity):
 
         model = config_entry_data.device_information.model
         device_id = config_entry_data.device_information.device_id
-        self._attr_unique_id = f"{model}-{device_id}-{light.lower()}"
+        self._attr_unique_id = f"{model}-{device_id}-{description.key.lower()}"
 
-        self._attrs: dict[str, Any] = {}
-        self.kind = light.partition("#")[0]
+        # Some Philips keys are disambiguated with a "#" marker.
+        self._key = description.key.partition("#")[0]
 
     @property
     def is_on(self) -> bool:
-        """Return if the light is on."""
-        status = int(self._device_status.get(self.kind))
-        return int(status) != int(self._off)
+        """Return True if the light is on."""
+        value = self._device_status.get(self._key)
+        if value is None:
+            return False
+        return int(value) != int(self._off)
 
     @property
     def brightness(self) -> int | None:
         """Return the brightness of the light."""
+        if not self._dimmable:
+            return None
 
-        if self._dimmable:
-            # let's test first if the light has auto capability, and the auto effect is on
-            if self._auto and self._attr_effect == SWITCH_AUTO:
-                return None
+        if self._auto and self._attr_effect == SWITCH_AUTO:
+            return None
 
-            brightness = int(self._device_status.get(self.kind))
+        value = self._device_status.get(self._key)
+        if value is None:
+            return None
+        brightness = int(value)
 
-            # sometimes the device sets the brightness to the auto value but the integration doesn't yet know about this
-            if self._auto and brightness == int(self._auto):
-                self._attr_effect = SWITCH_AUTO
-                return None
+        # The device may switch to the auto value on its own.
+        if self._auto and brightness == int(self._auto):
+            self._attr_effect = SWITCH_AUTO
+            return None
 
-            # if the light has medium capability, and the brightness is set to medium
-            if self._medium and brightness == int(self._medium):
-                return 128
+        if self._medium and brightness == int(self._medium):
+            return 128
 
-            # if the brightness is set to off, return 0 and set the effect to off
-            if brightness == int(self._off):
-                self._attr_effect = EFFECT_OFF
-                return 0
+        if brightness == int(self._off):
+            self._attr_effect = EFFECT_OFF
+            return 0
 
-            # finally, this seems to be a truly dimmable light, so return the brightness
-            return round(255 * brightness / int(self._on))
+        return round(255 * brightness / int(self._on))
 
-        return None
-
-    async def async_turn_on(self, **kwargs) -> None:
+    async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the light on."""
+        value: Any = self._on
 
-        # first we test if the auto effect is set for this light
         if ATTR_EFFECT in kwargs:
             self._attr_effect = kwargs[ATTR_EFFECT]
             if self._attr_effect == SWITCH_AUTO:
                 value = self._auto
-
-        # no auto effect, so we test if the brightness is set
         elif self._dimmable:
             if ATTR_BRIGHTNESS in kwargs:
                 if self._medium and kwargs[ATTR_BRIGHTNESS] < 255:
@@ -176,17 +223,9 @@ class PhilipsLight(PhilipsEntity, LightEntity):
             else:
                 value = int(self._on)
 
-        # no brightness set, so we just turn the light on
-        else:
-            value = self._on
+        await self._async_set_control_value(self._key, value)
 
-        await self.coordinator.client.set_control_value(self.kind, value)
-        self._device_status[self.kind] = value
-        self._handle_coordinator_update()
-
-    async def async_turn_off(self, **kwargs) -> None:
+    async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the light off."""
         self._attr_effect = EFFECT_OFF
-        await self.coordinator.client.set_control_value(self.kind, self._off)
-        self._device_status[self.kind] = self._off
-        self._handle_coordinator_update()
+        await self._async_set_control_value(self._key, self._off)

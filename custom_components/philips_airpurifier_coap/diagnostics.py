@@ -2,15 +2,16 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.diagnostics import async_redact_data
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST
 from homeassistant.core import HomeAssistant
 
-from .config_entry_data import ConfigEntryData
-from .const import CONF_DEVICE_ID, DOMAIN
+from .const import CONF_DEVICE_ID
+
+if TYPE_CHECKING:
+    from .const import PhilipsConfigEntry
 
 TO_REDACT = {
     CONF_HOST,
@@ -23,11 +24,11 @@ TO_REDACT = {
 
 
 async def async_get_config_entry_diagnostics(
-    hass: HomeAssistant, entry: ConfigEntry
+    hass: HomeAssistant, entry: PhilipsConfigEntry
 ) -> dict[str, Any]:
     """Return diagnostics for a config entry."""
 
-    config_entry_data: ConfigEntryData = hass.data[DOMAIN][entry.entry_id]
+    config_entry_data = entry.runtime_data
 
     return {
         "entry": {

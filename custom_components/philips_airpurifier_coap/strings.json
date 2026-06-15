@@ -7,7 +7,10 @@
       "timeout": "Timeout, cannot connect to device",
       "no_host": "Could not determine device IP address",
       "no_devices_found": "No Philips devices found on the network",
-      "device_not_found": "Selected device not found"
+      "device_not_found": "Selected device not found",
+      "reauth_successful": "Re-authentication successful",
+      "reauth_different_device": "The device at this address is different from the original",
+      "reconfigure_different_device": "The device at this address is different from the original"
     },
     "step": {
       "user": {
@@ -33,6 +36,20 @@
       },
       "confirm": {
         "description": "Do you want to setup {model} {name}?"
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate device",
+        "description": "The device {name} is unreachable. Please verify or update the IP address.",
+        "data": {
+          "host": "Device hostname or IP address"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure device",
+        "description": "Update the IP address for {name}",
+        "data": {
+          "host": "Device hostname or IP address"
+        }
       }
     },
     "progress": {
@@ -40,7 +57,21 @@
     },
     "error": {
       "host": "Device address is required",
-      "connect": "Cannot connect to device"
+      "connect": "Cannot connect to device",
+      "timeout": "Timeout connecting to device"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "filter_alert_threshold": "Filter alert threshold (%)"
+        },
+        "data_description": {
+          "filter_alert_threshold": "Alert when a filter drops below this percentage"
+        }
+      }
     }
   },
   "entity": {

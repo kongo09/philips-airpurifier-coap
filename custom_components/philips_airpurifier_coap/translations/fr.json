@@ -6,11 +6,15 @@
       "model_unsupported": "Modèle non supporté",
       "no_devices_found": "Aucun appareil Philips trouvé sur le réseau",
       "no_host": "Impossible de déterminer l'adresse IP de l'appareil",
+      "reauth_different_device": "L'appareil à cette adresse est différent de l'appareil d'origine",
+      "reauth_successful": "Ré-authentification réussie",
+      "reconfigure_different_device": "L'appareil à cette adresse est différent de l'appareil d'origine",
       "timeout": "Délai dépassé, impossible de se connecter à l'appareil"
     },
     "error": {
       "connect": "Impossible de se connecter à l'appareil",
-      "host": "L'adresse de l'appareil est requise"
+      "host": "L'adresse de l'appareil est requise",
+      "timeout": "Délai dépassé lors de la connexion à l'appareil"
     },
     "progress": {
       "scanning": "Recherche des appareils Philips sur le réseau..."
@@ -31,6 +35,20 @@
         },
         "description": "{count} appareil(s) trouvé(s) sur le réseau",
         "title": "Sélectionner un appareil"
+      },
+      "reauth_confirm": {
+        "data": {
+          "host": "Nom d'hôte ou adresse IP de l'appareil"
+        },
+        "description": "L'appareil {name} est injoignable. Veuillez vérifier ou mettre à jour l'adresse IP.",
+        "title": "Ré-authentifier l'appareil"
+      },
+      "reconfigure": {
+        "data": {
+          "host": "Nom d'hôte ou adresse IP de l'appareil"
+        },
+        "description": "Mettre à jour l'adresse IP de {name}",
+        "title": "Reconfigurer l'appareil"
       },
       "user": {
         "description": "Choisissez comment ajouter votre appareil",
@@ -298,6 +316,19 @@
       },
       "standby_sensors": {
         "name": "Capteurs en veille"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "filter_alert_threshold": "Seuil d'alerte filtre (%)"
+        },
+        "data_description": {
+          "filter_alert_threshold": "Alerter lorsqu'un filtre passe sous ce pourcentage"
+        },
+        "title": "Options"
       }
     }
   },

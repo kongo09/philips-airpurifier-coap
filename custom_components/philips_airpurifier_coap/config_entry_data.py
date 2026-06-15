@@ -1,18 +1,22 @@
 """Module containing the ConfigEntryData class for the Philips Air Purifier integration."""
 
-from dataclasses import dataclass
+from __future__ import annotations
 
-from aioairctrl import CoAPClient
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
-from .coordinator import Coordinator
-from .model import DeviceInformation, DeviceStatus
+if TYPE_CHECKING:
+    from aioairctrl import CoAPClient
+
+    from .coordinator import Coordinator
+    from .model import DeviceInformation, DeviceStatus
 
 
-@dataclass
+@dataclass(slots=True)
 class ConfigEntryData:
-    """Config entry data class."""
+    """Runtime data for a Philips AirPurifier config entry."""
 
     device_information: DeviceInformation
     client: CoAPClient
     coordinator: Coordinator
-    latest_status: DeviceStatus | None = None
+    latest_status: DeviceStatus | None = field(default=None)

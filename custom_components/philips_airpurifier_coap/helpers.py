@@ -6,6 +6,8 @@ import asyncio
 import logging
 import socket
 
+from aioairctrl import CoAPClient
+
 from .const import PhilipsApi
 
 _LOGGER = logging.getLogger(__name__)
@@ -60,34 +62,29 @@ def get_active_ips_from_arp() -> list[str]:
     return active_ips
 
 
-async def ping_sweep(network_prefix: str) -> set[str]:
-    """Quick ping sweep to find active hosts using multiple methods."""
+async def ping_sweep(network_prefix: str) -> None:
+    """Send UDP probes across the subnet to populate the ARP table."""
     _LOGGER.debug("Ping sweep on %s.0/24 to discover active hosts", network_prefix)
-    active_ips = set()
 
-    async def check_port(ip: str, port: int) -> str | None:
-        """Try to connect to a port to check if host is alive."""
+    async def probe(ip: str, port: int) -> None:
+        """Send a single UDP packet to trigger an ARP entry."""
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.setblocking(False)
-            sock.settimeout(0.1)
             sock.sendto(b"\x00", (ip, port))
             sock.close()
-            return ip
-        except Exception:
-            return None
+        except OSError:
+            pass
 
-    # Send UDP packets to common ports to trigger ARP
+    # Send UDP packets to common ports to trigger ARP resolution.
     tasks = []
     for i in range(1, 255):
         ip = f"{network_prefix}.{i}"
-        tasks.append(check_port(ip, 5683))  # CoAP
-        tasks.append(check_port(ip, 80))  # HTTP
+        tasks.append(probe(ip, 5683))  # CoAP
+        tasks.append(probe(ip, 80))  # HTTP
 
     await asyncio.gather(*tasks)
     await asyncio.sleep(1)  # Wait for ARP responses
-
-    return active_ips
 
 
 async def _check_single_ip(
@@ -96,8 +93,6 @@ async def _check_single_ip(
     timeout: float,
 ) -> dict | None:
     """Check a single IP for a Philips device."""
-    from aioairctrl import CoAPClient
-
     async with semaphore:
         client = None
         try:
@@ -133,8 +128,6 @@ async def scan_for_devices(timeout: float = 8.0) -> list[dict]:
 
     Returns a list of dicts with 'ip', 'model', 'name' keys.
     """
-    import logging
-
     # Suppress noisy CoAP logs during scan
     logging.getLogger("coap").setLevel(logging.ERROR)
     logging.getLogger("aioairctrl").setLevel(logging.WARNING)

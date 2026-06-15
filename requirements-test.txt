@@ -1,0 +1,14 @@
+# Test dependencies for philips-airpurifier-coap
+# Install with: pip install -r requirements-test.txt
+
+# Core test framework
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.0.0
+
+# Home Assistant test support
+pytest-homeassistant-custom-component>=0.13.0
+
+# Runtime dependencies (needed for imports in tests)
+aioairctrl==0.2.5
+getmac==0.9.5

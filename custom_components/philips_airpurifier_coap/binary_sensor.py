@@ -1,110 +1,146 @@
-"""Philips Air Purifier & Humidifier Binary Sensors."""
+"""Philips Air Purifier & Humidifier binary sensors."""
 
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import dataclass
 import logging
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
+    BinarySensorEntityDescription,
 )
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_DEVICE_CLASS, CONF_ENTITY_CATEGORY, EntityCategory
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .config_entry_data import ConfigEntryData
 from .const import (
-    BINARY_SENSOR_TYPES,
-    DOMAIN,
-    FILTER_ALERT_THRESHOLD,
-    FILTER_TYPES,
+    CONF_FILTER_ALERT_THRESHOLD,
+    DEFAULT_FILTER_ALERT_THRESHOLD,
     FanAttributes,
+    PhilipsApi,
 )
-from .devices import PhilipsEntity, model_to_class
+from .devices import PhilipsEntity, collect_class_attribute, model_to_class
+from .sensor import FILTER_TYPES
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+
+    from .config_entry_data import ConfigEntryData
+    from .const import PhilipsConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
 
+PARALLEL_UPDATES = 0
+
 EVENT_FILTER_ALERT = "philips_filter_alert"
+
+_FILTER_BY_KEY = {description.key: description for description in FILTER_TYPES}
+
+
+@dataclass(frozen=True, kw_only=True)
+class PhilipsBinarySensorEntityDescription(BinarySensorEntityDescription):
+    """Describe a Philips binary sensor entity."""
+
+    value_fn: Callable[[Any], bool] | None = None
+
+
+BINARY_SENSOR_TYPES: tuple[PhilipsBinarySensorEntityDescription, ...] = (
+    PhilipsBinarySensorEntityDescription(
+        # the out-of-water error is encoded in bit 9 of the error number
+        key=PhilipsApi.ERROR_CODE,
+        translation_key=FanAttributes.WATER_TANK,
+        device_class=BinarySensorDeviceClass.MOISTURE,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda value: not value & (1 << 8),
+    ),
+    PhilipsBinarySensorEntityDescription(
+        key=PhilipsApi.NEW2_ERROR_CODE,
+        translation_key=FanAttributes.WATER_TANK,
+        device_class=BinarySensorDeviceClass.MOISTURE,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda value: not value & (1 << 8),
+    ),
+    PhilipsBinarySensorEntityDescription(
+        # the water container being present means humidification is on
+        key=PhilipsApi.FUNCTION,
+        translation_key=FanAttributes.HUMIDIFICATION,
+        value_fn=lambda value: value == "PH",
+    ),
+    PhilipsBinarySensorEntityDescription(
+        key=PhilipsApi.NEW2_MODE_A,
+        translation_key=FanAttributes.HUMIDIFICATION,
+        value_fn=lambda value: value == 4,
+    ),
+)
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: Callable[[list[Entity], bool], None],
+    entry: PhilipsConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up platform for binary_sensor."""
-
-    config_entry_data: ConfigEntryData = hass.data[DOMAIN][entry.entry_id]
-
+    """Set up the binary sensor platform."""
+    config_entry_data = entry.runtime_data
     model = config_entry_data.device_information.model
-    status = config_entry_data.latest_status
+    status = config_entry_data.latest_status or {}
 
     model_class = model_to_class.get(model)
     available_binary_sensors = []
     unavailable_filters = []
-
     if model_class:
-        for cls in reversed(model_class.__mro__):
-            cls_available_binary_sensors = getattr(cls, "AVAILABLE_BINARY_SENSORS", [])
-            available_binary_sensors.extend(cls_available_binary_sensors)
-            cls_unavailable_filters = getattr(cls, "UNAVAILABLE_FILTERS", [])
-            unavailable_filters.extend(cls_unavailable_filters)
+        available_binary_sensors = collect_class_attribute(model_class, "AVAILABLE_BINARY_SENSORS")
+        unavailable_filters = collect_class_attribute(model_class, "UNAVAILABLE_FILTERS")
 
-    binary_sensors: list[Entity] = [
-        PhilipsBinarySensor(hass, entry, config_entry_data, binary_sensor)
-        for binary_sensor in BINARY_SENSOR_TYPES
-        if binary_sensor in status and binary_sensor in available_binary_sensors
+    entities: list[BinarySensorEntity] = [
+        PhilipsBinarySensor(hass, entry, config_entry_data, description)
+        for description in BINARY_SENSOR_TYPES
+        if description.key in status and description.key in available_binary_sensors
     ]
 
-    # Check if device has any filter sensors, then add filter alert sensor
-    available_filters = [f for f in FILTER_TYPES if f in status and f not in unavailable_filters]
+    # Add a single filter-alert sensor when the device exposes any filter.
+    available_filters = [
+        description.key
+        for description in FILTER_TYPES
+        if description.key in status and description.key not in unavailable_filters
+    ]
     if available_filters:
-        binary_sensors.append(
-            PhilipsFilterAlertSensor(hass, entry, config_entry_data, available_filters)
-        )
+        entities.append(PhilipsFilterAlertSensor(hass, entry, config_entry_data, available_filters))
 
-    async_add_entities(binary_sensors, update_before_add=False)
+    async_add_entities(entities)
 
 
 class PhilipsBinarySensor(PhilipsEntity, BinarySensorEntity):
-    """Define a Philips AirPurifier binary_sensor."""
+    """Define a Philips AirPurifier binary sensor."""
+
+    entity_description: PhilipsBinarySensorEntityDescription
 
     def __init__(
         self,
         hass: HomeAssistant,
         config: ConfigEntry,
         config_entry_data: ConfigEntryData,
-        kind: str,
+        description: PhilipsBinarySensorEntityDescription,
     ) -> None:
         """Initialize the binary sensor."""
-
         super().__init__(hass, config, config_entry_data)
-
-        self._model = config_entry_data.device_information.model
-
-        self._description = BINARY_SENSOR_TYPES[kind]
-        self._attr_device_class = self._description.get(ATTR_DEVICE_CLASS)
-        self._attr_entity_category = self._description.get(CONF_ENTITY_CATEGORY)
-        self._attr_translation_key = self._description.get(FanAttributes.LABEL)
+        self.entity_description = description
 
         model = config_entry_data.device_information.model
         device_id = config_entry_data.device_information.device_id
-        self._attr_unique_id = f"{model}-{device_id}-{kind.lower()}"
-
-        self._attrs: dict[str, Any] = {}
-        self.kind = kind
+        self._attr_unique_id = f"{model}-{device_id}-{description.key.lower()}"
 
     @property
-    def is_on(self) -> bool:
+    def is_on(self) -> bool | None:
         """Return the state of the binary sensor."""
-        value = self._device_status[self.kind]
-        convert = self._description.get(FanAttributes.VALUE)
-        if convert:
-            value = convert(value)
-        return cast(bool, value)
+        value = self._device_status.get(self.entity_description.key)
+        if value is None:
+            return None
+        if self.entity_description.value_fn is not None:
+            return bool(self.entity_description.value_fn(value))
+        return bool(value)
 
 
 class PhilipsFilterAlertSensor(PhilipsEntity, BinarySensorEntity):
@@ -127,6 +163,9 @@ class PhilipsFilterAlertSensor(PhilipsEntity, BinarySensorEntity):
         self._filter_keys = filter_keys
         self._previous_alert_state: bool | None = None
         self._previous_low_filters: set[str] = set()
+        self._threshold = config.options.get(
+            CONF_FILTER_ALERT_THRESHOLD, DEFAULT_FILTER_ALERT_THRESHOLD
+        )
 
         model = config_entry_data.device_information.model
         device_id = config_entry_data.device_information.device_id
@@ -142,15 +181,18 @@ class PhilipsFilterAlertSensor(PhilipsEntity, BinarySensorEntity):
         """Return extra state attributes with details about low filters."""
         low_filters = self._get_low_filters()
         attrs: dict[str, Any] = {
-            "threshold": FILTER_ALERT_THRESHOLD,
+            "threshold": self._threshold,
             "low_filters": list(low_filters.keys()),
         }
-        # Add individual filter percentages
         for filter_key, percentage in low_filters.items():
-            filter_desc = FILTER_TYPES.get(filter_key, {})
-            filter_name = filter_desc.get(FanAttributes.LABEL, filter_key)
-            attrs[f"{filter_name}_percentage"] = percentage
+            attrs[f"{self._filter_name(filter_key)}_percentage"] = percentage
         return attrs
+
+    @staticmethod
+    def _filter_name(filter_key: str) -> str:
+        """Return the translation key (display name) of a filter."""
+        description = _FILTER_BY_KEY.get(filter_key)
+        return description.translation_key if description else filter_key
 
     def _get_low_filters(self) -> dict[str, float]:
         """Get filters that are below the threshold with their percentages."""
@@ -159,61 +201,52 @@ class PhilipsFilterAlertSensor(PhilipsEntity, BinarySensorEntity):
             if filter_key not in self._device_status:
                 continue
 
-            filter_desc = FILTER_TYPES.get(filter_key)
-            if not filter_desc:
+            description = _FILTER_BY_KEY.get(filter_key)
+            if description is None:
                 continue
 
-            total_key = filter_desc.get(FanAttributes.TOTAL)
+            value = self._device_status[filter_key]
+            total_key = description.total_key
             if total_key and total_key in self._device_status:
-                # Calculate percentage
-                value = self._device_status[filter_key]
                 total = self._device_status[total_key]
                 if total > 0:
                     percentage = round(100.0 * value / total)
-                    if percentage < FILTER_ALERT_THRESHOLD:
+                    if percentage < self._threshold:
                         low_filters[filter_key] = percentage
-            else:
-                # No total available, use raw hours value
-                # Consider low if under ~72 hours (3 days)
-                value = self._device_status[filter_key]
-                if value < 72:
-                    low_filters[filter_key] = value
+            elif value < 72:
+                # No total available: use the raw hours value (~3 days).
+                low_filters[filter_key] = value
         return low_filters
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator and fire events."""
         current_low_filters = set(self._get_low_filters().keys())
-        current_alert = bool(current_low_filters)
 
-        # Fire event when a new filter becomes low (not on initial load)
+        # Fire an event when a new filter drops below the threshold.
         if self._previous_alert_state is not None:
-            new_low_filters = current_low_filters - self._previous_low_filters
-            if new_low_filters:
-                for filter_key in new_low_filters:
-                    filter_desc = FILTER_TYPES.get(filter_key, {})
-                    filter_name = filter_desc.get(FanAttributes.LABEL, filter_key)
-                    low_filters_data = self._get_low_filters()
+            low_filters_data = self._get_low_filters()
+            for filter_key in current_low_filters - self._previous_low_filters:
+                filter_name = self._filter_name(filter_key)
+                device_info = self.config_entry_data.device_information
+                self.hass.bus.fire(
+                    EVENT_FILTER_ALERT,
+                    {
+                        "device_id": device_info.device_id,
+                        "device_name": device_info.name,
+                        "filter_key": filter_key,
+                        "filter_name": filter_name,
+                        "percentage": low_filters_data.get(filter_key),
+                        "threshold": self._threshold,
+                    },
+                )
+                _LOGGER.info(
+                    "Filter alert: %s is at %s%% (threshold: %s%%)",
+                    filter_name,
+                    low_filters_data.get(filter_key),
+                    self._threshold,
+                )
 
-                    device_info = self.config_entry_data.device_information
-                    self.hass.bus.fire(
-                        EVENT_FILTER_ALERT,
-                        {
-                            "device_id": device_info.device_id,
-                            "device_name": device_info.name,
-                            "filter_key": filter_key,
-                            "filter_name": filter_name,
-                            "percentage": low_filters_data.get(filter_key),
-                            "threshold": FILTER_ALERT_THRESHOLD,
-                        },
-                    )
-                    _LOGGER.info(
-                        "Filter alert: %s is at %s%% (threshold: %s%%)",
-                        filter_name,
-                        low_filters_data.get(filter_key),
-                        FILTER_ALERT_THRESHOLD,
-                    )
-
-        self._previous_alert_state = current_alert
+        self._previous_alert_state = bool(current_low_filters)
         self._previous_low_filters = current_low_filters
         super()._handle_coordinator_update()

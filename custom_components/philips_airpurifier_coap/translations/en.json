@@ -6,11 +6,15 @@
       "model_unsupported": "Model unsupported",
       "no_devices_found": "No Philips devices found on the network",
       "no_host": "Could not determine device IP address",
+      "reauth_different_device": "The device at this address is different from the original",
+      "reauth_successful": "Re-authentication successful",
+      "reconfigure_different_device": "The device at this address is different from the original",
       "timeout": "Timeout, cannot connect to device"
     },
     "error": {
       "connect": "Cannot connect to device",
-      "host": "Device address is required"
+      "host": "Device address is required",
+      "timeout": "Timeout connecting to device"
     },
     "progress": {
       "scanning": "Scanning network for Philips devices..."
@@ -31,6 +35,20 @@
         },
         "description": "Found {count} device(s) on the network",
         "title": "Select device"
+      },
+      "reauth_confirm": {
+        "data": {
+          "host": "Device hostname or IP address"
+        },
+        "description": "The device {name} is unreachable. Please verify or update the IP address.",
+        "title": "Re-authenticate device"
+      },
+      "reconfigure": {
+        "data": {
+          "host": "Device hostname or IP address"
+        },
+        "description": "Update the IP address for {name}",
+        "title": "Reconfigure device"
       },
       "user": {
         "description": "Choose how to add your device",
@@ -298,6 +316,19 @@
       },
       "standby_sensors": {
         "name": "Standby sensors"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "filter_alert_threshold": "Filter alert threshold (%)"
+        },
+        "data_description": {
+          "filter_alert_threshold": "Alert when a filter drops below this percentage"
+        },
+        "title": "Options"
       }
     }
   },

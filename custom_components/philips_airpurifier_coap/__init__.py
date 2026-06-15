@@ -9,6 +9,7 @@ import json
 import logging
 from os import walk
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from aioairctrl import CoAPClient
 from getmac import get_mac_address
@@ -16,7 +17,6 @@ from getmac import get_mac_address
 from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.components.http.view import HomeAssistantView
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -38,6 +38,9 @@ from .const import (
 )
 from .coordinator import Coordinator
 from .model import DeviceInformation
+
+if TYPE_CHECKING:
+    from .const import PhilipsConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -134,7 +137,7 @@ async def async_get_mac_address_from_host(hass: HomeAssistant, host: str) -> str
     return format_mac(mac_address)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: PhilipsConfigEntry) -> bool:
     """Set up the Philips AirPurifier integration."""
 
     host = entry.data[CONF_HOST]
@@ -160,9 +163,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         """Get MAC address in background and update device info."""
         try:
             mac = await asyncio.wait_for(async_get_mac_address_from_host(hass, host), timeout=3)
-            if mac and entry.entry_id in hass.data.get(DOMAIN, {}):
-                config_entry_data: ConfigEntryData = hass.data[DOMAIN][entry.entry_id]
-                config_entry_data.device_information.mac = mac
+            if mac and entry.runtime_data:
+                entry.runtime_data.device_information.mac = mac
                 _LOGGER.debug("MAC address updated for %s: %s", host, mac)
         except Exception as ex:
             _LOGGER.debug("MAC lookup failed for %s: %s", host, ex)
@@ -170,7 +172,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Check if we have status data, it will be missing in old entries
     if CONF_STATUS not in entry.data:
         _LOGGER.warning("No status data found for model %s, trying to fetch it", model)
-        coordinator = Coordinator(hass, client, host, None)
+        coordinator = Coordinator(hass, client, host, None, config_entry=entry)
         # Add timeout to first refresh to avoid blocking too long
         try:
             await asyncio.wait_for(coordinator.async_first_refresh(), timeout=10)
@@ -185,38 +187,43 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.config_entries.async_update_entry(entry, data=new_data)
     else:
         status = entry.data[CONF_STATUS]
-        coordinator = Coordinator(hass, client, host, status)
+        coordinator = Coordinator(hass, client, host, status, config_entry=entry)
 
     # Initialize device info without MAC (will be updated in background)
     device_information = DeviceInformation(
         host=host, mac=None, model=model, name=name, device_id=device_id
     )
 
-    # store the data in the hass.data
-    config_entry_data = ConfigEntryData(
+    # Store runtime data in the config entry (new pattern)
+    entry.runtime_data = ConfigEntryData(
         device_information=device_information,
         coordinator=coordinator,
         latest_status=status,
         client=client,
     )
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = config_entry_data
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    # Start deferred MAC lookup in background (non-blocking)
-    hass.async_create_task(get_mac_deferred())
+    # Reload the entry when its options change (e.g. the filter alert threshold).
+    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
+
+    # Start deferred MAC lookup in background (non-blocking, tied to the entry)
+    entry.async_create_background_task(hass, get_mac_deferred(), "philips_mac_lookup")
 
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def _async_update_listener(hass: HomeAssistant, entry: PhilipsConfigEntry) -> None:
+    """Reload the entry when its options are updated."""
+    await hass.config_entries.async_reload(entry.entry_id)
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: PhilipsConfigEntry) -> bool:
     """Unload a config entry."""
 
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
     if unload_ok:
-        config_entry_data: ConfigEntryData = hass.data[DOMAIN][entry.entry_id]
-        await config_entry_data.coordinator.shutdown()
-        hass.data[DOMAIN].pop(entry.entry_id)
+        await entry.runtime_data.coordinator.async_shutdown()
 
     return unload_ok

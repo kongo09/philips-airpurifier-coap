@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest an idea or request support for a new device
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+      description: What are you trying to achieve? What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+    validations:
+      required: false
+  - type: input
+    id: device_model
+    attributes:
+      label: Device model (if requesting new device support)
+      placeholder: e.g. AC3033
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Any other context, screenshots, or links to the Philips app.
+    validations:
+      required: false

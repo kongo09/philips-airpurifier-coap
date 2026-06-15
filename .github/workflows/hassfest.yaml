@@ -11,4 +11,4 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@v4"
-      - uses: kongo09/actions/hassfest@master
+      - uses: home-assistant/actions/hassfest@master

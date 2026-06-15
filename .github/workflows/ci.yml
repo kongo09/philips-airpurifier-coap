@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   lint:
-    name: Lint
+    name: Lint (ruff)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,10 +28,34 @@ jobs:
           pip install ruff
 
       - name: Run ruff check
-        run: ruff check custom_components/
+        run: ruff check custom_components/ tests/
 
       - name: Run ruff format check
-        run: ruff format --check custom_components/
+        run: ruff format --check custom_components/ tests/
+
+  typing:
+    name: Type check (mypy)
+    runs-on: ubuntu-latest
+    # Non-blocking: the dynamic device pattern leaves a handful of residual
+    # errors with no runtime impact. Kept as signal until strict typing
+    # (Platinum) is reached, then flip continue-on-error to false.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-test.txt
+          pip install mypy
+
+      - name: Run mypy
+        run: mypy custom_components/philips_airpurifier_coap/ --ignore-missing-imports
 
   test:
     name: Test Python ${{ matrix.python-version }}
@@ -55,7 +79,10 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/ -v --tb=short --cov=custom_components/philips_airpurifier_coap --cov-report=xml
+          pytest tests/ -v --tb=short \
+            --cov=custom_components/philips_airpurifier_coap \
+            --cov-report=xml --cov-report=term-missing \
+            --cov-fail-under=88
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4

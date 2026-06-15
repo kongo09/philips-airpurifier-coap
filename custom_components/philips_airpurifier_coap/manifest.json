@@ -27,16 +27,16 @@
       "registered_devices": true
     }
   ],
-  "ssdp": [
-    {
-      "st": "urn:philips-com:device:DiProduct:1"
-    }
-  ],
   "documentation": "https://github.com/kongo09/philips-airpurifier-coap",
   "integration_type": "device",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/kongo09/philips-airpurifier-coap/issues",
   "loggers": ["aioairctrl", "coap", "getmac"],
   "requirements": ["aioairctrl==0.2.5", "getmac==0.9.5"],
+  "ssdp": [
+    {
+      "st": "urn:philips-com:device:DiProduct:1"
+    }
+  ],
   "version": "0.37.0"
 }

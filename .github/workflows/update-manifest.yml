@@ -49,7 +49,7 @@ jobs:
         uses: actions/github-script@v9
         with:
           script: |
-            const { data: releases } = await github.repos.listReleases({
+            const { data: releases } = await github.rest.repos.listReleases({
               owner: context.repo.owner,
               repo: context.repo.repo
             });
@@ -57,7 +57,7 @@ jobs:
             const draftRelease = releases.find(release => release.draft && release.tag_name === process.env.GITHUB_REF_NAME);
 
             if (draftRelease) {
-              await github.repos.updateRelease({
+              await github.rest.repos.updateRelease({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id: draftRelease.id,

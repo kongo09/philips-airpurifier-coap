@@ -331,6 +331,7 @@ class PhilipsFilterSensor(PhilipsEntity, SensorEntity):
 
     entity_description: PhilipsFilterEntityDescription
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     def __init__(
         self,

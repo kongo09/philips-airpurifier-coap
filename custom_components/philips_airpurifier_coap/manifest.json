@@ -4,7 +4,6 @@
   "codeowners": ["@kongo09"],
   "config_flow": true,
   "dependencies": ["frontend", "http", "ssdp"],
-  "homeassistant": "2024.8.0",
   "dhcp": [
     {
       "macaddress": "B0F893*"

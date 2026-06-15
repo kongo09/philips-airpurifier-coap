@@ -12,3 +12,6 @@ pytest-homeassistant-custom-component>=0.13.0
 # Runtime dependencies (needed for imports in tests)
 aioairctrl==0.2.5
 getmac==0.9.5
+
+# Discovery dependency (ssdp) pulled in when the config flow loads
+async-upnp-client

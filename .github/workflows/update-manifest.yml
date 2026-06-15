@@ -46,7 +46,7 @@ jobs:
       # Update the release
       - name: Publish Draft Release
         id: publish_release
-        uses: actions/github-script@v4
+        uses: actions/github-script@v9
         with:
           script: |
             const { data: releases } = await github.repos.listReleases({

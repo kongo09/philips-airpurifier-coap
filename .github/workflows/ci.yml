@@ -36,10 +36,6 @@ jobs:
   typing:
     name: Type check (mypy)
     runs-on: ubuntu-latest
-    # Non-blocking: the dynamic device pattern leaves a handful of residual
-    # errors with no runtime impact. Kept as signal until strict typing
-    # (Platinum) is reached, then flip continue-on-error to false.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
@@ -52,7 +48,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-test.txt
-          pip install mypy
+          # Pinned for reproducibility: a blocking gate must be deterministic.
+          pip install mypy==1.19.1
 
       - name: Run mypy
         run: mypy custom_components/philips_airpurifier_coap/ --ignore-missing-imports

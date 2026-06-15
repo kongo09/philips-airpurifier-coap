@@ -7,7 +7,7 @@ from collections.abc import Mapping
 import ipaddress
 import logging
 import re
-from typing import Any
+from typing import Any, cast
 from urllib.parse import urlparse
 
 from aioairctrl import CoAPClient
@@ -233,8 +233,8 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
             user_input[CONF_MODEL] = self._model
             user_input[CONF_NAME] = self._name
-            user_input[CONF_DEVICE_ID] = self._device_id
-            user_input[CONF_HOST] = self._host
+            user_input[CONF_DEVICE_ID] = cast(str, self._device_id)
+            user_input[CONF_HOST] = cast(str, self._host)
             user_input[CONF_STATUS] = self._status
 
             config_entry_name = f"{self._model} {self._name}"

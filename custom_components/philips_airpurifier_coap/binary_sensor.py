@@ -192,7 +192,7 @@ class PhilipsFilterAlertSensor(PhilipsEntity, BinarySensorEntity):
     def _filter_name(filter_key: str) -> str:
         """Return the translation key (display name) of a filter."""
         description = _FILTER_BY_KEY.get(filter_key)
-        return description.translation_key if description else filter_key
+        return (description.translation_key or filter_key) if description else filter_key
 
     def _get_low_filters(self) -> dict[str, float]:
         """Get filters that are below the threshold with their percentages."""

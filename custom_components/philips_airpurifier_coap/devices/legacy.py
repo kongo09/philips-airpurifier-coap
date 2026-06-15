@@ -88,9 +88,10 @@ class PhilipsAC1214(PhilipsGenericFan):
             )
             await asyncio.sleep(1)
 
-    async def _ensure_mode_transition(self, target_mode: str) -> None:
+    async def _ensure_mode_transition(self, target_mode: str | None) -> None:
         """Ensure proper mode transition through 'A' state if needed."""
-        current_pattern = self._available_preset_modes.get(self.preset_mode)
+        preset = self.preset_mode
+        current_pattern = self._available_preset_modes.get(preset) if preset else None
         if target_mode != "A" and current_pattern and current_pattern.get(PhilipsApi.MODE) != "M":
             _LOGGER.debug("AC1214 switches to mode 'A' first")
             a_status_pattern = self._available_preset_modes.get(PresetMode.ALLERGEN)

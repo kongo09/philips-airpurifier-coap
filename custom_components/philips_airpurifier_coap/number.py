@@ -34,7 +34,7 @@ PARALLEL_UPDATES = 0
 class PhilipsNumberEntityDescription(NumberEntityDescription):
     """Describe a Philips number entity."""
 
-    min_value: float = 0
+    min_set_value: float = 0
 
 
 NUMBER_TYPES: tuple[PhilipsNumberEntityDescription, ...] = (
@@ -46,7 +46,7 @@ NUMBER_TYPES: tuple[PhilipsNumberEntityDescription, ...] = (
         native_min_value=0,
         native_max_value=350,
         native_step=5,
-        min_value=30,
+        min_set_value=30,
     ),
     PhilipsNumberEntityDescription(
         key=PhilipsApi.NEW2_TARGET_TEMP,
@@ -57,7 +57,7 @@ NUMBER_TYPES: tuple[PhilipsNumberEntityDescription, ...] = (
         native_min_value=1,
         native_max_value=37,
         native_step=1,
-        min_value=1,
+        min_set_value=1,
     ),
 )
 
@@ -114,9 +114,10 @@ class PhilipsNumber(PhilipsEntity, NumberEntity):
         """Set a new number value, snapped to the configured boundaries."""
         if value is None or value < self.native_min_value:
             value = self.native_min_value
-        if value % self.native_step > 0:
-            value = value // self.native_step * self.native_step
-        value = max(value, self.entity_description.min_value) if value > 0 else value
+        step = self.native_step
+        if step is not None and value % step > 0:
+            value = value // step * step
+        value = max(value, self.entity_description.min_set_value) if value > 0 else value
         value = min(value, self.native_max_value)
 
         await self._async_set_control_value(self.entity_description.key, int(value))

@@ -320,7 +320,7 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
             return None
 
         key = next(iter(self.KEY_OSCILLATION))
-        values = self.KEY_OSCILLATION.get(key)
+        values = self.KEY_OSCILLATION[key]
         off = values.get(SWITCH_OFF)
         status = self._device_status.get(key)
 
@@ -336,7 +336,7 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
             return
 
         key = next(iter(self.KEY_OSCILLATION))
-        values = self.KEY_OSCILLATION.get(key)
+        values = self.KEY_OSCILLATION[key]
         on = values.get(SWITCH_ON)
         off = values.get(SWITCH_OFF)
 

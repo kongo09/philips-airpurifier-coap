@@ -137,7 +137,7 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
         """Initialize the humidifier."""
         super().__init__(hass, config, config_entry_data)
         self.entity_description = description
-        latest_status = config_entry_data.latest_status
+        latest_status = config_entry_data.latest_status or {}
 
         model = config_entry_data.device_information.model
         device_id = config_entry_data.device_information.device_id
@@ -250,5 +250,5 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
                 humidity = int(current_target) - step
 
         target = round(humidity / step) * step
-        target = max(self._attr_min_humidity, min(target, self._attr_max_humidity))
+        target = int(max(self._attr_min_humidity, min(target, self._attr_max_humidity)))
         await self._async_set_control_value(self._humidity_target_key, target)

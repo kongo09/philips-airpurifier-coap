@@ -142,7 +142,7 @@ async def test_number_setup_and_value(hass: HomeAssistant, make_runtime) -> None
     assert osc.unique_id == "AMF870-ABCD1234567890-d0320f"
     assert osc.native_value == 90
     assert osc.native_max_value == 350
-    assert osc.entity_description.min_value == 30
+    assert osc.entity_description.min_set_value == 30
 
 
 # --------------------------------------------------------------------------- #

@@ -115,14 +115,14 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         """Initialize the fan heater."""
         super().__init__(hass, config, config_entry_data)
         self.entity_description = description
-        latest_status = config_entry_data.latest_status
+        latest_status = config_entry_data.latest_status or {}
 
         model = config_entry_data.device_information.model
         device_id = config_entry_data.device_information.device_id
         self._attr_unique_id = f"{model}-{device_id}-{description.key.lower()}"
 
-        self._preset_modes = available_preset_modes
-        self._attr_preset_modes = list(self._preset_modes.keys())
+        self._preset_patterns = available_preset_modes
+        self._attr_preset_modes = list(self._preset_patterns.keys())
 
         self._power_key = description.power_key
         self._temperature_target_key = description.key.partition("#")[0]
@@ -184,14 +184,14 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
     @property
     def preset_mode(self) -> str | None:
         """Return the current preset mode."""
-        for preset_mode, status_pattern in self._preset_modes.items():
+        for preset_mode, status_pattern in self._preset_patterns.items():
             if all(self._device_status.get(k) == v for k, v in status_pattern.items()):
                 return preset_mode
         return None
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set the preset mode of the heater."""
-        status_pattern = self._preset_modes.get(preset_mode)
+        status_pattern = self._preset_patterns.get(preset_mode)
         if status_pattern:
             await self._async_set_control_values(status_pattern)
 

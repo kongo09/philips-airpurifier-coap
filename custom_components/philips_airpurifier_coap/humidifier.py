@@ -168,7 +168,7 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
             else:
                 function_value = self._description[FanAttributes.HUMIDIFYING]
 
-            await self.coordinator.client.set_control_values(
+            await self.coordinator.set_control_values(
                 data={
                     self._power_key: self._description[FanAttributes.ON],
                     self._function_key: function_value,
@@ -181,7 +181,7 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
         # then we treat pure humidification devices
         elif self._function_key == self._power_key:
             status_pattern = self._available_preset_modes.get(mode)
-            await self.coordinator.client.set_control_values(data=status_pattern)
+            await self.coordinator.set_control_values(data=status_pattern)
             self._device_status.update(status_pattern)
             self._handle_coordinator_update()
 
@@ -192,7 +192,7 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the device."""
-        await self.coordinator.client.set_control_values(
+        await self.coordinator.set_control_values(
             data={
                 self._power_key: self._description[FanAttributes.ON],
             }
@@ -202,7 +202,7 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn off the device."""
-        await self.coordinator.client.set_control_values(
+        await self.coordinator.set_control_values(
             data={
                 self._power_key: self._description[FanAttributes.OFF],
             }
@@ -226,6 +226,6 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
         # now let's make sure we're on the steps and inside the boundaries
         target = round(humidity / step) * step
         target = max(self._attr_min_humidity, min(target, self._attr_max_humidity))
-        await self.coordinator.client.set_control_value(self._humidity_target_key, target)
+        await self.coordinator.set_control_value(self._humidity_target_key, target)
         self._device_status[self._humidity_target_key] = humidity
         self._handle_coordinator_update()

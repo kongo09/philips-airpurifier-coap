@@ -90,6 +90,44 @@ class Coordinator:
         except Exception:
             _LOGGER.exception("_reconnect error")
 
+    async def set_control_value(self, *args, **kwargs) -> None:
+        """Send a single control value, with timeout and reconnect-on-failure."""
+        await self._send_command("set_control_value", *args, **kwargs)
+
+    async def set_control_values(self, *args, **kwargs) -> None:
+        """Send multiple control values, with timeout and reconnect-on-failure."""
+        await self._send_command("set_control_values", *args, **kwargs)
+
+    async def _send_command(self, method: str, *args, **kwargs) -> None:
+        """Send a command to the device, bounded by a timeout.
+
+        Unlike the observe stream, command requests are not watched by the
+        disconnect timer. A stale CoAP session therefore makes a command hang
+        indefinitely (observed for ~2h) and eventually surface as
+        aiocoap LibraryShutdown when the client is torn down for an unrelated
+        reason. Bound the call, and on any failure recreate the session and
+        retry the command exactly once on the fresh client.
+        """
+        try:
+            await asyncio.wait_for(
+                getattr(self.client, method)(*args, **kwargs),
+                timeout=self._timeout,
+            )
+            return
+        except Exception as ex:  # noqa: BLE001 - incl. TimeoutError and LibraryShutdown
+            _LOGGER.warning(
+                "Command '%s' to %s failed (%s); reconnecting and retrying once",
+                method,
+                self.host,
+                ex,
+            )
+
+        await self._reconnect()
+        await asyncio.wait_for(
+            getattr(self.client, method)(*args, **kwargs),
+            timeout=self._timeout,
+        )
+
     async def async_first_refresh(self) -> None:
         """Refresh the data for the first time."""
 

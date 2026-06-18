@@ -107,7 +107,7 @@ class PhilipsSelect(PhilipsEntity, SelectEntity):
                 option,
                 option_key,
             )
-            await self.coordinator.client.set_control_value(self.kind, option_key)
+            await self.coordinator.set_control_value(self.kind, option_key)
             self._device_status[self.kind] = option_key
             self._handle_coordinator_update()
 

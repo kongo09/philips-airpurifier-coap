@@ -229,7 +229,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         if status_pattern is None:
             return
 
-        await self.coordinator.client.set_control_values(data=status_pattern)
+        await self.coordinator.set_control_values(data=status_pattern)
         self._device_status.update(status_pattern)
         self._handle_coordinator_update()
 
@@ -252,7 +252,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
 
         value = self._oscillation_modes[SWITCH_ON] if swing_mode == SWING_ON else self._oscillation_modes[SWITCH_OFF]
 
-        await self.coordinator.client.set_control_value(self._oscillation_key, value)
+        await self.coordinator.set_control_value(self._oscillation_key, value)
         self._device_status[self._oscillation_key] = value
         self._handle_coordinator_update()
 
@@ -263,7 +263,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn on the device."""
-        await self.coordinator.client.set_control_values(
+        await self.coordinator.set_control_values(
             data={
                 self._power_key: self._description[FanAttributes.ON],
             }
@@ -273,7 +273,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn off the device."""
-        await self.coordinator.client.set_control_values(
+        await self.coordinator.set_control_values(
             data={
                 self._power_key: self._description[FanAttributes.OFF],
             }
@@ -290,6 +290,6 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         temperature = int(raw_temperature)
 
         target = max(self._attr_min_temp, min(temperature, self._attr_max_temp))
-        await self.coordinator.client.set_control_value(self._temperature_target_key, target)
+        await self.coordinator.set_control_value(self._temperature_target_key, target)
         self._device_status[self._temperature_target_key] = temperature
         self._handle_coordinator_update()

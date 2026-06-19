@@ -11,6 +11,7 @@ from aioairctrl import CoAPClient
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 
+from .helpers import get_status_with_trigger
 from .timer import Timer
 
 _LOGGER = logging.getLogger(__name__)
@@ -80,6 +81,16 @@ class Coordinator:
             with contextlib.suppress(Exception):
                 await self.client.shutdown()
             self.client = await CoAPClient.create(self.host)
+            # Refresh status immediately after reconnect; uses trigger fallback
+            # for devices (e.g. CX3550) that don't push the initial status.
+            try:
+                self.status, _ = await asyncio.wait_for(
+                    get_status_with_trigger(self.client), timeout=35
+                )
+                for update_callback in self._listeners:
+                    update_callback()
+            except Exception:
+                _LOGGER.debug("Could not refresh status on reconnect for %s", self.host)
             self._start_observing()
 
         except asyncio.CancelledError:
@@ -94,7 +105,7 @@ class Coordinator:
         """Refresh the data for the first time."""
 
         try:
-            self.status, timeout = await self.client.get_status()
+            self.status, timeout = await get_status_with_trigger(self.client)
             self._timeout = timeout
             if self._timer_disconnected is not None:
                 self._timer_disconnected.setTimeout(timeout * MISSED_PACKAGE_COUNT)

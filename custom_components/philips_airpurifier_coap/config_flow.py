@@ -16,7 +16,7 @@ from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 from homeassistant.util.timeout import TimeoutManager
 
 from .const import CONF_DEVICE_ID, CONF_MODEL, CONF_STATUS, DOMAIN, PhilipsApi
-from .helpers import extract_model, extract_name
+from .helpers import extract_model, extract_name, get_status_with_trigger
 from .philips import model_to_class
 
 _LOGGER = logging.getLogger(__name__)
@@ -76,10 +76,11 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 client = await CoAPClient.create(self._host)
                 _LOGGER.debug("got a valid client for host %s", self._host)
 
-            # we give it 30s to get a status, otherwise we abort
-            async with timeout.async_timeout(30):
+            # Allow 60s: some devices (e.g. CX3550) need a control trigger
+            # before they push their first status, adding ~11s to the normal path.
+            async with timeout.async_timeout(60):
                 _LOGGER.debug("trying to get status")
-                status, _ = await client.get_status()
+                status, _ = await get_status_with_trigger(client)
                 _LOGGER.debug("got status")
 
             if client is not None:
@@ -215,10 +216,11 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         client = await CoAPClient.create(self._host)
                         _LOGGER.debug("got a valid client")
 
-                    # we give it 30s to get a status, otherwise we abort
-                    async with timeout.async_timeout(30):
+                    # Allow 60s: some devices (e.g. CX3550) need a control trigger
+                    # before they push their first status, adding ~11s to the normal path.
+                    async with timeout.async_timeout(60):
                         _LOGGER.debug("trying to get status")
-                        status, _ = await client.get_status()
+                        status, _ = await get_status_with_trigger(client)
                         _LOGGER.debug("got status")
 
                     if client is not None:
@@ -324,8 +326,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         client = await CoAPClient.create(new_host)
                         _LOGGER.debug("options flow: got a valid client for host %s", new_host)
 
-                    async with timeout.async_timeout(30):
-                        status, _ = await client.get_status()
+                    async with timeout.async_timeout(60):
+                        status, _ = await get_status_with_trigger(client)
                         _LOGGER.debug("options flow: got status from host %s", new_host)
 
                     if client is not None:

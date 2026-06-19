@@ -83,9 +83,10 @@ class Coordinator:
             self.client = await CoAPClient.create(self.host)
             # Refresh status immediately after reconnect; uses trigger fallback
             # for devices (e.g. CX3550) that don't push the initial status.
+            # Timeout must exceed the full toggle sequence (~37 s minimum).
             try:
                 self.status, _ = await asyncio.wait_for(
-                    get_status_with_trigger(self.client), timeout=35
+                    get_status_with_trigger(self.client), timeout=60
                 )
                 for update_callback in self._listeners:
                     update_callback()

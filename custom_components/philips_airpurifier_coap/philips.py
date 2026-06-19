@@ -2038,36 +2038,34 @@ class PhilipsCX5120(PhilipsNew2GenericFan):
 class PhilipsCX3550(PhilipsNew2GenericFan):
     """CX3550."""
 
+    # NEW2_MODE_C (D0310D) is omitted: the device does not reflect it back in
+    # status pushes, so including it prevents preset-mode detection from ever
+    # matching.  NEW2_MODE_B (D0310C) alone uniquely identifies each preset.
     AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.SPEED_1: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
             PhilipsApi.NEW2_MODE_B: 1,
-            PhilipsApi.NEW2_MODE_C: 1,
         },
         PresetMode.SPEED_2: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
             PhilipsApi.NEW2_MODE_B: 2,
-            PhilipsApi.NEW2_MODE_C: 2,
         },
         PresetMode.SPEED_3: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
             PhilipsApi.NEW2_MODE_B: 3,
-            PhilipsApi.NEW2_MODE_C: 3,
         },
         PresetMode.NATURAL: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
             PhilipsApi.NEW2_MODE_B: -126,
-            PhilipsApi.NEW2_MODE_C: 1,
         },
         PresetMode.SLEEP: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
             PhilipsApi.NEW2_MODE_B: 17,
-            PhilipsApi.NEW2_MODE_C: 2,
         },
     }
     AVAILABLE_SPEEDS: ClassVar = {
@@ -2075,19 +2073,16 @@ class PhilipsCX3550(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
             PhilipsApi.NEW2_MODE_B: 1,
-            PhilipsApi.NEW2_MODE_C: 1,
         },
         PresetMode.SPEED_2: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
             PhilipsApi.NEW2_MODE_B: 2,
-            PhilipsApi.NEW2_MODE_C: 2,
         },
         PresetMode.SPEED_3: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
             PhilipsApi.NEW2_MODE_B: 3,
-            PhilipsApi.NEW2_MODE_C: 3,
         },
     }
     KEY_OSCILLATION: ClassVar = {

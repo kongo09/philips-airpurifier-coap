@@ -47,6 +47,7 @@
               "high": "Hoch",
               "ventilation": "Durchlüftung",
               "natural": "Natürlich",
+              "manual": "Manuell",
               "speed_1": "Geschwindigkeit 1",
               "gentle_speed_1": "Sanft/Geschwindigkeit 1",
               "speed_2": "Geschwindigkeit 2",
@@ -57,7 +58,9 @@
               "speed_7": "Geschwindigkeit 7",
               "speed_8": "Geschwindigkeit 8",
               "speed_9": "Geschwindigkeit 9",
-              "speed_10": "Geschwindigkeit 10"
+              "speed_10": "Geschwindigkeit 10",
+              "speed_11": "Geschwindigkeit 11",
+              "speed_12": "Geschwindigkeit 12"
             }
           }
         }
@@ -210,6 +213,15 @@
       },
       "quickdry_mode": {
         "name": "Manueller QuickDry-Modus"
+      },
+      "temperature_color": {
+        "name": "Temperatur Farbe aktiv"
+      },
+      "standby_temperature": {
+        "name": "Temperatur im Standby"
+      },
+      "oscillation": {
+        "name": "Oszillation"
       }
     },
     "light": {

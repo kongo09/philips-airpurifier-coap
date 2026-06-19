@@ -63,6 +63,7 @@
               "high": "High",
               "ventilation": "Ventilation",
               "natural": "Natural",
+              "manual": "Manual",
               "speed_1": "Speed 1",
               "gentle_speed_1": "Gentle/Speed 1",
               "speed_2": "Speed 2",
@@ -73,7 +74,9 @@
               "speed_7": "Speed 7",
               "speed_8": "Speed 8",
               "speed_9": "Speed 9",
-              "speed_10": "Speed 10"
+              "speed_10": "Speed 10",
+              "speed_11": "Speed 11",
+              "speed_12": "Speed 12"
             }
           }
         }
@@ -226,6 +229,15 @@
       },
       "quickdry_mode": {
         "name": "Quickdry mode"
+      },
+      "temperature_color": {
+        "name": "Temperature color"
+      },
+      "standby_temperature": {
+        "name": "Standby temperature"
+      },
+      "oscillation": {
+        "name": "Oscillation"
       }
     },
     "light": {

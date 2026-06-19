@@ -119,6 +119,7 @@ Note: Some of these models seem to have a newer firmware that does not allow loc
 - CX3120
 - CX5120
 - CX3550
+- CX7550
 - HU1509
 - HU1510
 - HU5710

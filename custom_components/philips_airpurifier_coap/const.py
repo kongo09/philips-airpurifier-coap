@@ -168,6 +168,7 @@ class FanModel(StrEnum):
     CX3120 = "CX3120"
     CX3550 = "CX3550"
     CX5120 = "CX5120"
+    CX7550 = "CX7550"
     HU1509 = "HU1509"
     HU1510 = "HU1510"
     HU5710 = "HU5710"
@@ -187,6 +188,8 @@ class PresetMode:
     SPEED_8 = "speed_8"
     SPEED_9 = "speed_9"
     SPEED_10 = "speed_10"
+    SPEED_11 = "speed_11"
+    SPEED_12 = "speed_12"
     ALLERGEN = "allergen"
     AUTO = "auto"
     AUTO_GENERAL = "auto_general"
@@ -205,6 +208,7 @@ class PresetMode:
     HIGH = "high"
     VENTILATION = "ventilation"
     NATURAL = "natural"
+    MANUAL = "manual"
 
     ICON_MAP: ClassVar = {
         SPEED_1: "pap:speed_1",
@@ -218,6 +222,8 @@ class PresetMode:
         SPEED_8: "pap:fan_speed_button",
         SPEED_9: "pap:fan_speed_button",
         SPEED_10: "pap:fan_speed_button",
+        SPEED_11: "pap:fan_speed_button",
+        SPEED_12: "pap:fan_speed_button",
         ALLERGEN: "pap:allergen_mode",
         AUTO: "pap:auto_mode_button",
         AUTO_GENERAL: "pap:auto_mode_button",
@@ -236,6 +242,7 @@ class PresetMode:
         HIGH: "pap:speed_3",
         VENTILATION: "pap:circulate",
         NATURAL: "pap:fan_speed_button",
+        MANUAL: "pap:fan_speed_button",
     }
 
 
@@ -344,6 +351,8 @@ class FanAttributes(StrEnum):
     WATER_TANK = "water_tank"
     AUTO_QUICKDRY_MODE = "auto_quickdry_mode"
     QUICKDRY_MODE = "quickdry_mode"
+    TEMPERATURE_COLOR = "temperature_color"
+    STANDBY_TEMPERATURE = "standby_temperature"
 
 
 class FanUnits(StrEnum):
@@ -434,6 +443,11 @@ class PhilipsApi:
         SWITCH_ON: 17222,
         SWITCH_OFF: 0,
     }
+    # CX7550 uses this map
+    OSCILLATION_MAP5: ClassVar = {
+        SWITCH_ON: 80,
+        SWITCH_OFF: 0,
+    }
 
     # the AC1715 seems to follow a new scheme, this should later be refactored
     NEW_NAME = "D01-03"
@@ -451,6 +465,7 @@ class PhilipsApi:
     NEW2_NAME = "D01S03"
     NEW2_MODEL_ID = "D01S05"
     NEW2_POWER = "D03102"
+    NEW2_TEMPERATURE_COLOR = "D03104"
     NEW2_DISPLAY_BACKLIGHT = "D0312D"
     NEW2_DISPLAY_BACKLIGHT2 = "D03105"
     NEW2_DISPLAY_BACKLIGHT3 = "D03105#1"  # dimmable in 3 steps with auto
@@ -490,6 +505,7 @@ class PhilipsApi:
     NEW2_TARGET_TEMP = "D0310E"
     NEW2_HEATING_ACTION = "D0313F"
     NEW2_STANDBY_SENSORS = "D03134"
+    NEW2_STANDBY_TEMPERATURE = "D03133"
     NEW2_AUTO_PLUS_AI = "D03180"
     NEW2_PREFERRED_INDEX = "D0312A#1"
     NEW2_GAS_PREFERRED_INDEX = "D0312A#2"
@@ -867,6 +883,24 @@ SWITCH_TYPES: dict[str, SwitchDescription] = {
     PhilipsApi.NEW2_QUICKDRY_MODE: {
         FanAttributes.LABEL: FanAttributes.QUICKDRY_MODE,
         SWITCH_ON: 1,
+        SWITCH_OFF: 0,
+    },
+    PhilipsApi.NEW2_TEMPERATURE_COLOR: {
+        FanAttributes.LABEL: FanAttributes.TEMPERATURE_COLOR,
+        CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
+        SWITCH_ON: 100,
+        SWITCH_OFF: 0,
+    },
+    PhilipsApi.NEW2_STANDBY_TEMPERATURE: {
+        FanAttributes.LABEL: FanAttributes.STANDBY_TEMPERATURE,
+        CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
+        SWITCH_ON: 1,
+        SWITCH_OFF: 0,
+    },
+    PhilipsApi.NEW2_OSCILLATION: {
+        FanAttributes.LABEL: FanAttributes.OSCILLATION,
+        CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
+        SWITCH_ON: 80,
         SWITCH_OFF: 0,
     },
 }

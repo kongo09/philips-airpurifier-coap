@@ -2174,6 +2174,135 @@ class PhilipsHU5710(PhilipsNew2GenericFan):
     AVAILABLE_HUMIDIFIERS: ClassVar = [PhilipsApi.NEW2_HUMIDITY_TARGET2]
 
 
+class PhilipsCX7550(PhilipsNew2GenericFan):
+    """CX7550."""
+
+    AVAILABLE_PRESET_MODES: ClassVar = {
+        PresetMode.AUTO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 0,
+        },
+        PresetMode.NATURAL: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: -126,
+        },
+        PresetMode.SLEEP: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 17,
+        },
+        PresetMode.MANUAL: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 1,
+            PhilipsApi.NEW2_MODE_C: 1,
+        },
+    }
+    AVAILABLE_SPEEDS: ClassVar = {
+        PresetMode.SPEED_1: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 1,
+            PhilipsApi.NEW2_MODE_C: 1,
+        },
+        PresetMode.SPEED_2: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 2,
+            PhilipsApi.NEW2_MODE_C: 2,
+        },
+        PresetMode.SPEED_3: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 3,
+            PhilipsApi.NEW2_MODE_C: 3,
+        },
+        PresetMode.SPEED_4: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 4,
+            PhilipsApi.NEW2_MODE_C: 4,
+        },
+        PresetMode.SPEED_5: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 5,
+            PhilipsApi.NEW2_MODE_C: 5,
+        },
+        PresetMode.SPEED_6: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 6,
+            PhilipsApi.NEW2_MODE_C: 6,
+        },
+        PresetMode.SPEED_7: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 7,
+            PhilipsApi.NEW2_MODE_C: 7,
+        },
+        PresetMode.SPEED_8: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 8,
+            PhilipsApi.NEW2_MODE_C: 8,
+        },
+        PresetMode.SPEED_9: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 9,
+            PhilipsApi.NEW2_MODE_C: 9,
+        },
+        PresetMode.SPEED_10: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 10,
+            PhilipsApi.NEW2_MODE_C: 10,
+        },
+        PresetMode.SPEED_11: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 81,
+            PhilipsApi.NEW2_MODE_C: 81,
+        },
+        PresetMode.SPEED_12: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 82,
+            PhilipsApi.NEW2_MODE_C: 82,
+        },
+    }
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT4]
+    AVAILABLE_SWITCHES: ClassVar = [
+        PhilipsApi.NEW2_BEEP,
+        PhilipsApi.NEW2_TEMPERATURE_COLOR,
+        PhilipsApi.NEW2_STANDBY_TEMPERATURE,
+        PhilipsApi.NEW2_OSCILLATION,
+    ]
+    AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_TIMER2]
+
+    _MANUAL_MODE_B_VALUES: ClassVar = {0, -126, 17}
+
+    @property
+    def preset_mode(self) -> str | None:
+        """Return the selected preset mode."""
+        # First check the standard presets (Auto, Natural, Sleep, Manual speed 1)
+        for preset_mode, status_pattern in self._available_preset_modes.items():
+            for k, v in status_pattern.items():
+                status = self._device_status.get(k)
+                if status != v:
+                    break
+            else:
+                return preset_mode
+
+        # Check if in manual mode at any speed (mode_b not a special mode value)
+        if self._device_status.get(PhilipsApi.NEW2_POWER) == 1:
+            mode_b = self._device_status.get(PhilipsApi.NEW2_MODE_B)
+            if mode_b is not None and mode_b not in self._MANUAL_MODE_B_VALUES:
+                return PresetMode.MANUAL
+
+        return None
+
+
 model_to_class = {
     FanModel.AC0850_11: PhilipsAC085011,
     FanModel.AC0850_11C: PhilipsAC085011C,
@@ -2233,6 +2362,7 @@ model_to_class = {
     FanModel.CX3120: PhilipsCX3120,
     FanModel.CX5120: PhilipsCX5120,
     FanModel.CX3550: PhilipsCX3550,
+    FanModel.CX7550: PhilipsCX7550,
     FanModel.HU1509: PhilipsHU1510,
     FanModel.HU1510: PhilipsHU1510,
     FanModel.HU5710: PhilipsHU5710,

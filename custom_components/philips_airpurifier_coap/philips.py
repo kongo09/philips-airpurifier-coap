@@ -2137,9 +2137,6 @@ class PhilipsHU1510(PhilipsHU1509):
 class PhilipsHU4209(PhilipsNew2GenericFan):
     """HU4209."""
 
-class PhilipsHU4210(PhilipsNew2GenericFan):
-    """HU4210."""
-
     CREATE_FAN = False
 
     AVAILABLE_PRESET_MODES: ClassVar = {
@@ -2167,6 +2164,9 @@ class PhilipsHU4210(PhilipsNew2GenericFan):
     ]
     AVAILABLE_BINARY_SENSORS: ClassVar = [PhilipsApi.NEW2_ERROR_CODE ]
     AVAILABLE_HUMIDIFIERS: ClassVar = [PhilipsApi.NEW2_HUMIDITY_TARGET2]
+
+class PhilipsHU4210(PhilipsHU4209):
+    """HU4210."""
 
 
 class PhilipsHU5710(PhilipsNew2GenericFan):

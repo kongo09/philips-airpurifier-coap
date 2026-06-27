@@ -2109,7 +2109,7 @@ class PhilipsCX7550(PhilipsNew2GenericFan):
     firmware 0.2.9):
       - Power:       D03102 (0/1)
       - Manual mode: D0310A = 1
-      - Fan speed:   D0310C = 1..12 (D0310D mirrors the actual speed)
+      - Fan speed:   D0310C = speeds 1..10, plus 81 (speed 11) and 82 (speed 12); D0310D mirrors the actual speed
       - Oscillation: D0320F (0 = off, 80 = 80 degree swing)
       - Modes via D0310C (MODE_B): 0 = Auto, -126 = Natural, 17 = Sleep
     This model has no Turbo mode.
@@ -2186,12 +2186,12 @@ class PhilipsCX7550(PhilipsNew2GenericFan):
         PresetMode.SPEED_11: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
-            PhilipsApi.NEW2_MODE_B: 11,
+            PhilipsApi.NEW2_MODE_B: 81,
         },
         PresetMode.SPEED_12: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_A: 1,
-            PhilipsApi.NEW2_MODE_B: 12,
+            PhilipsApi.NEW2_MODE_B: 82,
         },
     }
     KEY_OSCILLATION: ClassVar = {

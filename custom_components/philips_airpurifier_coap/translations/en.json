@@ -226,6 +226,12 @@
       },
       "quickdry_mode": {
         "name": "Quickdry mode"
+      },
+      "temp_color": {
+        "name": "Show temperature colour"
+      },
+      "temp_in_standby": {
+        "name": "Show temperature in standby"
       }
     },
     "light": {
@@ -279,6 +285,21 @@
         "state": {
           "off": "Off",
           "on": "On"
+        }
+      },
+      "display_brightness": {
+        "name": "Display brightness",
+        "state": {
+          "off": "Off",
+          "low": "Low",
+          "high": "High"
+        }
+      },
+      "display_indicator": {
+        "name": "Display indicator",
+        "state": {
+          "temperature": "Temperature (always)",
+          "fan_speed": "Fan speed (manual)"
         }
       }
     },

@@ -2197,6 +2197,16 @@ class PhilipsCX7550(PhilipsNew2GenericFan):
     KEY_OSCILLATION: ClassVar = {
         PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP5,
     }
+    AVAILABLE_SWITCHES: ClassVar = [
+        PhilipsApi.NEW2_BEEP,
+        PhilipsApi.NEW2_DISPLAY_TEMP_COLOR,
+        PhilipsApi.NEW2_TEMP_STANDBY_DISPLAY,
+    ]
+    AVAILABLE_SELECTS: ClassVar = [
+        PhilipsApi.NEW2_TIMER2,
+        PhilipsApi.NEW2_DISPLAY_BRIGHTNESS,
+        PhilipsApi.NEW2_DISPLAY_INDICATOR,
+    ]
 
 
 class PhilipsHU1509(PhilipsNew2GenericFan):

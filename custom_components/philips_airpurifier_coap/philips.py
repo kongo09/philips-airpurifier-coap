@@ -1255,29 +1255,29 @@ class PhilipsAC3420(PhilipsNew2GenericFan):
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
-            PhilipsApi.NEW2_MODE_C: 3,
+            # PhilipsApi.NEW2_MODE_C: 3,
         },
         PresetMode.TURBO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 18,
-            PhilipsApi.NEW2_MODE_C: 18,
+            # PhilipsApi.NEW2_MODE_C: 18,
         },
         PresetMode.MEDIUM: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 19,
-            PhilipsApi.NEW2_MODE_C: 3,
+            # PhilipsApi.NEW2_MODE_C: 3,
         },
         PresetMode.SLEEP: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 17,
-            PhilipsApi.NEW2_MODE_C: 1,
+            # PhilipsApi.NEW2_MODE_C: 1,
         },
     }
     AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SPEED_1: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 1,
-            PhilipsApi.NEW2_MODE_C: 1,
+            # PhilipsApi.NEW2_MODE_C: 1,
         },
         PresetMode.SPEED_2: {
             PhilipsApi.NEW2_POWER: 1,
@@ -1287,17 +1287,17 @@ class PhilipsAC3420(PhilipsNew2GenericFan):
         PresetMode.SPEED_3: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 3,
-            PhilipsApi.NEW2_MODE_C: 3,
+            # PhilipsApi.NEW2_MODE_C: 3,
         },
         PresetMode.SPEED_4: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 4,
-            PhilipsApi.NEW2_MODE_C: 4,
+            # PhilipsApi.NEW2_MODE_C: 4,
         },
         PresetMode.SPEED_5: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 5,
-            PhilipsApi.NEW2_MODE_C: 18,
+            # PhilipsApi.NEW2_MODE_C: 18,
         },
     }
 

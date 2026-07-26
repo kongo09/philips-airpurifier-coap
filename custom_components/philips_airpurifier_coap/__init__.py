@@ -14,13 +14,12 @@ from aioairctrl import CoAPClient
 from getmac import get_mac_address
 from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
-from homeassistant.helpers.http import HomeAssistantView
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers.device_registry import format_mac
+from homeassistant.helpers.http import HomeAssistantView
 
 from .config_entry_data import ConfigEntryData
 from .const import (
@@ -36,6 +35,7 @@ from .const import (
     PAP,
 )
 from .coordinator import Coordinator
+from .helpers import normalize_connection_mac
 from .model import DeviceInformation
 
 _LOGGER = logging.getLogger(__name__)
@@ -125,7 +125,12 @@ async def async_get_mac_address_from_host(hass: HomeAssistant, host: str) -> str
     if not mac_address:
         return None
 
-    return format_mac(mac_address)
+    normalized_mac = normalize_connection_mac(mac_address)
+    if normalized_mac is None:
+        _LOGGER.debug("Ignoring invalid MAC address '%s' for host %s", mac_address, host)
+        return None
+
+    return normalized_mac
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

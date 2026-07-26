@@ -109,6 +109,7 @@ Note: Some of these models seem to have a newer firmware that does not allow loc
 - AC3858/86
 - AC4220
 - AC4221
+- AC4231
 - AC4236
 - AC4550
 - AC4558
@@ -121,6 +122,8 @@ Note: Some of these models seem to have a newer firmware that does not allow loc
 - CX3550
 - HU1509
 - HU1510
+- HU4209
+- HU4210
 - HU5710
 
 

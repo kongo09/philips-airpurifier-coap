@@ -158,6 +158,7 @@ class FanModel(StrEnum):
     AC3858_86 = "AC3858/86"
     AC4220 = "AC4220"
     AC4221 = "AC4221"
+    AC4231 = "AC4231"
     AC4236 = "AC4236"
     AC4550 = "AC4550"
     AC4558 = "AC4558"
@@ -170,6 +171,8 @@ class FanModel(StrEnum):
     CX5120 = "CX5120"
     HU1509 = "HU1509"
     HU1510 = "HU1510"
+    HU4209 = "HU4209"
+    HU4210 = "HU4210"
     HU5710 = "HU5710"
 
 

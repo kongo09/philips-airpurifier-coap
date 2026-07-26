@@ -1677,6 +1677,10 @@ class PhilipsAC4236(PhilipsGenericFan):
     AVAILABLE_SELECTS: ClassVar = [PhilipsApi.PREFERRED_INDEX]
 
 
+class PhilipsAC4231(PhilipsAC4236):
+    """AC4231."""
+
+
 class PhilipsAC4558(PhilipsGenericFan):
     """AC4558."""
 
@@ -2136,6 +2140,42 @@ class PhilipsHU1510(PhilipsHU1509):
     """HU1510."""
 
 
+class PhilipsHU4209(PhilipsNew2GenericFan):
+    """HU4209."""
+
+    CREATE_FAN = False
+
+    AVAILABLE_PRESET_MODES: ClassVar = {
+        PresetMode.AUTO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 0,
+        },
+        PresetMode.SLEEP: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 17},
+        PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
+        PresetMode.HIGH: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 65},
+    }
+    AVAILABLE_SPEEDS: ClassVar = {
+        PresetMode.SLEEP: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 17},
+        PresetMode.MEDIUM: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 19},
+        PresetMode.HIGH: {PhilipsApi.NEW2_POWER: 1, PhilipsApi.NEW2_MODE_B: 65},
+    }
+
+    AVAILABLE_SWITCHES: ClassVar = [
+        PhilipsApi.NEW2_BEEP,
+        PhilipsApi.NEW2_STANDBY_SENSORS,
+    ]
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT4]
+    AVAILABLE_SELECTS: ClassVar = [
+        PhilipsApi.NEW2_TIMER2,
+    ]
+    AVAILABLE_BINARY_SENSORS: ClassVar = [PhilipsApi.NEW2_ERROR_CODE]
+    AVAILABLE_HUMIDIFIERS: ClassVar = [PhilipsApi.NEW2_HUMIDITY_TARGET2]
+
+
+class PhilipsHU4210(PhilipsHU4209):
+    """HU4210."""
+
+
 class PhilipsHU5710(PhilipsNew2GenericFan):
     """HU5710."""
 
@@ -2223,6 +2263,7 @@ model_to_class = {
     FanModel.AC3858_86: PhilipsAC385886,
     FanModel.AC4220: PhilipsAC4220,
     FanModel.AC4221: PhilipsAC4221,
+    FanModel.AC4231: PhilipsAC4231,
     FanModel.AC4236: PhilipsAC4236,
     FanModel.AC4550: PhilipsAC4550,
     FanModel.AC4558: PhilipsAC4558,
@@ -2235,5 +2276,7 @@ model_to_class = {
     FanModel.CX3550: PhilipsCX3550,
     FanModel.HU1509: PhilipsHU1510,
     FanModel.HU1510: PhilipsHU1510,
+    FanModel.HU4209: PhilipsHU4210,
+    FanModel.HU4210: PhilipsHU4210,
     FanModel.HU5710: PhilipsHU5710,
 }

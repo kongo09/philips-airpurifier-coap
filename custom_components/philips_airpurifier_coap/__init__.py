@@ -14,12 +14,12 @@ from aioairctrl import CoAPClient
 from getmac import get_mac_address
 from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
-from homeassistant.helpers.http import HomeAssistantView
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.http import HomeAssistantView
 
 from .config_entry_data import ConfigEntryData
 from .const import (

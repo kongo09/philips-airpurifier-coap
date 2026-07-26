@@ -4,7 +4,6 @@ from homeassistant.helpers.device_registry import format_mac
 
 from .const import PhilipsApi
 
-
 INVALID_MAC_ADDRESSES = {
     "00:00:00:00:00:00",
     "ff:ff:ff:ff:ff:ff",

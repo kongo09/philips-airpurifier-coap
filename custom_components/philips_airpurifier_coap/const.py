@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import ClassVar
 
-from homeassistant.components.climate import HVACAction
+from homeassistant.components.climate.const import HVACAction
 from homeassistant.components.number import NumberDeviceClass
 from homeassistant.components.sensor import (
     ATTR_STATE_CLASS,

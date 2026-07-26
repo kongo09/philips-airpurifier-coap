@@ -7,11 +7,10 @@ from collections.abc import Callable
 from typing import Any
 
 from homeassistant.components.humidifier import (
-    HumidifierAction,
     HumidifierDeviceClass,
     HumidifierEntity,
-    HumidifierEntityFeature,
 )
+from homeassistant.components.humidifier.const import HumidifierAction, HumidifierEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity

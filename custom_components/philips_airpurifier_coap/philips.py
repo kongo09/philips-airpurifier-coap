@@ -2102,6 +2102,113 @@ class PhilipsCX3550(PhilipsNew2GenericFan):
     AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_TIMER2]
 
 
+class PhilipsCX7550(PhilipsNew2GenericFan):
+    """CX7550 - Smart Tower Fan 7000 series.
+
+    Reverse-engineered from the local CoAP interface (device type "Babel",
+    firmware 0.2.9):
+      - Power:       D03102 (0/1)
+      - Manual mode: D0310A = 1
+      - Fan speed:   D0310C = speeds 1..10, plus 81 (speed 11) and 82 (speed 12); D0310D mirrors the actual speed
+      - Oscillation: D0320F (0 = off, 80 = 80 degree swing)
+      - Modes via D0310C (MODE_B): 0 = Auto, -126 = Natural, 17 = Sleep
+    This model has no Turbo mode.
+    """
+
+    AVAILABLE_PRESET_MODES: ClassVar = {
+        PresetMode.AUTO: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 0,
+        },
+        PresetMode.NATURAL: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: -126,
+        },
+        PresetMode.SLEEP: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 17,
+        },
+    }
+    AVAILABLE_SPEEDS: ClassVar = {
+        PresetMode.SPEED_1: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 1,
+        },
+        PresetMode.SPEED_2: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 2,
+        },
+        PresetMode.SPEED_3: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 3,
+        },
+        PresetMode.SPEED_4: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 4,
+        },
+        PresetMode.SPEED_5: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 5,
+        },
+        PresetMode.SPEED_6: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 6,
+        },
+        PresetMode.SPEED_7: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 7,
+        },
+        PresetMode.SPEED_8: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 8,
+        },
+        PresetMode.SPEED_9: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 9,
+        },
+        PresetMode.SPEED_10: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 10,
+        },
+        PresetMode.SPEED_11: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 81,
+        },
+        PresetMode.SPEED_12: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_A: 1,
+            PhilipsApi.NEW2_MODE_B: 82,
+        },
+    }
+    KEY_OSCILLATION: ClassVar = {
+        PhilipsApi.NEW2_OSCILLATION: PhilipsApi.OSCILLATION_MAP5,
+    }
+    AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT4]
+    AVAILABLE_SWITCHES: ClassVar = [
+        PhilipsApi.NEW2_BEEP,
+        PhilipsApi.NEW2_DISPLAY_TEMP_COLOR,
+        PhilipsApi.NEW2_TEMP_STANDBY_DISPLAY,
+    ]
+    AVAILABLE_SELECTS: ClassVar = [
+        PhilipsApi.NEW2_TIMER2,
+        PhilipsApi.NEW2_DISPLAY_INDICATOR,
+    ]
+
+
 class PhilipsHU1509(PhilipsNew2GenericFan):
     """HU1509."""
 
@@ -2274,6 +2381,7 @@ model_to_class = {
     FanModel.CX3120: PhilipsCX3120,
     FanModel.CX5120: PhilipsCX5120,
     FanModel.CX3550: PhilipsCX3550,
+    FanModel.CX7550: PhilipsCX7550,
     FanModel.HU1509: PhilipsHU1510,
     FanModel.HU1510: PhilipsHU1510,
     FanModel.HU4209: PhilipsHU4210,

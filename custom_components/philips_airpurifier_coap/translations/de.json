@@ -210,6 +210,12 @@
       },
       "quickdry_mode": {
         "name": "Manueller QuickDry-Modus"
+      },
+      "temp_color": {
+        "name": "Temperaturfarbe anzeigen"
+      },
+      "temp_in_standby": {
+        "name": "Temperatur im Standby anzeigen"
       }
     },
     "light": {
@@ -263,6 +269,13 @@
         "state": {
           "off": "Aus",
           "on": "An"
+        }
+      },
+      "display_indicator": {
+        "name": "Anzeigeindikator",
+        "state": {
+          "temperature": "Temperatur (immer)",
+          "fan_speed": "Lüftergeschwindigkeit (manuell)"
         }
       }
     },

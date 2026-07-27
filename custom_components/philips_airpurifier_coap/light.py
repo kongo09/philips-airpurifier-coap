@@ -178,13 +178,13 @@ class PhilipsLight(PhilipsEntity, LightEntity):
         else:
             value = self._on
 
-        await self.coordinator.client.set_control_value(self.kind, value)
+        await self.coordinator.set_control_value(self.kind, value)
         self._device_status[self.kind] = value
         self._handle_coordinator_update()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the light off."""
         self._attr_effect = EFFECT_OFF
-        await self.coordinator.client.set_control_value(self.kind, self._off)
+        await self.coordinator.set_control_value(self.kind, self._off)
         self._device_status[self.kind] = self._off
         self._handle_coordinator_update()

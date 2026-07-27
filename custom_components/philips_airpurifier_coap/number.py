@@ -109,6 +109,6 @@ class PhilipsNumber(PhilipsEntity, NumberEntity):
 
         _LOGGER.debug("setting number with: %s", value)
 
-        await self.coordinator.client.set_control_value(self.kind, int(value))
+        await self.coordinator.set_control_value(self.kind, int(value))
         self._device_status[self.kind] = int(value)
         self._handle_coordinator_update()

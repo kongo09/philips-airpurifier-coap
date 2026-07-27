@@ -257,14 +257,14 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
             await self.async_set_percentage(percentage)
             return
 
-        await self.coordinator.client.set_control_value(self.KEY_PHILIPS_POWER, self.STATE_POWER_ON)
+        await self.coordinator.set_control_value(self.KEY_PHILIPS_POWER, self.STATE_POWER_ON)
 
         self._device_status[self.KEY_PHILIPS_POWER] = self.STATE_POWER_ON
         self._handle_coordinator_update()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the fan off."""
-        await self.coordinator.client.set_control_value(self.KEY_PHILIPS_POWER, self.STATE_POWER_OFF)
+        await self.coordinator.set_control_value(self.KEY_PHILIPS_POWER, self.STATE_POWER_OFF)
 
         self._device_status[self.KEY_PHILIPS_POWER] = self.STATE_POWER_OFF
         self._handle_coordinator_update()
@@ -299,7 +299,7 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
 
         status_pattern = self._available_preset_modes.get(preset_mode)
         if status_pattern:
-            await self.coordinator.client.set_control_values(data=status_pattern)
+            await self.coordinator.set_control_values(data=status_pattern)
             self._device_status.update(status_pattern)
             self._handle_coordinator_update()
 
@@ -337,9 +337,9 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
         off = values.get(SWITCH_OFF)
 
         if oscillating:
-            await self.coordinator.client.set_control_value(key, on)
+            await self.coordinator.set_control_value(key, on)
         else:
-            await self.coordinator.client.set_control_value(key, off)
+            await self.coordinator.set_control_value(key, off)
 
         self._device_status[key] = on if oscillating else off
         self._handle_coordinator_update()
@@ -369,7 +369,7 @@ class PhilipsGenericFanBase(PhilipsGenericControlBase, FanEntity):
             speed = percentage_to_ordered_list_item(self._speeds, percentage)
             status_pattern = self._available_speeds.get(speed)
             if status_pattern:
-                await self.coordinator.client.set_control_values(data=status_pattern)
+                await self.coordinator.set_control_values(data=status_pattern)
                 self._device_status.update(status_pattern)
                 self._handle_coordinator_update()
 
@@ -701,7 +701,7 @@ class PhilipsAC1214(PhilipsGenericFan):
         _LOGGER.debug("AC1214 switches to mode 'A' first")
         a_status_pattern = self._available_preset_modes.get(PresetMode.ALLERGEN)
         if a_status_pattern is not None:
-            await self.coordinator.client.set_control_values(data=a_status_pattern)
+            await self.coordinator.set_control_values(data=a_status_pattern)
         await asyncio.sleep(1)
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
@@ -712,7 +712,7 @@ class PhilipsAC1214(PhilipsGenericFan):
         # so it needs to be done in sequence
         if not self.is_on:
             _LOGGER.debug("AC1214 is switched on without setting a mode")
-            await self.coordinator.client.set_control_value(PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON])
+            await self.coordinator.set_control_value(PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON])
             await asyncio.sleep(1)
 
         # the AC1214 also doesn't seem to like switching to mode 'M' without cycling through mode 'A'
@@ -731,7 +731,7 @@ class PhilipsAC1214(PhilipsGenericFan):
                 await self.async_set_a()
             _LOGGER.debug("AC1214 sets preset mode to: %s", preset_mode)
             if status_pattern:
-                await self.coordinator.client.set_control_values(data=status_pattern)
+                await self.coordinator.set_control_values(data=status_pattern)
 
     async def async_set_percentage(self, percentage: int) -> None:
         """Set the preset mode of the fan."""
@@ -741,7 +741,7 @@ class PhilipsAC1214(PhilipsGenericFan):
         # so it needs to be done in sequence
         if not self.is_on:
             _LOGGER.debug("AC1214 is switched on without setting a mode")
-            await self.coordinator.client.set_control_value(PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON])
+            await self.coordinator.set_control_value(PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON])
             await asyncio.sleep(1)
 
         current_pattern = self._available_preset_modes.get(self.preset_mode)
@@ -764,7 +764,7 @@ class PhilipsAC1214(PhilipsGenericFan):
                 await self.async_set_a()
             _LOGGER.debug("AC1214 sets speed percentage to: %s", percentage)
             if status_pattern:
-                await self.coordinator.client.set_control_values(data=status_pattern)
+                await self.coordinator.set_control_values(data=status_pattern)
 
     async def async_turn_on(
         self,
@@ -782,7 +782,7 @@ class PhilipsAC1214(PhilipsGenericFan):
         # so it needs to be done in sequence
         if not self.is_on:
             _LOGGER.debug("AC1214 is switched on without setting a mode")
-            await self.coordinator.client.set_control_value(PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON])
+            await self.coordinator.set_control_value(PhilipsApi.POWER, PhilipsApi.POWER_MAP[SWITCH_ON])
             await asyncio.sleep(1)
 
         if preset_mode:

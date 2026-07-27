@@ -90,12 +90,12 @@ class PhilipsSwitch(PhilipsEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Switch the switch on."""
-        await self.coordinator.client.set_control_value(self.kind, self._on)
+        await self.coordinator.set_control_value(self.kind, self._on)
         self._device_status[self.kind] = self._on
         self._handle_coordinator_update()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Switch the switch off."""
-        await self.coordinator.client.set_control_value(self.kind, self._off)
+        await self.coordinator.set_control_value(self.kind, self._off)
         self._device_status[self.kind] = self._off
         self._handle_coordinator_update()

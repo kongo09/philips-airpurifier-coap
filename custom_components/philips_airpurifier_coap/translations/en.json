@@ -287,14 +287,6 @@
           "on": "On"
         }
       },
-      "display_brightness": {
-        "name": "Display brightness",
-        "state": {
-          "off": "Off",
-          "low": "Low",
-          "high": "High"
-        }
-      },
       "display_indicator": {
         "name": "Display indicator",
         "state": {

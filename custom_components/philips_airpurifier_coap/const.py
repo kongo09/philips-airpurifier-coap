@@ -278,7 +278,6 @@ class FanAttributes(StrEnum):
     BEEP = "beep"
     TEMP_COLOR = "temp_color"
     TEMP_IN_STANDBY = "temp_in_standby"
-    DISPLAY_BRIGHTNESS = "display_brightness"
     DISPLAY_INDICATOR = "display_indicator"
     DEVICE_ID = "device_id"
     DEVICE_VERSION = "device_version"
@@ -451,11 +450,6 @@ class PhilipsApi:
         SWITCH_ON: 80,
         SWITCH_OFF: 0,
     }
-    DISPLAY_BRIGHTNESS_MAP: ClassVar = {
-        0: "off",
-        115: "low",
-        123: "high",
-    }
     DISPLAY_INDICATOR_MAP: ClassVar = {
         7: "fan_speed",
         5: "temperature",
@@ -490,7 +484,6 @@ class PhilipsApi:
     NEW2_BEEP = "D03130"
     NEW2_DISPLAY_TEMP_COLOR = "D03104"
     NEW2_TEMP_STANDBY_DISPLAY = "D03133"
-    NEW2_DISPLAY_BRIGHTNESS = "D03105"
     NEW2_DISPLAY_INDICATOR = "D0312A"
     NEW2_INDOOR_ALLERGEN_INDEX = "D03120"
     NEW2_PM25 = "D03221"
@@ -1043,11 +1036,6 @@ SELECT_TYPES: dict[str, SelectDescription] = {
         FanAttributes.LABEL: FanAttributes.TIMER,
         CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
         OPTIONS: PhilipsApi.TIMER2_MAP,
-    },
-    PhilipsApi.NEW2_DISPLAY_BRIGHTNESS: {
-        FanAttributes.LABEL: FanAttributes.DISPLAY_BRIGHTNESS,
-        CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,
-        OPTIONS: PhilipsApi.DISPLAY_BRIGHTNESS_MAP,
     },
     PhilipsApi.NEW2_DISPLAY_INDICATOR: {
         FanAttributes.LABEL: FanAttributes.DISPLAY_INDICATOR,

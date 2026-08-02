@@ -11,6 +11,7 @@ from aioairctrl import CoAPClient
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 
+from .const import PhilipsApi
 from .helpers import get_status_with_trigger
 from .timer import Timer
 

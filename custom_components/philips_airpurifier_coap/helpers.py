@@ -5,6 +5,8 @@ import logging
 
 from .const import PhilipsApi
 
+_BEEP_CONTROL_TRIGGER = PhilipsApi.NEW2_BEEP
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -13,11 +15,11 @@ async def get_status_with_trigger(client) -> tuple[dict, int]:
 
     Some devices (e.g. CX3550) ignore the initial CoAP observe GET but push a
     status update after receiving any encrypted control command.  We try the
-    normal path first; on timeout we register the observe, then toggle D03130
-    (beep) to guarantee a value change that the device will respond to, then
+    normal path first; on timeout we register the observe, then toggle the beep
+    control to guarantee a value change that the device will respond to, then
     collect the first result.
 
-    We toggle D03130: first set 0, then 1 if no push arrives within 5 s.  This
+    We toggle the beep: first set 0, then 1 if no push arrives within 5 s.  This
     ensures a change regardless of the current value.  We leave it at 0 (beep
     off) and patch the captured status accordingly.
 
@@ -41,17 +43,17 @@ async def get_status_with_trigger(client) -> tuple[dict, int]:
     # Yield so the observe GET is dispatched before the trigger is sent.
     await asyncio.sleep(0.5)
     try:
-        # Try D03130=0 first (if D03130 was 1, this triggers a push immediately).
-        await asyncio.wait_for(client.set_control_values({"D03130": 0}), timeout=10)
-        # Wait briefly; if the first trigger didn't fire (D03130 was already 0),
-        # send D03130=1 to guarantee a value change, then restore to 0.
+        # Try beep=0 first (if beep was 1, this triggers a push immediately).
+        await asyncio.wait_for(client.set_control_values({_BEEP_CONTROL_TRIGGER: 0}), timeout=10)
+        # Wait briefly; if the first trigger didn't fire (beep was already 0),
+        # send beep=1 to guarantee a value change, then restore to 0.
         try:
             await asyncio.wait_for(asyncio.shield(collect_task), timeout=5)
         except (asyncio.TimeoutError, TimeoutError):
-            _LOGGER.debug("D03130=0 did not trigger push (already 0?), toggling to 1")
-            await asyncio.wait_for(client.set_control_values({"D03130": 1}), timeout=10)
+            _LOGGER.debug("Beep=0 did not trigger push (already 0?), toggling to 1")
+            await asyncio.wait_for(client.set_control_values({_BEEP_CONTROL_TRIGGER: 1}), timeout=10)
             await asyncio.sleep(0.3)
-            await asyncio.wait_for(client.set_control_values({"D03130": 0}), timeout=10)
+            await asyncio.wait_for(client.set_control_values({_BEEP_CONTROL_TRIGGER: 0}), timeout=10)
     except Exception:
         collect_task.cancel()
         raise
@@ -61,11 +63,11 @@ async def get_status_with_trigger(client) -> tuple[dict, int]:
     if "status" not in status_holder:
         raise TimeoutError("Device did not push status after control trigger")
 
-    # If the captured status has D03130=1 (from the toggle above), correct it to
-    # 0 since we immediately sent D03130=0 afterwards.
+    # If the captured status has beep=1 (from the toggle above), correct it to
+    # 0 since we immediately sent beep=0 afterwards.
     status = status_holder["status"]
-    if status.get("D03130") == 1:
-        status["D03130"] = 0
+    if status.get(_BEEP_CONTROL_TRIGGER) == 1:
+        status[_BEEP_CONTROL_TRIGGER] = 0
     return status, 60
 
 

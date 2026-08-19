@@ -1323,42 +1323,40 @@ class PhilipsAC3421(PhilipsAC3420):
 class PhilipsAC3737(PhilipsNew2GenericFan):
     """AC3737."""
 
+    # NEW2_MODE_A (D0310A) is the humidification flag on this model, not a
+    # fan mode field: const.py declares it as the "humidification" binary
+    # sensor with value == 4, and the device reports 4 while it humidifies.
+    # Listing it here made preset_mode and percentage read None whenever
+    # humidification was running. See #356.
     AVAILABLE_PRESET_MODES: ClassVar = {
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 2,
             PhilipsApi.NEW2_MODE_B: 0,
         },
         PresetMode.SLEEP: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 2,
             PhilipsApi.NEW2_MODE_B: 17,
         },
         PresetMode.TURBO: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 3,
             PhilipsApi.NEW2_MODE_B: 18,
         },
     }
     AVAILABLE_SPEEDS: ClassVar = {
         PresetMode.SLEEP: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 2,
             PhilipsApi.NEW2_MODE_B: 17,
         },
         PresetMode.SPEED_1: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 2,
             PhilipsApi.NEW2_MODE_B: 1,
         },
         PresetMode.SPEED_2: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 2,
             PhilipsApi.NEW2_MODE_B: 2,
         },
         PresetMode.TURBO: {
             PhilipsApi.NEW2_POWER: 1,
-            PhilipsApi.NEW2_MODE_A: 3,
             PhilipsApi.NEW2_MODE_B: 18,
         },
     }

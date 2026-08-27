@@ -1333,9 +1333,18 @@ class PhilipsAC3737(PhilipsNew2GenericFan):
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
         },
+        # make speeds available as preset
         PresetMode.SLEEP: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 17,
+        },
+        PresetMode.SPEED_1: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 1,
+        },
+        PresetMode.SPEED_2: {
+            PhilipsApi.NEW2_POWER: 1,
+            PhilipsApi.NEW2_MODE_B: 2,
         },
         PresetMode.TURBO: {
             PhilipsApi.NEW2_POWER: 1,

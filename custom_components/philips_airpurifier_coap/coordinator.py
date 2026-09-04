@@ -43,7 +43,7 @@ class Coordinator:
 
         self._timer_disconnected = Timer(
             timeout=self._timeout * MISSED_PACKAGE_COUNT,
-            callback=self.reconnect,
+            callback=self._refresh_observation,
             autostart=True,
         )
         self._timer_disconnected.setAutoRestart(True)
@@ -72,6 +72,22 @@ class Coordinator:
 
         except Exception:
             _LOGGER.exception("Exception on starting reconnect!")
+
+    async def _refresh_observation(self) -> None:
+        """Refresh observation without replacing the CoAP client."""
+        if not self._listeners:
+            return
+
+        task = self._task
+        if task is not None:
+            if task.done() and not task.cancelled() and task.exception() is not None:
+                await self.reconnect()
+                return
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+            self._task = None
+
+        self._start_observing()
 
     async def _reconnect(self):
         """Reconnect to the API connection."""

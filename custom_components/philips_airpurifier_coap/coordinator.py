@@ -51,11 +51,16 @@ class Coordinator:
     async def shutdown(self):
         """Shutdown the API connection."""
 
-        if self._reconnect_task is not None:
-            self._reconnect_task.cancel()
-
         if self._timer_disconnected is not None:
             self._timer_disconnected.cancel()
+
+        tasks = [task for task in (self._task, self._reconnect_task) if task is not None]
+        for task in tasks:
+            task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
+        self._task = None
+        self._reconnect_task = None
 
         if self.client is not None:
             await self.client.shutdown()
@@ -129,7 +134,6 @@ class Coordinator:
 
         if not self._listeners and self._task:
             self._task.cancel()
-            self._task = None
 
     async def _async_observe_status(self) -> None:
         """Observe the status of the device."""

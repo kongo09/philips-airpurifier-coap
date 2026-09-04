@@ -1,5 +1,6 @@
 """The Philips AirPurifier component."""
 
+import asyncio
 import ipaddress
 import logging
 import re
@@ -20,6 +21,29 @@ from .helpers import extract_model, extract_name
 from .philips import model_to_class
 
 _LOGGER = logging.getLogger(__name__)
+
+
+async def _async_get_status(host: str) -> tuple[dict[str, Any], int]:
+    """Get device status and always close the temporary client."""
+    client = None
+    status_task = None
+    timeout = TimeoutManager()
+    try:
+        async with timeout.async_timeout(30):
+            client = await CoAPClient.create(host)
+
+        status_task = asyncio.create_task(client.get_status())
+        async with timeout.async_timeout(30):
+            return await asyncio.shield(status_task)
+    finally:
+        if client is not None:
+            try:
+                await client.shutdown()
+            except Exception:
+                _LOGGER.debug("Failed to shut down temporary client for %s", host, exc_info=True)
+        if status_task is not None:
+            status_task.cancel()
+            await asyncio.gather(status_task, return_exceptions=True)
 
 
 def host_valid(host: str) -> bool:
@@ -66,26 +90,15 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._host = discovery_info.ip
         _LOGGER.debug("trying to configure host: %s", self._host)
 
+        if any(
+            entry.options.get(CONF_HOST, entry.data.get(CONF_HOST)) == self._host
+            for entry in self._async_current_entries()
+        ):
+            return self.async_abort(reason="already_configured")
+
         # let's try and connect to an AirPurifier
         try:
-            client = None
-            timeout = TimeoutManager()
-
-            # try for 30s to get a valid client
-            async with timeout.async_timeout(30):
-                client = await CoAPClient.create(self._host)
-                _LOGGER.debug("got a valid client for host %s", self._host)
-
-            # we give it 30s to get a status, otherwise we abort
-            async with timeout.async_timeout(30):
-                _LOGGER.debug("trying to get status")
-                status, _ = await client.get_status()
-                _LOGGER.debug("got status")
-
-            if client is not None:
-                await client.shutdown()
-
-            # get the status out of the queue
+            status, _ = await _async_get_status(self._host)
             _LOGGER.debug("status for host %s is: %s", self._host, status)
 
         except TimeoutError:
@@ -207,22 +220,7 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
                 # let's try and connect to an AirPurifier
                 try:
-                    client = None
-                    timeout = TimeoutManager()
-
-                    # try for 30s to get a valid client
-                    async with timeout.async_timeout(30):
-                        client = await CoAPClient.create(self._host)
-                        _LOGGER.debug("got a valid client")
-
-                    # we give it 30s to get a status, otherwise we abort
-                    async with timeout.async_timeout(30):
-                        _LOGGER.debug("trying to get status")
-                        status, _ = await client.get_status()
-                        _LOGGER.debug("got status")
-
-                    if client is not None:
-                        await client.shutdown()
+                    status, _ = await _async_get_status(self._host)
 
                 except TimeoutError:
                     _LOGGER.warning(r"Timeout, host %s doesn't answer, aborting", self._host)
@@ -317,19 +315,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             else:
                 _LOGGER.debug("options flow: trying to connect to new host %s", new_host)
                 try:
-                    client = None
-                    timeout = TimeoutManager()
-
-                    async with timeout.async_timeout(30):
-                        client = await CoAPClient.create(new_host)
-                        _LOGGER.debug("options flow: got a valid client for host %s", new_host)
-
-                    async with timeout.async_timeout(30):
-                        status, _ = await client.get_status()
-                        _LOGGER.debug("options flow: got status from host %s", new_host)
-
-                    if client is not None:
-                        await client.shutdown()
+                    status, _ = await _async_get_status(new_host)
 
                     device_id = status[PhilipsApi.DEVICE_ID]
                     _LOGGER.debug(

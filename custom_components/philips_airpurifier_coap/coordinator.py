@@ -55,10 +55,24 @@ class Coordinator:
             self._reconnect_task.cancel()
 
         if self._timer_disconnected is not None:
-            self._timer_disconnected.cancel()
+            # Force the cancel: an unguarded Timer.cancel() raises
+            # CallbackRunningException if it lands while the timeout callback
+            # is running - which is exactly the case when we unload during a
+            # reconnect - and the auto-restarting timer would otherwise keep
+            # running after the entry is gone.
+            self._timer_disconnected.setAutoRestart(False)
+            self._timer_disconnected.cancel(msg="SHUTDOWN", force=True)
 
         if self.client is not None:
-            await self.client.shutdown()
+            # The client may already be (partially) shut down, e.g. after a
+            # _reconnect() whose CoAPClient.create() timed out. Shutting an
+            # aiocoap context down a second time raises AttributeError, which
+            # would propagate out of async_unload_entry and strand the config
+            # entry in FAILED_UNLOAD - a state that neither a reload nor
+            # re-enabling recovers from, only restarting Home Assistant.
+            with contextlib.suppress(Exception):
+                await self.client.shutdown()
+            self.client = None
 
     async def reconnect(self):
         """Reconnect to the API connection."""
@@ -79,6 +93,13 @@ class Coordinator:
         try:
             with contextlib.suppress(Exception):
                 await self.client.shutdown()
+
+            # Drop the reference to the client we just shut down before
+            # reconnecting. If create() below fails - which it does whenever
+            # the device is still unreachable - self.client must not keep
+            # pointing at a dead aiocoap context for shutdown() to trip over.
+            self.client = None
+
             self.client = await CoAPClient.create(self.host)
             self._start_observing()
 

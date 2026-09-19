@@ -64,9 +64,15 @@ class Timer:
         # Set new Timeout immediatly effective
         self.reset()
 
-    def cancel(self, msg="STOP"):
-        """Cancel the task."""
-        if self._in_callback:
+    def cancel(self, msg="STOP", force=False):
+        """Cancel the task.
+
+        Refuses to cancel while the timeout callback is running, so that a
+        reset() does not cut its own callback short. Pass force=True to tear
+        the timer down regardless - used on shutdown, where the timer must go
+        away even mid-callback and raising is not an option.
+        """
+        if self._in_callback and not force:
             raise CallbackRunningException
         if self._task is not None:
             self._task.cancel(msg=msg)

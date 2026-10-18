@@ -28,6 +28,7 @@ from .const import (
     SWITCH_OFF,
     SWITCH_ON,
     FanAttributes,
+    PhilipsApi,
     PresetMode,
 )
 from .model import DeviceStatus
@@ -143,7 +144,6 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         self._attr_min_temp = self._description[FanAttributes.MIN_TEMPERATURE]
         self._attr_max_temp = self._description[FanAttributes.MAX_TEMPERATURE]
         self._attr_target_temperature = latest_status.get(self._temperature_target_key)
-        self._attr_current_temperature = latest_status.get(self._description[FanAttributes.TEMPERATURE])
 
         self._attr_supported_features = (
             ClimateEntityFeature.TARGET_TEMPERATURE
@@ -173,6 +173,16 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         return float(value)
 
     @property
+    def current_temperature(self) -> float | None:
+        """Return the current temperature from the live device status."""
+        value = self._device_status.get(self._description[FanAttributes.TEMPERATURE])
+        if value is not None:
+            return float(value)
+        # new2 devices (e.g. CX3120) report it in D03224, in tenths of a degree.
+        value = self._device_status.get(PhilipsApi.NEW2_TEMPERATURE)
+        return float(value) / 10 if value is not None else None
+
+    @property
     def hvac_action(self) -> HVACAction | None:
         """Return the current HVAC action."""
         if not self.is_on:
@@ -188,7 +198,7 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         """Return the current HVAC mode."""
         if not self.is_on:
             return HVACMode.OFF
-        if self.preset_mode == PresetMode.AUTO:
+        if self.preset_mode in (PresetMode.AUTO, PresetMode.AUTO_PLUS):
             return HVACMode.AUTO
         if self.preset_mode == PresetMode.VENTILATION:
             return HVACMode.FAN_ONLY
@@ -199,7 +209,9 @@ class PhilipsHeater(PhilipsGenericControlBase, ClimateEntity):
         if hvac_mode == HVACMode.OFF:
             await self.async_turn_off()
         elif hvac_mode == HVACMode.AUTO:
-            await self.async_set_preset_mode(PresetMode.AUTO)
+            # Some heaters (e.g. CX3120) only have AUTO_PLUS.
+            preset = PresetMode.AUTO if PresetMode.AUTO in (self._attr_preset_modes or []) else PresetMode.AUTO_PLUS
+            await self.async_set_preset_mode(preset)
         elif hvac_mode == HVACMode.FAN_ONLY:
             await self.async_set_preset_mode(PresetMode.VENTILATION)
         elif hvac_mode == HVACMode.HEAT:

@@ -59,6 +59,14 @@ Note: `configuration.yaml` is no longer supported and your configuration is not 
 
 ## Supported models
 
+### AC3420 target humidity
+
+AC3420 provides a Target humidity number (40–70%, steps of 10) which writes
+only the humidity target. Its fan continues to control power and speed, and
+its humidity sensor reports the current measurement. The existing humidifier
+entity remains available for existing automations, but is disabled by default
+on new installations to avoid presenting a second control for the same power.
+
 Note: Some of these models seem to have a newer firmware that does not allow local connections anymore. If you buy the device with the intention to manage it via Home Assistant, make sure you can return it, if the integration doesn't work for you.
 
 - AC0850/11 AWS_Philips_AIR

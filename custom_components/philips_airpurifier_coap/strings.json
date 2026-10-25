@@ -288,6 +288,9 @@
       },
       "target_temp": {
         "name": "Target temperature"
+      },
+      "target_humidity": {
+        "name": "Target humidity"
       }
     }
   }

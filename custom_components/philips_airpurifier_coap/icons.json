@@ -237,6 +237,9 @@
       },
       "target_temp": {
         "default": "mdi:thermometer"
+      },
+      "target_humidity": {
+        "default": "mdi:water-percent"
       }
     }
   }

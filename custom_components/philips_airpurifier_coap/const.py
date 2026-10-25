@@ -14,6 +14,7 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import (
     ATTR_DEVICE_CLASS,
+    ATTR_ICON,
     ATTR_TEMPERATURE,
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
     CONF_ENTITY_CATEGORY,
@@ -709,9 +710,7 @@ SENSOR_TYPES: dict[str, SensorDescription] = {
     PhilipsApi.WATER_LEVEL: {
         FanAttributes.ICON_MAP: {0: ICON.WATER_REFILL, 10: "mdi:water"},
         FanAttributes.LABEL: FanAttributes.WATER_LEVEL,
-        FanAttributes.VALUE: lambda value, status: (
-            0 if status.get("err") in [32768, 49408] else value
-        ),
+        FanAttributes.VALUE: lambda value, status: 0 if status.get("err") in [32768, 49408] else value,
         ATTR_STATE_CLASS: SensorStateClass.MEASUREMENT,
         FanAttributes.UNIT: PERCENTAGE,
         CONF_ENTITY_CATEGORY: EntityCategory.DIAGNOSTIC,
@@ -1008,6 +1007,17 @@ SELECT_TYPES: dict[str, SelectDescription] = {
 }
 
 NUMBER_TYPES: dict[str, NumberDescription] = {
+    # Independent AC3420 target humidity, without a second power control.
+    PhilipsApi.NEW2_HUMIDITY_TARGET.partition("#")[0]: {
+        FanAttributes.LABEL: "target_humidity",
+        ATTR_DEVICE_CLASS: NumberDeviceClass.HUMIDITY,
+        ATTR_ICON: "mdi:water-percent",
+        FanAttributes.UNIT: PERCENTAGE,
+        FanAttributes.OFF: 40,
+        FanAttributes.MIN: 40,
+        FanAttributes.MAX: 70,
+        FanAttributes.STEP: 10,
+    },
     PhilipsApi.NEW2_OSCILLATION: {
         FanAttributes.LABEL: FanAttributes.OSCILLATION,
         CONF_ENTITY_CATEGORY: EntityCategory.CONFIG,

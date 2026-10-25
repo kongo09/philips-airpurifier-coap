@@ -13,7 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
 
 from .config_entry_data import ConfigEntryData
-from .const import DOMAIN, NUMBER_TYPES, FanAttributes
+from .const import DOMAIN, NUMBER_TYPES, FanAttributes, PhilipsApi
 from .philips import PhilipsEntity, model_to_class
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,6 +37,10 @@ async def async_setup_entry(
         for cls in reversed(model_class.__mro__):
             cls_available_numbers = getattr(cls, "AVAILABLE_NUMBERS", [])
             available_numbers.extend(cls_available_numbers)
+
+        # Independent AC3420 target humidity, without a second power control.
+        if model.split("/")[0] == "AC3420":
+            available_numbers.append(PhilipsApi.NEW2_HUMIDITY_TARGET.partition("#")[0])
 
         numbers = [
             PhilipsNumber(hass, entry, config_entry_data, number)

@@ -78,6 +78,8 @@ class PhilipsHumidifier(PhilipsGenericControlBase, HumidifierEntity):
         super().__init__(hass, config, config_entry_data)
 
         self._model = config_entry_data.device_information.model
+        if self._model.split("/")[0] == "AC3420":
+            self._attr_entity_registry_enabled_default = False
         latest_status = config_entry_data.latest_status
 
         self._description = HUMIDIFIER_TYPES[humidifier]

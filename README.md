@@ -59,6 +59,17 @@ Note: `configuration.yaml` is no longer supported and your configuration is not 
 
 ## Supported models
 
+### AMF870 and AC3420 status recovery
+
+For configured AMF870 and AC3420 devices, a subscription that does not deliver an
+initial status within two seconds gets one recovery attempt: temporarily disable
+the beep setting, then restore its last confirmed value. An already muted device
+stays muted. Recovery never sends power or display-brightness commands. The last
+confirmed beep setting is stored per config entry and retained across restarts;
+if none is known, no recovery command is sent. A setting changed on the device
+while disconnected may be newer than this saved value. Recovery cannot help when
+the device is unreachable and does not apply to other models or initial discovery.
+
 Note: Some of these models seem to have a newer firmware that does not allow local connections anymore. If you buy the device with the intention to manage it via Home Assistant, make sure you can return it, if the integration doesn't work for you.
 
 - AC0850/11 AWS_Philips_AIR

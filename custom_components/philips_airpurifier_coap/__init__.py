@@ -37,6 +37,7 @@ from .const import (
 from .coordinator import Coordinator
 from .helpers import normalize_connection_mac
 from .model import DeviceInformation
+from .status_recovery import SUPPORTED_MODELS, StatusRecoveryClient
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -153,6 +154,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         raise ConfigEntryNotReady from ex
 
     device_information = DeviceInformation(host=host, mac=mac, model=model, name=name, device_id=device_id)
+
+    if model.split("/")[0] in SUPPORTED_MODELS:
+        client = await StatusRecoveryClient.async_create(hass, client, entry.entry_id, entry.data.get(CONF_STATUS))
 
     # check if we have status data, it will be missing in old entries
     if CONF_STATUS not in entry.data:

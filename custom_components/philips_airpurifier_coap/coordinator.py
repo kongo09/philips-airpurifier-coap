@@ -11,6 +11,7 @@ from aioairctrl import CoAPClient
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 
+from .status_recovery import StatusRecoveryClient
 from .timer import Timer
 
 _LOGGER = logging.getLogger(__name__)
@@ -21,7 +22,13 @@ MISSED_PACKAGE_COUNT = 3
 class Coordinator:
     """Class to coordinate the data requests from the Philips API."""
 
-    def __init__(self, hass: HomeAssistant, client: CoAPClient, host: str, status: dict[str, Any] | None) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        client: CoAPClient | StatusRecoveryClient,
+        host: str,
+        status: dict[str, Any] | None,
+    ) -> None:
         """Initialize the Coordinator.
 
         :param hass: HomeAssistant instance.
@@ -51,11 +58,14 @@ class Coordinator:
     async def shutdown(self):
         """Shutdown the API connection."""
 
-        if self._reconnect_task is not None:
-            self._reconnect_task.cancel()
-
         if self._timer_disconnected is not None:
             self._timer_disconnected.cancel()
+
+        if self._reconnect_task is not None:
+            self._reconnect_task.cancel()
+            await asyncio.gather(self._reconnect_task, return_exceptions=True)
+
+        await self._stop_observing()
 
         if self.client is not None:
             await self.client.shutdown()
@@ -77,9 +87,13 @@ class Coordinator:
         """Reconnect to the API connection."""
 
         try:
+            await self._stop_observing()
+            previous_client = self.client
             with contextlib.suppress(Exception):
                 await self.client.shutdown()
             self.client = await CoAPClient.create(self.host)
+            if isinstance(previous_client, StatusRecoveryClient):
+                self.client = previous_client.with_client(self.client)
             self._start_observing()
 
         except asyncio.CancelledError:
@@ -127,9 +141,8 @@ class Coordinator:
 
         self._listeners.remove(update_callback)
 
-        if not self._listeners and self._task:
+        if not self._listeners and self._task and not self._task.cancelling():
             self._task.cancel()
-            self._task = None
 
     async def _async_observe_status(self) -> None:
         """Observe the status of the device."""
@@ -140,12 +153,30 @@ class Coordinator:
             for update_callback in self._listeners:
                 update_callback()
 
+    async def _stop_observing(self) -> None:
+        """Wait for any in-flight recovery to restore settings before closing."""
+        if self._task:
+            if not self._task.cancelling():
+                self._task.cancel()
+            await asyncio.shield(asyncio.gather(self._task, return_exceptions=True))
+            self._task = None
+
     def _start_observing(self) -> None:
         """Schedule state observation."""
 
-        if self._task:
-            self._task.cancel()
-            self._task = None
+        previous = self._task
+        if previous and not previous.cancelling():
+            previous.cancel()
 
-        self._task = asyncio.create_task(self._async_observe_status())
+        async def observe() -> None:
+            if previous:
+                finished = asyncio.gather(previous, return_exceptions=True)
+                try:
+                    await asyncio.shield(finished)
+                except asyncio.CancelledError:
+                    await asyncio.shield(finished)
+                    raise
+            await self._async_observe_status()
+
+        self._task = asyncio.create_task(observe())
         self._timer_disconnected.reset()

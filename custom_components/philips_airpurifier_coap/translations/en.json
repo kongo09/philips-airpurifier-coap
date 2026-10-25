@@ -171,9 +171,6 @@
       "pm25": {
         "name": "PM2.5"
       },
-      "gas": {
-        "name": "Gas"
-      },
       "total_volatile_organic_compounds": {
         "name": "Total volatile organic compounds"
       },
@@ -206,6 +203,15 @@
       },
       "nanoprotect_filter": {
         "name": "NanoProtect filter"
+      },
+      "gas_level": {
+        "name": "Gas level",
+        "state": {
+          "L1": "L1",
+          "L2": "L2",
+          "L3": "L3",
+          "L4": "L4"
+        }
       }
     },
     "switch": {
@@ -271,7 +277,7 @@
         "state": {
           "indoor_allergen_index": "Indoor allergen index",
           "pm25": "PM2.5",
-          "gas": "Gas"
+          "gas_level": "Gas level"
         }
       },
       "timer": {

@@ -20,7 +20,7 @@
               "sleep_allergy": "pap:sleep_mode",
               "turbo": "pap:speed_3",
               "medium": "pap:speed_2",
-              "gas": "pap:gas",
+              "gas": "mdi:molecule",
               "pollution": "pap:pollution_mode",
               "low": "pap:speed_1",
               "high": "pap:speed_3",
@@ -125,9 +125,6 @@
       "pm25": {
         "default": "pap:pm25b"
       },
-      "gas": {
-        "default": "pap:gas"
-      },
       "total_volatile_organic_compounds": {
         "default": "mdi:blur"
       },
@@ -136,6 +133,9 @@
       },
       "time_remaining": {
         "default": "mdi:timer"
+      },
+      "gas_level": {
+        "default": "mdi:molecule"
       }
     },
     "switch": {
@@ -208,7 +208,7 @@
         "state": {
           "indoor_allergen_index": "pap:iai",
           "pm25": "pap:pm25b",
-          "gas": "pap:gas"
+          "gas_level": "mdi:molecule"
         }
       },
       "timer": {

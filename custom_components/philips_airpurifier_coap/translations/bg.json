@@ -155,9 +155,6 @@
       "pm25": {
         "name": "PM2.5"
       },
-      "gas": {
-        "name": "Газ"
-      },
       "total_volatile_organic_compounds": {
         "name": "Общо количество летливи органични съединения"
       },
@@ -190,6 +187,9 @@
       },
       "nanoprotect_filter": {
         "name": "NanoProtect филтър"
+      },
+      "gas_level": {
+        "name": "Газ"
       }
     },
     "switch": {
@@ -255,7 +255,7 @@
         "state": {
           "indoor_allergen_index": "Индекс на вътрешни алергени",
           "pm25": "PM2.5",
-          "gas": "Газ"
+          "gas_level": "Газ"
         }
       },
       "timer": {

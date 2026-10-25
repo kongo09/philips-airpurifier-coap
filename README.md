@@ -59,6 +59,11 @@ Note: `configuration.yaml` is no longer supported and your configuration is not 
 
 ## Supported models
 
+### AMF870 gas level
+
+AMF870 gas readings are the categories `L1`–`L4`, without a liters unit or a
+numeric measurement state class. The sensor unique ID is retained.
+
 Note: Some of these models seem to have a newer firmware that does not allow local connections anymore. If you buy the device with the intention to manage it via Home Assistant, make sure you can return it, if the integration doesn't work for you.
 
 - AC0850/11 AWS_Philips_AIR

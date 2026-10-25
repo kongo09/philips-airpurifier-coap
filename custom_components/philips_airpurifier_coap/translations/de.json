@@ -155,9 +155,6 @@
       "pm25": {
         "name": "PM2.5"
       },
-      "gas": {
-        "name": "Gaskonzentration"
-      },
       "total_volatile_organic_compounds": {
         "name": "Flüchtige organische Verbindungen insgesamt"
       },
@@ -190,6 +187,9 @@
       },
       "nanoprotect_filter": {
         "name": "NanoProtect-Filter"
+      },
+      "gas_level": {
+        "name": "Gaskonzentration"
       }
     },
     "switch": {
@@ -255,7 +255,7 @@
         "state": {
           "indoor_allergen_index": "Allergene (IAI)",
           "pm25": "PM2.5",
-          "gas": "Gaskonzentration"
+          "gas_level": "Gaskonzentration"
         }
       },
       "timer": {

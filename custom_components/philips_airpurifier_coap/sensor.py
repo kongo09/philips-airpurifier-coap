@@ -7,7 +7,12 @@ from collections.abc import Callable
 from datetime import timedelta
 from typing import Any, cast
 
-from homeassistant.components.sensor import ATTR_STATE_CLASS, SensorEntity, SensorStateClass
+from homeassistant.components.sensor import (
+    ATTR_STATE_CLASS,
+    SensorDeviceClass,
+    SensorEntity,
+    SensorStateClass,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     ATTR_DEVICE_CLASS,
@@ -118,6 +123,17 @@ class PhilipsSensor(PhilipsEntity, SensorEntity):
 
         self._attrs: dict[str, Any] = {}
         self.kind = kind
+
+        # AMF870 reports a categorical gas level, not a volume in liters.
+        if self._model.split("/")[0] == "AMF870" and kind == PhilipsApi.NEW2_GAS:
+            self._attr_native_unit_of_measurement = None
+            self._attr_state_class = None
+            self._attr_device_class = SensorDeviceClass.ENUM
+            self._attr_options = ["L1", "L2", "L3", "L4"]
+            self._description = dict(self._description)
+            self._description[FanAttributes.VALUE] = lambda value, status: (
+                f"L{value}" if type(value) is int and 1 <= value <= 4 else None
+            )
 
     @property
     def native_value(self) -> StateType:

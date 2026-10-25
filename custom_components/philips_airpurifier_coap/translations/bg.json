@@ -267,10 +267,10 @@
       }
     },
     "number": {
-      "oscillaton": {
+      "oscillation": {
         "name": "Осцилация"
       },
-      "target_temp": {
+      "target_temperature": {
         "name": "Целева температура"
       }
     }

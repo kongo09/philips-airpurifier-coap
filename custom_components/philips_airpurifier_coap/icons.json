@@ -36,10 +36,12 @@
               "speed_7": "pap:fan_speed_button",
               "speed_8": "pap:fan_speed_button",
               "speed_9": "pap:fan_speed_button",
-              "speed_10": "pap:fan_speed_button"
+              "speed_10": "pap:fan_speed_button",
+              "allergy_sleep": "pap:sleep_mode"
             }
           }
-        }
+        },
+        "default": "mdi:fan"
       }
     },
     "humidifier": {
@@ -74,7 +76,8 @@
           "current_humidity": {
             "default": "pap:humidity_button"
           }
-        }
+        },
+        "default": "mdi:air-humidifier"
       }
     },
     "climate": {
@@ -101,7 +104,8 @@
               "on": "pap:rotate"
             }
           }
-        }
+        },
+        "default": "mdi:radiator"
       }
     },
     "binary_sensor": {
@@ -109,13 +113,15 @@
         "state": {
           "on": "mdi:water",
           "off": "mdi:water-off"
-        }
+        },
+        "default": "mdi:water"
       },
       "humidification": {
         "state": {
           "on": "pap:two_in_one_mode",
           "off": "pap:purification_only_mode"
-        }
+        },
+        "default": "mdi:water-percent"
       }
     },
     "sensor": {
@@ -136,6 +142,30 @@
       },
       "time_remaining": {
         "default": "mdi:timer"
+      },
+      "temperature": {
+        "default": "mdi:thermometer"
+      },
+      "water_level": {
+        "default": "mdi:water-percent"
+      },
+      "rssi": {
+        "default": "mdi:wifi"
+      },
+      "pre_filter": {
+        "default": "pap:prefilter_cleaning"
+      },
+      "hepa_filter": {
+        "default": "mdi:air-filter"
+      },
+      "active_carbon_filter": {
+        "default": "mdi:grain"
+      },
+      "wick": {
+        "default": "mdi:air-humidifier"
+      },
+      "nanoprotect_filter": {
+        "default": "pap:nanoprotect_filter"
       }
     },
     "switch": {
@@ -209,7 +239,8 @@
           "indoor_allergen_index": "pap:iai",
           "pm25": "pap:pm25b",
           "gas": "pap:gas"
-        }
+        },
+        "default": "mdi:chart-box-outline"
       },
       "timer": {
         "default": "mdi:clock-plus",
@@ -227,15 +258,16 @@
           "9h": "mdi:clock-time-nine",
           "10h": "mdi:clock-time-ten",
           "11h": "mdi:clock-time-eleven",
-          "12h": "mdi:clock-time-twelve"
+          "12h": "mdi:clock-time-twelve",
+          "Off": "mdi:timer-off-outline"
         }
       }
     },
     "number": {
-      "oscillaton": {
+      "oscillation": {
         "default": "pap:oscillate"
       },
-      "target_temp": {
+      "target_temperature": {
         "default": "mdi:thermometer"
       }
     }

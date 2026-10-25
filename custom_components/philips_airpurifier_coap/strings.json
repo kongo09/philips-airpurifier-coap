@@ -14,7 +14,7 @@
         }
       },
       "confirm": {
-        "description": "Do you want to setup {model} {name}?"
+        "description": "Do you want to set up {model} {name}?"
       }
     },
     "error": {
@@ -89,7 +89,7 @@
           "mode": {
             "state": {
               "purification": "Purification",
-              "purification_humidification": "Purification and Humidification",
+              "purification_humidification": "Purification and humidification",
               "auto": "Auto",
               "allergen": "Allergen",
               "sleep": "Sleep",
@@ -105,7 +105,7 @@
           "action": {
             "state": {
               "off": "Off",
-              "humidifying": "humidifying",
+              "humidifying": "Humidifying",
               "idle": "Idle"
             }
           },
@@ -230,7 +230,16 @@
     },
     "light": {
       "display_backlight": {
-        "name": "Display backlight"
+        "name": "Display backlight",
+        "state_attributes": {
+          "effect": {
+            "name": "Effect",
+            "state": {
+              "auto": "Auto",
+              "off": "Off"
+            }
+          }
+        }
       },
       "light_brightness": {
         "name": "Light brightness"
@@ -278,15 +287,29 @@
         "name": "Timer",
         "state": {
           "off": "Off",
-          "on": "On"
+          "on": "On",
+          "Off": "Off",
+          "30min": "30 minutes",
+          "1h": "1 hour",
+          "2h": "2 hours",
+          "3h": "3 hours",
+          "4h": "4 hours",
+          "5h": "5 hours",
+          "6h": "6 hours",
+          "7h": "7 hours",
+          "8h": "8 hours",
+          "9h": "9 hours",
+          "10h": "10 hours",
+          "11h": "11 hours",
+          "12h": "12 hours"
         }
       }
     },
     "number": {
-      "oscillaton": {
+      "oscillation": {
         "name": "Oscillation"
       },
-      "target_temp": {
+      "target_temperature": {
         "name": "Target temperature"
       }
     }

@@ -59,6 +59,10 @@ Note: `configuration.yaml` is no longer supported and your configuration is not 
 
 ## Supported models
 
+Custom Philips icon names begin with `pap:`, such as `pap:nanoprotect_filter` and
+`pap:prefilter_cleaning`; these names can be entered directly in an entity's icon
+field. Existing user-specified entity names and icons are not overwritten.
+
 Note: Some of these models seem to have a newer firmware that does not allow local connections anymore. If you buy the device with the intention to manage it via Home Assistant, make sure you can return it, if the integration doesn't work for you.
 
 - AC0850/11 AWS_Philips_AIR

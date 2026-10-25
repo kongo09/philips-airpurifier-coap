@@ -75,6 +75,9 @@ class PhilipsSelect(PhilipsEntity, SelectEntity):
         label = label.partition("#")[0]
         self._attr_translation_key = self._description.get(FanAttributes.LABEL)
         self._attr_entity_category = self._description.get(CONF_ENTITY_CATEGORY)
+        # Keep frequently used AMF870 controls separate from configuration.
+        if self._model.split("/")[0] == "AMF870" and self._attr_translation_key in ("function",):
+            self._attr_entity_category = None
 
         self._options = self._description.get(OPTIONS)
         self._attr_options = list(self._options.values())

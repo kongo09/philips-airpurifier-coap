@@ -10,7 +10,7 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_DEVICE_CLASS, CONF_ENTITY_CATEGORY
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity import Entity, EntityCategory
 
 from .config_entry_data import ConfigEntryData
 from .const import DOMAIN, SWITCH_OFF, SWITCH_ON, SWITCH_TYPES, FanAttributes
@@ -75,6 +75,9 @@ class PhilipsSwitch(PhilipsEntity, SwitchEntity):
         self._attr_device_class = self._description.get(ATTR_DEVICE_CLASS)
         self._attr_translation_key = self._description.get(FanAttributes.LABEL)
         self._attr_entity_category = self._description.get(CONF_ENTITY_CATEGORY)
+        # Keep frequently used AMF870 controls separate from configuration.
+        if self._model.split("/")[0] == "AMF870" and self._attr_translation_key in ("auto_plus", "standby_sensors"):
+            self._attr_entity_category = EntityCategory.CONFIG
 
         model = config_entry_data.device_information.model
         device_id = config_entry_data.device_information.device_id

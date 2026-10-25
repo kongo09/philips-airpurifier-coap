@@ -73,6 +73,12 @@ class PhilipsNumber(PhilipsEntity, NumberEntity):
         label = label.partition("#")[0]
         self._attr_translation_key = self._description.get(FanAttributes.LABEL)
         self._attr_entity_category = self._description.get(CONF_ENTITY_CATEGORY)
+        # Keep frequently used AMF870 controls separate from configuration.
+        if self._model.split("/")[0] == "AMF870" and self._attr_translation_key in (
+            "oscillation",
+            "target_temperature",
+        ):
+            self._attr_entity_category = None
         self._attr_icon = self._description.get(ATTR_ICON)
         self._attr_mode = "slider"  # hardwired for now
         self._attr_native_unit_of_measurement = self._description.get(FanAttributes.UNIT)

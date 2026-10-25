@@ -454,6 +454,7 @@ class PhilipsApi:
     NEW2_NAME = "D01S03"
     NEW2_MODEL_ID = "D01S05"
     NEW2_POWER = "D03102"
+    AMF870_DISPLAY_BACKLIGHT = "D0312F"
     NEW2_DISPLAY_BACKLIGHT = "D0312D"
     NEW2_DISPLAY_BACKLIGHT2 = "D03105"
     NEW2_DISPLAY_BACKLIGHT3 = "D03105#1"  # dimmable in 3 steps with auto
@@ -709,9 +710,7 @@ SENSOR_TYPES: dict[str, SensorDescription] = {
     PhilipsApi.WATER_LEVEL: {
         FanAttributes.ICON_MAP: {0: ICON.WATER_REFILL, 10: "mdi:water"},
         FanAttributes.LABEL: FanAttributes.WATER_LEVEL,
-        FanAttributes.VALUE: lambda value, status: (
-            0 if status.get("err") in [32768, 49408] else value
-        ),
+        FanAttributes.VALUE: lambda value, status: 0 if status.get("err") in [32768, 49408] else value,
         ATTR_STATE_CLASS: SensorStateClass.MEASUREMENT,
         FanAttributes.UNIT: PERCENTAGE,
         CONF_ENTITY_CATEGORY: EntityCategory.DIAGNOSTIC,

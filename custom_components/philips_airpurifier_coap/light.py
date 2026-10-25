@@ -29,6 +29,7 @@ from .const import (
     SWITCH_OFF,
     SWITCH_ON,
     FanAttributes,
+    PhilipsApi,
 )
 from .philips import PhilipsEntity, model_to_class
 
@@ -118,6 +119,9 @@ class PhilipsLight(PhilipsEntity, LightEntity):
 
         self._attrs: dict[str, Any] = {}
         self.kind = light.partition("#")[0]
+        # D0312D only echoes writes on AMF870; D0312F controls the physical display.
+        if self._model.split("/")[0] == "AMF870" and light == PhilipsApi.NEW2_DISPLAY_BACKLIGHT:
+            self.kind = PhilipsApi.AMF870_DISPLAY_BACKLIGHT
 
     @property
     def is_on(self) -> bool:

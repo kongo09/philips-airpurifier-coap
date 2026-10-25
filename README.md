@@ -59,6 +59,11 @@ Note: `configuration.yaml` is no longer supported and your configuration is not 
 
 ## Supported models
 
+### AMF870 display backlight
+
+AMF870 display brightness reads and writes `D0312F`. The existing light unique
+ID is retained; `D0312D` may echo a command without changing the physical display.
+
 Note: Some of these models seem to have a newer firmware that does not allow local connections anymore. If you buy the device with the intention to manage it via Home Assistant, make sure you can return it, if the integration doesn't work for you.
 
 - AC0850/11 AWS_Philips_AIR

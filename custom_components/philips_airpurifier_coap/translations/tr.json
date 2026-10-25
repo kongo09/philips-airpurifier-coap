@@ -1,0 +1,326 @@
+{
+  "title": "Philips Hava Temizleyici",
+  "config": {
+    "abort": {
+      "already_configured": "Cihaz zaten yapılandırılmış",
+      "model_unsupported": "Bu model desteklenmiyor",
+      "timeout": "Zaman aşımı: cihaza bağlanılamıyor"
+    },
+    "step": {
+      "user": {
+        "title": "Yeni Philips Hava Temizleyici",
+        "data": {
+          "host": "Cihazın ana bilgisayar adı veya IP adresi"
+        }
+      },
+      "confirm": {
+        "description": "{model} {name} cihazını kurmak istiyor musunuz?"
+      }
+    },
+    "error": {
+      "host": "Cihaz adresi gerekli",
+      "connect": "Cihaza bağlanılamıyor"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Philips Hava Temizleyiciyi yeniden yapılandır",
+        "data": {
+          "host": "Cihazın ana bilgisayar adı veya IP adresi"
+        }
+      }
+    },
+    "error": {
+      "host": "Cihaz adresi gerekli",
+      "connect": "Cihaza bağlanılamıyor",
+      "timeout": "Zaman aşımı: cihaza bağlanılamıyor",
+      "different_device": "Bu adresteki cihaz, yapılandırılmış cihazla aynı değil"
+    }
+  },
+  "entity": {
+    "fan": {
+      "pap": {
+        "state_attributes": {
+          "preset_mode": {
+            "name": "Hazır mod",
+            "state": {
+              "auto": "Otomatik",
+              "auto_general": "Otomatik/Genel",
+              "auto_plus": "Otomatik+",
+              "bacteria": "Bakteri",
+              "allergen": "Alerjen",
+              "gentle": "Hafif",
+              "night": "Gece",
+              "sleep": "Uyku",
+              "sleep_allergy": "Uyku/Alerji",
+              "allergy_sleep": "Alerji/Uyku",
+              "turbo": "Turbo",
+              "medium": "Orta",
+              "gas": "Gaz",
+              "pollution": "Kirlilik",
+              "low": "Düşük",
+              "high": "Yüksek",
+              "ventilation": "Havalandırma",
+              "natural": "Doğal",
+              "speed_1": "Hız 1",
+              "gentle_speed_1": "Hafif/Hız 1",
+              "speed_2": "Hız 2",
+              "speed_3": "Hız 3",
+              "speed_4": "Hız 4",
+              "speed_5": "Hız 5",
+              "speed_6": "Hız 6",
+              "speed_7": "Hız 7",
+              "speed_8": "Hız 8",
+              "speed_9": "Hız 9",
+              "speed_10": "Hız 10"
+            }
+          }
+        }
+      }
+    },
+    "humidifier": {
+      "pap": {
+        "state": {
+          "on": "Açık",
+          "off": "Kapalı"
+        },
+        "state_attributes": {
+          "mode": {
+            "state": {
+              "purification": "Hava temizleme",
+              "purification_humidification": "Hava temizleme ve nemlendirme",
+              "auto": "Otomatik",
+              "allergen": "Alerjen",
+              "sleep": "Uyku",
+              "night": "Gece",
+              "turbo": "Turbo",
+              "high": "Yüksek",
+              "medium": "Orta",
+              "speed_1": "Hız 1",
+              "speed_2": "Hız 2",
+              "speed_3": "Hız 3"
+            }
+          },
+          "action": {
+            "state": {
+              "off": "Kapalı",
+              "humidifying": "Nemlendiriyor",
+              "idle": "Beklemede"
+            }
+          },
+          "current_humidity": {
+            "name": "Mevcut nem"
+          }
+        }
+      }
+    },
+    "climate": {
+      "pap": {
+        "name": "Fanlı ısıtıcı",
+        "state": {
+          "off": "Kapalı",
+          "auto": "Otomatik",
+          "fan_only": "Havalandırma",
+          "heat": "Isıtma"
+        },
+        "state_attributes": {
+          "preset_mode": {
+            "name": "Hazır mod",
+            "state": {
+              "auto": "Otomatik",
+              "high": "Yüksek",
+              "medium": "Orta",
+              "low": "Düşük",
+              "ventilation": "Havalandırma"
+            }
+          },
+          "swing_mode": {
+            "name": "Salınım modu",
+            "state": {
+              "on": "Açık",
+              "off": "Kapalı"
+            }
+          },
+          "current_temperature": {
+            "name": "Mevcut sıcaklık"
+          }
+        }
+      }
+    },
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Su haznesi",
+        "state": {
+          "on": "Su var",
+          "off": "Boş"
+        }
+      },
+      "humidification": {
+        "name": "Nemlendirme",
+        "state": {
+          "on": "Açık",
+          "off": "Kapalı"
+        }
+      }
+    },
+    "sensor": {
+      "indoor_allergen_index": {
+        "name": "İç ortam alerjen indeksi"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "total_volatile_organic_compounds": {
+        "name": "Toplam uçucu organik bileşikler"
+      },
+      "humidity": {
+        "name": "Nem"
+      },
+      "time_remaining": {
+        "name": "Kalan süre"
+      },
+      "temperature": {
+        "name": "Sıcaklık"
+      },
+      "water_level": {
+        "name": "Su seviyesi"
+      },
+      "rssi": {
+        "name": "RSSI"
+      },
+      "pre_filter": {
+        "name": "Ön filtre"
+      },
+      "hepa_filter": {
+        "name": "HEPA filtre"
+      },
+      "active_carbon_filter": {
+        "name": "Aktif karbon filtre"
+      },
+      "wick": {
+        "name": "Nemlendirme filtresi"
+      },
+      "nanoprotect_filter": {
+        "name": "NanoProtect filtre"
+      },
+      "gas_level": {
+        "name": "Gaz seviyesi",
+        "state": {
+          "L1": "L1",
+          "L2": "L2",
+          "L3": "L3",
+          "L4": "L4"
+        }
+      }
+    },
+    "switch": {
+      "child_lock": {
+        "name": "Çocuk kilidi"
+      },
+      "beep": {
+        "name": "Sesli uyarı"
+      },
+      "standby_sensors": {
+        "name": "Bekleme modunda sensörler"
+      },
+      "auto_plus": {
+        "name": "Otomatik+"
+      },
+      "auto_quickdry_mode": {
+        "name": "Otomatik hızlı kurutma modu"
+      },
+      "quickdry_mode": {
+        "name": "Hızlı kurutma modu"
+      }
+    },
+    "light": {
+      "display_backlight": {
+        "name": "Ekran aydınlatması",
+        "state_attributes": {
+          "effect": {
+            "name": "Efekt",
+            "state": {
+              "auto": "Otomatik",
+              "off": "Kapalı"
+            }
+          }
+        }
+      },
+      "light_brightness": {
+        "name": "Işık parlaklığı"
+      }
+    },
+    "select": {
+      "function": {
+        "name": "İşlev",
+        "state": {
+          "purification": "Hava temizleme",
+          "purification_humidification": "Hava temizleme ve nemlendirme",
+          "fan": "Fan",
+          "circulation": "Hava sirkülasyonu",
+          "heating": "Isıtma"
+        }
+      },
+      "lamp_mode": {
+        "name": "Lamba modu",
+        "state": {
+          "off": "Kapalı",
+          "air_quality": "Hava kalitesi",
+          "ambient_light_mode": "Ortam",
+          "humidity": "Nem"
+        }
+      },
+      "ambient_light_mode": {
+        "name": "Ortam ışığı modu",
+        "state": {
+          "off": "Kapalı",
+          "warm": "Sıcak",
+          "dawn": "Şafak",
+          "calm": "Sakin",
+          "breath": "Nefes"
+        }
+      },
+      "preferred_index": {
+        "name": "Gösterilen ölçüm",
+        "state": {
+          "indoor_allergen_index": "İç ortam alerjen indeksi",
+          "pm25": "PM2.5",
+          "gas_level": "Gaz seviyesi"
+        }
+      },
+      "timer": {
+        "name": "Zamanlayıcı",
+        "state": {
+          "off": "Kapalı",
+          "on": "Açık",
+          "Off": "Kapalı",
+          "30min": "30 dakika",
+          "1h": "1 saat",
+          "2h": "2 saat",
+          "3h": "3 saat",
+          "4h": "4 saat",
+          "5h": "5 saat",
+          "6h": "6 saat",
+          "7h": "7 saat",
+          "8h": "8 saat",
+          "9h": "9 saat",
+          "10h": "10 saat",
+          "11h": "11 saat",
+          "12h": "12 saat"
+        }
+      }
+    },
+    "number": {
+      "oscillation": {
+        "name": "Salınım"
+      },
+      "target_temperature": {
+        "name": "Hedef sıcaklık"
+      },
+      "target_humidity": {
+        "name": "Hedef nem"
+      }
+    }
+  }
+}

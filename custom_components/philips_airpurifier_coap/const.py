@@ -477,6 +477,8 @@ class PhilipsApi:
     NEW2_FILTER_NANOPROTECT = "D0540E"
     NEW2_FILTER_NANOPROTECT_PREFILTER_TOTAL = "D05207"
     NEW2_FILTER_NANOPROTECT_TOTAL = "D05408"
+    NEW2_FILTER_WICK = "D05213"
+    NEW2_FILTER_WICK_TOTAL = "D05212"
     NEW2_FAN_SPEED = "D0310D"
     NEW2_SWING = "D0320F"
     NEW2_CIRCULATION = "D0310A#1"
@@ -831,6 +833,12 @@ FILTER_TYPES: dict[str, FilterDescription] = {
         },
         FanAttributes.LABEL: FanAttributes.FILTER_NANOPROTECT_CLEAN,
         FanAttributes.TOTAL: PhilipsApi.NEW2_FILTER_NANOPROTECT_PREFILTER_TOTAL,
+        FanAttributes.TYPE: "",
+    },
+    PhilipsApi.NEW2_FILTER_WICK: {
+        FanAttributes.ICON_MAP: {0: ICON.PREFILTER_WICK_CLEANING, 72: "mdi:dots-grid"},
+        FanAttributes.LABEL: FanAttributes.FILTER_WICK,
+        FanAttributes.TOTAL: PhilipsApi.NEW2_FILTER_WICK_TOTAL,
         FanAttributes.TYPE: "",
     },
 }

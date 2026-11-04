@@ -148,6 +148,14 @@
         }
       }
     },
+    "button": {
+      "reset_pre_filter": {
+        "name": "Vorfilter zurücksetzen"
+      },
+      "reset_nanoprotect_filter": {
+        "name": "NanoProtect-Filter zurücksetzen"
+      }
+    },
     "sensor": {
       "indoor_allergen_index": {
         "name": "Allergene (IAI)"

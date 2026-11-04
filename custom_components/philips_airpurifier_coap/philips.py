@@ -630,6 +630,10 @@ class PhilipsAC0950(PhilipsNew2GenericFan):
     AVAILABLE_SWITCHES: ClassVar = [PhilipsApi.NEW2_CHILD_LOCK, PhilipsApi.NEW2_BEEP]
     AVAILABLE_LIGHTS: ClassVar = [PhilipsApi.NEW2_DISPLAY_BACKLIGHT3]
     AVAILABLE_SELECTS: ClassVar = [PhilipsApi.NEW2_GAS_PREFERRED_INDEX, PhilipsApi.NEW2_TIMER2]
+    AVAILABLE_FILTER_RESETS: ClassVar = [
+        PhilipsApi.NEW2_FILTER_NANOPROTECT_PREFILTER,
+        PhilipsApi.NEW2_FILTER_NANOPROTECT,
+    ]
 
 
 class PhilipsAC0951(PhilipsAC0950):

@@ -7,8 +7,8 @@ heaters that communicate over CoAP. Supports 50+ device models across three
 API generations.
 
 - **Domain:** `philips_airpurifier_coap`
-- **Platforms:** `binary_sensor`, `climate`, `fan`, `humidifier`, `light`,
-  `number`, `select`, `sensor`, `switch`
+- **Platforms:** `binary_sensor`, `button`, `climate`, `fan`, `humidifier`,
+  `light`, `number`, `select`, `sensor`, `switch`
 - **External dependencies:** `aioairctrl` (CoAP client), `getmac` (MAC detection)
 - **HA dependencies:** `frontend`, `http`
 - **IoT class:** `local_push`
@@ -27,6 +27,7 @@ custom_components/philips_airpurifier_coap/
 ├── const.py              # DOMAIN, enums, API mappings, entity type dicts
 ├── timer.py              # Async timer utility
 ├── binary_sensor.py      # Water tank / humidification sensors
+├── button.py             # Filter counter reset
 ├── climate.py            # Heater entities (HVAC mode, temperature, swing)
 ├── fan.py                # Fan platform setup
 ├── humidifier.py         # Humidifier entities
@@ -63,6 +64,7 @@ PhilipsEntity (base — coordinator access, availability, device_info)
 │   │   ├── PhilipsNewGenericFan (new API)
 │   │   └── PhilipsNew2GenericFan (new2 API)
 │   ├── PhilipsBinarySensor
+│   ├── PhilipsFilterResetButton
 │   ├── PhilipsHeater (climate)
 │   ├── PhilipsHumidifier
 │   ├── PhilipsLight

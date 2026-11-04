@@ -118,6 +118,14 @@
         }
       }
     },
+    "button": {
+      "reset_pre_filter": {
+        "default": "pap:prefilter_cleaning"
+      },
+      "reset_nanoprotect_filter": {
+        "default": "pap:filter_replacement"
+      }
+    },
     "sensor": {
       "indoor_allergen_index": {
         "default": "pap:iai"

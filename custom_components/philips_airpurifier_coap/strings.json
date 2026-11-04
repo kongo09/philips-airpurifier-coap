@@ -164,6 +164,14 @@
         }
       }
     },
+    "button": {
+      "reset_pre_filter": {
+        "name": "Reset pre-filter"
+      },
+      "reset_nanoprotect_filter": {
+        "name": "Reset NanoProtect filter"
+      }
+    },
     "sensor": {
       "indoor_allergen_index": {
         "name": "Indoor allergen index"

@@ -586,10 +586,11 @@ class PhilipsAC0950(PhilipsNew2GenericFan):
     """AC0950."""
 
     AVAILABLE_PRESET_MODES: ClassVar = {
+        # NEW2_MODE_C (D0310D) is the live fan speed, which the device picks
+        # itself in auto mode, so it must not be part of the auto pattern
         PresetMode.AUTO: {
             PhilipsApi.NEW2_POWER: 1,
             PhilipsApi.NEW2_MODE_B: 0,
-            PhilipsApi.NEW2_MODE_C: 1,
         },
         PresetMode.TURBO: {
             PhilipsApi.NEW2_POWER: 1,

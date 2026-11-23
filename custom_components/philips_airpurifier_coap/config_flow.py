@@ -8,18 +8,46 @@ from typing import Any
 import voluptuous as vol
 from aioairctrl import CoAPClient
 from homeassistant import config_entries, exceptions
-from homeassistant.config_entries import ConfigFlowResult
+from homeassistant.config_entries import ConfigEntry, ConfigEntryState, ConfigFlowResult
 from homeassistant.const import CONF_HOST, CONF_NAME
-from homeassistant.core import callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 from homeassistant.util.timeout import TimeoutManager
 
 from .const import CONF_DEVICE_ID, CONF_MODEL, CONF_STATUS, DOMAIN, PhilipsApi
-from .helpers import extract_model, extract_name
+from .helpers import extract_model, extract_name, normalize_connection_mac
 from .philips import model_to_class
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def entry_host(entry: ConfigEntry) -> str:
+    """Return the host an entry connects to; a host set in options overrides data."""
+    return entry.options.get(CONF_HOST, entry.data[CONF_HOST])
+
+
+@callback
+def async_set_entry_host(hass: HomeAssistant, entry: ConfigEntry, host: str) -> bool:
+    """Point an entry at a new host and make sure it is set up again with it.
+
+    The host is written where the entry reads it from (options when overridden there,
+    data otherwise). A loaded entry reloads through its update listener. An entry that
+    never finished setup (e.g. stuck in setup_retry on the old address) has no update
+    listener, so its reload is scheduled here.
+    """
+    if entry_host(entry) == host:
+        return False
+
+    if CONF_HOST in entry.options:
+        hass.config_entries.async_update_entry(entry, options={**entry.options, CONF_HOST: host})
+    else:
+        hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_HOST: host})
+
+    if entry.state is not ConfigEntryState.LOADED:
+        hass.config_entries.async_schedule_reload(entry.entry_id)
+    return True
 
 
 def host_valid(host: str) -> bool:
@@ -62,6 +90,20 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_dhcp(self, discovery_info: DhcpServiceInfo) -> ConfigFlowResult:
         """Handle initial step of auto discovery flow."""
         _LOGGER.debug("async_step_dhcp: called, found: %s", discovery_info)
+
+        # A device we already know must not be probed: these devices keep a single
+        # status observer, so a probe takes the status stream away from the running
+        # coordinator. Probing a device that has just reconnected also often times out,
+        # which used to abort the flow before a changed IP address was ever stored.
+        if (entry := self._async_known_entry(discovery_info)) is not None:
+            if async_set_entry_host(self.hass, entry, discovery_info.ip):
+                _LOGGER.info(
+                    "Device %s of %s moved to %s, updated its host",
+                    discovery_info.macaddress,
+                    entry.title,
+                    discovery_info.ip,
+                )
+            return self.async_abort(reason="already_configured")
 
         self._host = discovery_info.ip
         _LOGGER.debug("trying to configure host: %s", self._host)
@@ -158,6 +200,35 @@ class PhilipsAirPurifierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         # show the confirmation form to the user
         _LOGGER.debug("waiting for async_step_confirm")
         return await self.async_step_confirm()
+
+    @callback
+    def _async_known_entry(self, discovery_info: DhcpServiceInfo) -> ConfigEntry | None:
+        """Find the configured entry for a discovered device, by MAC first, then by host."""
+        entries = self._async_current_entries(include_ignore=False)
+        device_registry = dr.async_get(self.hass)
+
+        if mac := normalize_connection_mac(discovery_info.macaddress):
+            device = device_registry.async_get_device(connections={(dr.CONNECTION_NETWORK_MAC, mac)})
+            if device is not None:
+                for entry in entries:
+                    if entry.entry_id in device.config_entries:
+                        return entry
+
+        # Entries whose MAC could not be detected at setup can only be matched by host.
+        # Entries that do have a MAC did not match above, so a device at their (stale)
+        # host is a different one and must go through discovery.
+        for entry in entries:
+            if entry_host(entry) != discovery_info.ip:
+                continue
+            has_mac = any(
+                conn_type == dr.CONNECTION_NETWORK_MAC
+                for device in dr.async_entries_for_config_entry(device_registry, entry.entry_id)
+                for conn_type, _ in device.connections
+            )
+            if not has_mac:
+                return entry
+
+        return None
 
     async def async_step_confirm(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Confirm the dhcp discovered data."""
@@ -308,7 +379,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Handle options flow to change the device host address."""
         errors = {}
-        current_host = self.config_entry.options.get(CONF_HOST, self.config_entry.data[CONF_HOST])
+        current_host = entry_host(self.config_entry)
 
         if user_input is not None:
             new_host = user_input[CONF_HOST]
@@ -348,7 +419,14 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         errors[CONF_HOST] = "different_device"
                     else:
                         _LOGGER.debug("options flow: device confirmed, updating host to %s", new_host)
-                        return self.async_create_entry(title="", data={CONF_HOST: new_host})
+                        options = {**self.config_entry.options, CONF_HOST: new_host}
+                        # Store the options now, so an entry that is not loaded (and so
+                        # has no update listener) can be reloaded with the new host.
+                        # Finishing the flow then writes the same options: a no-op.
+                        self.hass.config_entries.async_update_entry(self.config_entry, options=options)
+                        if self.config_entry.state is not ConfigEntryState.LOADED:
+                            self.hass.config_entries.async_schedule_reload(self.config_entry.entry_id)
+                        return self.async_create_entry(title="", data=options)
 
                 except TimeoutError:
                     _LOGGER.warning("options flow: timeout connecting to host %s", new_host)
